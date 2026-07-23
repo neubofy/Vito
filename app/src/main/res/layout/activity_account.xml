@@ -85,7 +85,7 @@
             android:text="Open Website Dashboard"
             style="@style/Widget.MaterialComponents.Button"
             app:icon="@drawable/ic_cloud"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="16dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSignOut"

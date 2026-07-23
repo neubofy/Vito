@@ -35,6 +35,29 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/margin_small"
+                android:text="Dashboard Telemetry" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/switchAutoUpload"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Auto Location Upload (Coming Soon)"
+                android:checked="false"
+                android:enabled="false"
+                android:layout_marginBottom="@dimen/margin_small" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/margin_small"
+                android:layout_marginBottom="@dimen/margin_normal"
+                android:background="?android:attr/listDivider" />
+
+            <TextView
+                style="@style/LCLD.Text.SectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_small"
                 android:text="FMD via PIN" />
 
             <TextView

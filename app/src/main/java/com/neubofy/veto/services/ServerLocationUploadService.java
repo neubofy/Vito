@@ -43,8 +43,9 @@ public class ServerLocationUploadService extends FmdJobService {
     }
 
     public static void scheduleJob(Context context, long delayMinutes) {
-        // Make sure that there are no duplicates scheduled
+        // Feature disabled per user request (Coming Soon)
         cancelJob(context);
+        if (true) return;
 
         FmdLogKt.log(context).d(TAG, "Scheduling upload service");
         SettingsRepository settings = SettingsRepository.Companion.getInstance(context);

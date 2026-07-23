@@ -81,11 +81,7 @@ class SettingsFragment : TaggedFragment() {
             }
 
             6 -> settingIntent = Intent(context, LogViewActivity::class.java)
-            7 -> {
-                val intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/neubofy/Veto/blob/main/ABOUT.md"))
-                startActivity(intent)
-                return
-            }
+            7 -> settingIntent = Intent(context, com.neubofy.veto.ui.settings.AboutActivity::class.java)
         }
 
         if (settingIntent != null) {

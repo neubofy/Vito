@@ -27,25 +27,26 @@ class VetoFirebaseMessagingService : FirebaseMessagingService() {
         if (remoteMessage.data.isNotEmpty()) {
             log().i(TAG, "Message data payload: ${remoteMessage.data}")
             
-            // Extract the command
-            val command = remoteMessage.data["command"]
-            
-            when (command) {
-                "LOCATE" -> {
-                    log().i(TAG, "Executing LOCATE command via FCM")
-                    // Trigger location worker
-                }
-                "RING" -> {
-                    log().i(TAG, "Executing RING command via FCM")
-                    // Trigger ring worker
-                }
-                "WIPE" -> {
-                    log().i(TAG, "Executing WIPE command via FCM")
-                    // Trigger wipe worker
-                }
-                else -> {
-                    log().w(TAG, "Unknown command received: $command")
-                }
+            val commandStr = remoteMessage.data["command"]
+            if (commandStr != null) {
+                // Prepend trigger word so the parser accepts it
+                val settings = com.neubofy.veto.data.SettingsRepository.getInstance(this)
+                val triggerWord = settings.get(com.neubofy.veto.data.Settings.SET_FMD_COMMAND) as String
+                val fullCommand = "$triggerWord $commandStr"
+
+                log().i(TAG, "Enqueuing FCM command execution: $fullCommand")
+
+                val inputData = androidx.work.workDataOf(
+                    com.neubofy.veto.workers.CommandExecutionWorker.KEY_COMMAND to fullCommand,
+                    com.neubofy.veto.workers.CommandExecutionWorker.KEY_TRANSPORT_TYPE to com.neubofy.veto.workers.CommandExecutionWorker.TRANS_INAPP,
+                    com.neubofy.veto.workers.CommandExecutionWorker.KEY_DESTINATION to "FCM Server",
+                )
+                val workRequest = androidx.work.OneTimeWorkRequestBuilder<com.neubofy.veto.workers.CommandExecutionWorker>()
+                    .setInputData(inputData)
+                    .build()
+                androidx.work.WorkManager.getInstance(this).enqueue(workRequest)
+            } else {
+                log().w(TAG, "FCM data payload did not contain a 'command' key")
             }
         }
     }

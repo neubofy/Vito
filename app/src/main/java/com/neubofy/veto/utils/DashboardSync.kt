@@ -54,11 +54,20 @@ object DashboardSync {
                 val responseCode = connection.responseCode
                 if (responseCode in 200..299) {
                     context.log().i(TAG, "Successfully synced FCM token to Dashboard")
+                    android.os.Handler(android.os.Looper.getMainLooper()).post {
+                        android.widget.Toast.makeText(context, "✅ Dashboard Connected!", android.widget.Toast.LENGTH_SHORT).show()
+                    }
                 } else {
                     context.log().e(TAG, "Failed to sync FCM token. Server returned $responseCode")
+                    android.os.Handler(android.os.Looper.getMainLooper()).post {
+                        android.widget.Toast.makeText(context, "❌ Dashboard Connection Error: $responseCode", android.widget.Toast.LENGTH_LONG).show()
+                    }
                 }
             } catch (e: Exception) {
                 context.log().e(TAG, "Error syncing FCM token: ${e.message}")
+                android.os.Handler(android.os.Looper.getMainLooper()).post {
+                    android.widget.Toast.makeText(context, "❌ Network Error connecting to Dashboard", android.widget.Toast.LENGTH_LONG).show()
+                }
             }
         }.start()
     }

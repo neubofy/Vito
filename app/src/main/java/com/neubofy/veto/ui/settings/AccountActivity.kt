@@ -2,7 +2,10 @@ package com.neubofy.veto.ui.settings
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.view.View
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -26,8 +29,16 @@ class AccountActivity : FmdActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var auth: FirebaseAuth
     private lateinit var tvStatus: TextView
-    private lateinit var btnGoogleSignIn: MaterialButton
     private lateinit var etDashboardUrl: TextInputEditText
+
+    private lateinit var layoutLogin: LinearLayout
+    private lateinit var layoutLoggedIn: LinearLayout
+    private lateinit var etEmail: TextInputEditText
+    private lateinit var etPassword: TextInputEditText
+    private lateinit var btnEmailSignIn: MaterialButton
+    private lateinit var btnGoogleSignIn: MaterialButton
+    private lateinit var btnOpenWebsite: MaterialButton
+    private lateinit var btnSignOut: MaterialButton
 
     companion object {
         private val TAG = AccountActivity::class.java.simpleName
@@ -37,24 +48,37 @@ class AccountActivity : FmdActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_account)
 
+        // Bind Views
         etDashboardUrl = findViewById(R.id.etDashboardUrl)
-        btnGoogleSignIn = findViewById(R.id.btnGoogleSignIn)
         tvStatus = findViewById(R.id.tvConnectionStatus)
-        auth = FirebaseAuth.getInstance()
+        
+        layoutLogin = findViewById(R.id.layoutLogin)
+        layoutLoggedIn = findViewById(R.id.layoutLoggedIn)
+        etEmail = findViewById(R.id.etEmail)
+        etPassword = findViewById(R.id.etPassword)
+        btnEmailSignIn = findViewById(R.id.btnEmailSignIn)
+        btnGoogleSignIn = findViewById(R.id.btnGoogleSignIn)
+        btnOpenWebsite = findViewById(R.id.btnOpenWebsite)
+        btnSignOut = findViewById(R.id.btnSignOut)
 
+        auth = FirebaseAuth.getInstance()
         val settings = SettingsRepository.getInstance(this)
         
-        // Load existing
-        val currentUrl = settings.get(Settings.SET_FMDSERVER_URL) as String
-        val currentUserId = settings.get(Settings.SET_FMDSERVER_ID) as String
-        if (currentUrl.isNotEmpty()) etDashboardUrl.setText(currentUrl)
-
-        if (currentUrl.isNotEmpty() && currentUserId.isNotEmpty()) {
-            val email = auth.currentUser?.email ?: "Unknown"
-            tvStatus.text = "Device is Paired!\nLogged in as $email"
-            btnGoogleSignIn.text = "Relink Device"
+        // Advanced Toggle Logic
+        val tvAdvancedToggle = findViewById<TextView>(R.id.tvAdvancedToggle)
+        val advancedLayout = findViewById<LinearLayout>(R.id.advancedLayout)
+        tvAdvancedToggle.setOnClickListener {
+            if (advancedLayout.visibility == View.GONE) {
+                advancedLayout.visibility = View.VISIBLE
+            } else {
+                advancedLayout.visibility = View.GONE
+            }
         }
 
+        val currentUrl = settings.get(Settings.SET_FMDSERVER_URL) as String
+        if (currentUrl.isNotEmpty()) etDashboardUrl.setText(currentUrl)
+
+        // Google Sign In Setup
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -68,8 +92,8 @@ class AccountActivity : FmdActivity() {
                     val account = task.getResult(ApiException::class.java)
                     firebaseAuthWithGoogle(account.idToken!!)
                 } catch (e: ApiException) {
-                    log().e(TAG, "Google sign in failed: \${e.message}")
-                    Snackbar.make(btnGoogleSignIn, "Google sign in failed: \${e.message}", Snackbar.LENGTH_LONG).show()
+                    log().e(TAG, "Google sign in failed: ${e.message}")
+                    Snackbar.make(btnGoogleSignIn, "Google sign in failed: ${e.message}", Snackbar.LENGTH_LONG).show()
                     tvStatus.text = "Sign in failed"
                 }
             } else {
@@ -77,16 +101,94 @@ class AccountActivity : FmdActivity() {
             }
         }
 
+        // Listeners
         btnGoogleSignIn.setOnClickListener {
-            val url = etDashboardUrl.text.toString().trim()
-            if (url.isEmpty()) {
-                Snackbar.make(btnGoogleSignIn, "Please enter a Dashboard URL.", Snackbar.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            settings.set(Settings.SET_FMDSERVER_URL, url)
+            if (!validateUrl(settings)) return@setOnClickListener
             tvStatus.text = "Signing in with Google..."
             val signInIntent = googleSignInClient.signInIntent
             googleSignInLauncher.launch(signInIntent)
+        }
+
+        btnEmailSignIn.setOnClickListener {
+            if (!validateUrl(settings)) return@setOnClickListener
+            val email = etEmail.text.toString().trim()
+            val password = etPassword.text.toString().trim()
+
+            if (email.isEmpty() || password.isEmpty()) {
+                Snackbar.make(btnEmailSignIn, "Please enter email and password.", Snackbar.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            tvStatus.text = "Signing in with Email..."
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        onAuthSuccess()
+                    } else {
+                        val e = task.exception
+                        log().w(TAG, "Email sign in failed: ${e?.message}")
+                        Snackbar.make(btnEmailSignIn, "Authentication Failed: ${e?.message}", Snackbar.LENGTH_LONG).show()
+                        tvStatus.text = "Email Auth Failed"
+                    }
+                }
+        }
+
+        btnSignOut.setOnClickListener {
+            auth.signOut()
+            googleSignInClient.signOut()
+            settings.set(Settings.SET_FMDSERVER_ID, "")
+            updateUI()
+            Snackbar.make(btnSignOut, "Signed Out Successfully", Snackbar.LENGTH_SHORT).show()
+        }
+
+        btnOpenWebsite.setOnClickListener {
+            val url = etDashboardUrl.text.toString().trim()
+            if (url.isNotEmpty()) {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                startActivity(intent)
+            }
+        }
+
+        updateUI()
+    }
+
+    private fun validateUrl(settings: SettingsRepository): Boolean {
+        val url = etDashboardUrl.text.toString().trim()
+        if (url.isEmpty()) {
+            Snackbar.make(btnGoogleSignIn, "Please enter a Dashboard URL in Advanced Settings.", Snackbar.LENGTH_SHORT).show()
+            return false
+        }
+        settings.set(Settings.SET_FMDSERVER_URL, url)
+        return true
+    }
+
+    private fun updateUI() {
+        val user = auth.currentUser
+        if (user != null) {
+            // Logged In State
+            layoutLogin.visibility = View.GONE
+            layoutLoggedIn.visibility = View.VISIBLE
+            val email = user.email ?: "Unknown"
+            tvStatus.text = "Device is Paired!\nLogged in as $email"
+        } else {
+            // Logged Out State
+            layoutLogin.visibility = View.VISIBLE
+            layoutLoggedIn.visibility = View.GONE
+            tvStatus.text = "Not Connected"
+        }
+    }
+
+    private fun onAuthSuccess() {
+        val user = auth.currentUser
+        if (user != null) {
+            val settings = SettingsRepository.getInstance(this)
+            settings.set(Settings.SET_FMDSERVER_ID, user.uid)
+
+            tvStatus.text = "Pairing... Sending FCM Token to Dashboard"
+            DashboardSync.uploadTokenIfPaired(this)
+
+            Snackbar.make(btnGoogleSignIn, "Paired! Connected as ${user.email}", Snackbar.LENGTH_LONG).show()
+            updateUI()
         }
     }
 
@@ -96,23 +198,11 @@ class AccountActivity : FmdActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    val user = auth.currentUser
-                    if (user != null) {
-                        val settings = SettingsRepository.getInstance(this)
-                        settings.set(Settings.SET_FMDSERVER_ID, user.uid)
-
-                        tvStatus.text = "Pairing... Sending FCM Token to Dashboard"
-                        DashboardSync.uploadTokenIfPaired(this)
-
-                        Snackbar.make(btnGoogleSignIn, "Paired! Connected as \${user.email}", Snackbar.LENGTH_LONG).show()
-                        tvStatus.text = "Device is Paired!\nLogged in as \${user.email}"
-                        
-                        finish()
-                    }
+                    onAuthSuccess()
                 } else {
                     val e = task.exception
-                    log().w(TAG, "Firebase sign in failed: \${e?.message}")
-                    Snackbar.make(btnGoogleSignIn, "Firebase Authentication Failed.", Snackbar.LENGTH_LONG).show()
+                    log().w(TAG, "Firebase sign in failed: ${e?.message}")
+                    Snackbar.make(btnGoogleSignIn, "Firebase Authentication Failed: ${e?.message}", Snackbar.LENGTH_LONG).show()
                     tvStatus.text = "Firebase Auth Failed"
                 }
             }

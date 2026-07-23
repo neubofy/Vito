@@ -18,12 +18,12 @@ class BootReceiver : BroadcastReceiver() {
     }
 
     // Keep the BootReceiver so that the app launches once after boot.
-    // However, the FmdApplication should start before this receiver runs, and it will start the main services.
+    // However, the VetoApplication should start before this receiver runs, and it will start the main services.
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == BOOT_COMPLETED) {
             context.log().i(TAG, "Running BOOT_COMPLETED handler")
 
-            // One-shot services that don't need to run on every FmdApplication start
+            // One-shot services that don't need to run on every VetoApplication start
             TempContactExpiredService.scheduleJob(context, 0)
 
             val settings = SettingsRepository.getInstance(context)

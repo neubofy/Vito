@@ -14,7 +14,8 @@ class VetoFirebaseMessagingService : FirebaseMessagingService() {
         super.onNewToken(token)
         log().i(TAG, "New Firebase token received: $token")
         
-        // TODO: Save to Firestore if user is authenticated
+        // Save to Firestore via Next.js Dashboard API if paired
+        com.neubofy.veto.utils.DashboardSync.uploadTokenIfPaired(this)
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {

@@ -10,7 +10,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.neubofy.veto.FmdApplication
+import com.neubofy.veto.VetoApplication
 import com.neubofy.veto.R
 import com.neubofy.veto.commands.CommandHandler
 import com.neubofy.veto.services.ServerLocationUploadService.SOURCE_REGULAR_BACKGROUND_UPLOAD
@@ -92,7 +92,7 @@ class CommandExecutionWorker(
             }
 
             TRANS_NOTIFICATION_REPLY -> {
-                val cached = (applicationContext as FmdApplication).latestStatusBarNotification
+                val cached = (applicationContext as VetoApplication).latestStatusBarNotification
                 if (cached?.packageName != destination || cached.key != notificationKey) {
                     applicationContext.log().e(
                         TAG,

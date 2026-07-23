@@ -6,7 +6,7 @@ import android.service.notification.StatusBarNotification
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
-import com.neubofy.veto.FmdApplication
+import com.neubofy.veto.VetoApplication
 import com.neubofy.veto.data.Settings
 import com.neubofy.veto.data.SettingsRepository
 import com.neubofy.veto.workers.CommandExecutionWorker
@@ -67,7 +67,7 @@ class NotificationListenService : NotificationListenerService() {
             return
         }
 
-        (applicationContext as FmdApplication).latestStatusBarNotification = sbn
+        (applicationContext as VetoApplication).latestStatusBarNotification = sbn
 
         val inputData = workDataOf(
             CommandExecutionWorker.KEY_COMMAND to message,

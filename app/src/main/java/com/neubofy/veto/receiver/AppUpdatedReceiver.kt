@@ -17,12 +17,12 @@ class AppUpdatedReceiver : BroadcastReceiver() {
     }
 
     // Keep the AppUpdatedReceiver so that the app launches once after app updates.
-    // However, the FmdApplication should start before this receiver runs, and it will start the main services.
+    // However, the VetoApplication should start before this receiver runs, and it will start the main services.
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == APP_UPDATED) {
             context.log().i(TAG, "Running MY_PACKAGE_REPLACED (APP_UPDATED) handler")
 
-            // One-shot services that don't need to run on every FmdApplication start
+            // One-shot services that don't need to run on every VetoApplication start
             TempContactExpiredService.scheduleJob(context, 0)
 
         }

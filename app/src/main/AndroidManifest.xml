@@ -48,7 +48,7 @@
         android:required="false" />
 
     <application
-        android:name=".FmdApplication"
+        android:name=".VetoApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup"

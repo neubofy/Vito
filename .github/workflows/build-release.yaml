@@ -37,13 +37,13 @@ jobs:
       - name: Decode Keystore and Google Services
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: |
           if [ ! -z "$KEYSTORE_BASE64" ]; then
             echo "$KEYSTORE_BASE64" | base64 -d > keystore.jks
           fi
-          if [ ! -z "$GOOGLE_SERVICES_JSON_BASE64" ]; then
-            echo "$GOOGLE_SERVICES_JSON_BASE64" | base64 -d > app/google-services.json
+          if [ ! -z "$GOOGLE_SERVICES_JSON" ]; then
+            echo "$GOOGLE_SERVICES_JSON" > app/google-services.json
           fi
 
       - name: Configure local.properties
@@ -53,10 +53,10 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           touch local.properties
-          echo "KEYSTORE_FILE=keystore.jks" >> local.properties
-          echo "KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD" >> local.properties
-          echo "KEY_ALIAS=$KEY_ALIAS" >> local.properties
-          echo "KEY_PASSWORD=$KEY_PASSWORD" >> local.properties
+          echo "keystore.file=../keystore.jks" >> local.properties
+          echo "keystore.password=$KEYSTORE_PASSWORD" >> local.properties
+          echo "key.alias=$KEY_ALIAS" >> local.properties
+          echo "key.password=$KEY_PASSWORD" >> local.properties
 
       - name: Make gradlew executable
         run: chmod +x gradlew

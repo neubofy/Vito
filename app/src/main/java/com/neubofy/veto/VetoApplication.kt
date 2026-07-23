@@ -15,10 +15,10 @@ import com.neubofy.veto.utils.Notifications
 import com.neubofy.veto.utils.log
 
 
-class FmdApplication : Application() {
+class VetoApplication : Application() {
 
     companion object {
-        private val TAG = FmdApplication::class.java.simpleName
+        private val TAG = VetoApplication::class.java.simpleName
     }
 
     // Workaround to "pass" this from the NotificationListenerService to the CommandExecutionWorker.
@@ -30,7 +30,7 @@ class FmdApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        this.log().i(TAG, "Starting FmdApplication")
+        this.log().i(TAG, "Starting VetoApplication")
 
         Notifications.init(this)
         initUncaughtExceptionHandler(this)

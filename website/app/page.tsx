@@ -94,8 +94,11 @@ export default function Home() {
           <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--danger-color)' }}>Factory Reset</h3>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Permanently wipe all data from your device.</p>
           <button onClick={() => {
-            if (window.confirm('Are you absolutely sure you want to WIPE your entire device? This cannot be undone.')) {
+            const confirmText = window.prompt('WARNING: This will PERMANENTLY WIPE all data from your phone!\\n\\nTo proceed, please type EXACTLY:\\ndelete my all data');
+            if (confirmText === 'delete my all data') {
               sendCommand('WIPE');
+            } else if (confirmText !== null) {
+              alert('Wipe cancelled. The phrase did not match exactly.');
             }
           }} className="btn btn-danger" style={{ width: '100%' }}>Wipe Device</button>
         </div>

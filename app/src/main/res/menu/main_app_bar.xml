@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menuItemSetupWarnings"
+        android:icon="@drawable/ic_warning"
+        android:title="@string/setup_warnings_title"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/menuItemSettings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/Settings_Settings"
+        app:showAsAction="ifRoom" />
+</menu>

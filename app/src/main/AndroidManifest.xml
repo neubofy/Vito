@@ -60,7 +60,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Fmd"
         android:networkSecurityConfig="@xml/network_security_config"
-        tools:replace="android:allowBackup"
         android:enableOnBackInvokedCallback="true">
 
         <activity

@@ -104,6 +104,7 @@
             android:turnScreenOn="true" />
         <activity android:name=".ui.onboarding.UpdateboardingModernCryptoActivity" />
         <activity android:name=".ui.settings.SettingsActivity" android:label="@string/Settings_Settings" />
+        <activity android:name=".ui.settings.AboutActivity" android:label="About Veto" />
         <activity android:name=".ui.settings.CommandsActivity" android:label="Commands" />
         <activity
             android:name=".ui.LockScreenMessage"

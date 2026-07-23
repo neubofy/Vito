@@ -40,6 +40,16 @@ android {
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        def buildTimestamp = System.currentTimeMillis()
+        buildConfigField "Long", "BUILD_TIMESTAMP", "${buildTimestamp}L"
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def timestamp = defaultConfig.buildConfigFields["BUILD_TIMESTAMP"]?.value?.replace("L", "") ?: ""
+            outputFileName = "Veto-v${variant.versionName}-${timestamp}-${variant.buildType.name}.apk"
+        }
     }
 
     def localProperties = new Properties()
@@ -152,6 +162,16 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-auth'
+    
+    // Professional App Updater
+    implementation("io.github.azhon:appupdate:4.3.6")
+
+    // Markdown Rendering for About Page
+    implementation("io.noties.markwon:core:4.6.2")
+    implementation("io.noties.markwon:image-coil:4.6.2")
+    implementation("io.coil-kt:coil:2.6.0")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
 }
 
 sonar {

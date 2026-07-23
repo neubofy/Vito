@@ -23,6 +23,8 @@ import com.neubofy.veto.services.TempContactExpiredService;
 import com.neubofy.veto.ui.home.MainPageFragment;
 import com.neubofy.veto.ui.onboarding.UpdateboardingModernCryptoActivity;
 import com.neubofy.veto.ui.settings.SettingsActivity;
+import com.neubofy.veto.ui.settings.AboutActivity;
+import com.neubofy.veto.utils.UpdateManager;
 import kotlin.Unit;
 
 public class MainActivity extends FmdActivity {
@@ -61,6 +63,9 @@ public class MainActivity extends FmdActivity {
                     .replace(R.id.fragment_container, new MainPageFragment())
                     .commit();
         }
+
+        // Silently check for OTA updates
+        UpdateManager.INSTANCE.checkForUpdates(this, true, false, null);
     }
 
     @Override
@@ -82,8 +87,14 @@ public class MainActivity extends FmdActivity {
             startActivity(new Intent(this, SetupWarningsActivity.class));
             return true;
         } else if (item.getItemId() == R.id.menuItemSettings) {
-            // Need to wrap SettingsFragment in an activity or handle it
             startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        } else if (item.getItemId() == R.id.menuItemWebsite) {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://veto.neubofy.com"));
+            startActivity(browserIntent);
+            return true;
+        } else if (item.getItemId() == R.id.menuItemAbout) {
+            startActivity(new Intent(this, AboutActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);

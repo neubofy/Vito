@@ -25,9 +25,7 @@ class MainPageFragment : TaggedFragment() {
             startActivity(Intent(requireContext(), com.neubofy.veto.ui.settings.CommandsActivity::class.java))
         }
 
-        view.findViewById<MaterialCardView>(R.id.card_fmd_server).setOnClickListener {
-            startActivity(Intent(requireContext(), AccountActivity::class.java))
-        }
+
 
         view.findViewById<MaterialCardView>(R.id.card_allowed_contacts).setOnClickListener {
             startActivity(Intent(requireContext(), AllowlistActivity::class.java))

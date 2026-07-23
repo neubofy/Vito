@@ -24,7 +24,7 @@ object DashboardSync {
 
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (!task.isSuccessful) {
-                context.log().w(TAG, "Fetching FCM registration token failed", task.exception)
+                context.log().w(TAG, "Fetching FCM registration token failed: ${task.exception?.message}")
                 return@addOnCompleteListener
             }
 
@@ -58,7 +58,7 @@ object DashboardSync {
                     context.log().e(TAG, "Failed to sync FCM token. Server returned $responseCode")
                 }
             } catch (e: Exception) {
-                context.log().e(TAG, "Error syncing FCM token", e)
+                context.log().e(TAG, "Error syncing FCM token: ${e.message}")
             }
         }.start()
     }

@@ -545,7 +545,10 @@ export default function Home() {
               </button>
             </h2>
             <div style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
-              Received: {new Date(Math.max(results[selectedOutput]?.timestamp || 0, photos[selectedOutput]?.timestamp || 0)).toLocaleString()}
+              Received: {new Date(Math.max(
+                results[selectedOutput]?.timestamp ? new Date(results[selectedOutput].timestamp).getTime() : 0, 
+                photos[selectedOutput]?.timestamp ? new Date(photos[selectedOutput].timestamp).getTime() : 0
+              )).toLocaleString()}
             </div>
             
             {photos[selectedOutput] && (

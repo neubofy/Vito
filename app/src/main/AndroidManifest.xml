@@ -80,7 +80,7 @@
             android:name=".ui.settings.VetoServerActivity"
             android:label="@string/Settings_LCLDServer" />
         <activity
-            android:name=".ui.settings.VetoConfigActivity"
+            android:name=".ui.settings.SettingsActivity"
             android:label="@string/Settings_LCLDConfig" />
         <activity
             android:name="com.mikepenz.aboutlibraries.ui.LibsActivity"

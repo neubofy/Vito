@@ -43,12 +43,6 @@ class PermissionView @JvmOverloads constructor(
         binding.permName.text = context.getString(p.name)
 
         val descId = p.description
-        if (descId != null) {
-            binding.permDescription.text = context.getString(descId)
-            binding.permDescription.visibility = View.VISIBLE
-        } else {
-            binding.permDescription.visibility = View.GONE
-        }
 
         binding.permInfoIcon.setOnClickListener {
             MaterialAlertDialogBuilder(context)

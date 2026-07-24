@@ -66,27 +66,31 @@ class StatsCommand(context: Context) : Command(context) {
             }
         }
 
-        val deferred = CompletableDeferred<Unit>()
+        val deferred = CompletableDeferred<List<android.net.wifi.ScanResult>>()
 
-        WifiScan(context, { scanResults ->
-            val wifisString =
-                scanResults.joinToString(", ") { sr -> "${sr.getSsidCompat()}" }
+        WifiScan(context) { scanResults ->
+            deferred.complete(scanResults)
+        }.startWifiScan()
 
-            val reply = """
-                Model: $manufacturer $model
-                OS: Android $androidVersion (SDK $sdkLevel)
-                Battery: $batteryPct%
-                IMEI: $imei
-                SIM Network: $networkOperator
-                Phone Number: $phoneNumber
-                IPs: $ipsString
-                WiFi: $wifisString
-            """.trimIndent()
+        // Wait up to 5 seconds for WiFi scan results
+        val scanResults = kotlinx.coroutines.withTimeoutOrNull(5000L) {
+            deferred.await()
+        } ?: emptyList()
 
-            transport.send(context, reply)
-            deferred.complete(Unit)
-        }).startWifiScan()
+        val wifisString =
+            scanResults.joinToString(", ") { sr -> "${sr.getSsidCompat()}" }
 
-        deferred.await()
+        val reply = """
+            Model: $manufacturer $model
+            OS: Android $androidVersion (SDK $sdkLevel)
+            Battery: $batteryPct%
+            IMEI: $imei
+            SIM Network: $networkOperator
+            Phone Number: $phoneNumber
+            IPs: $ipsString
+            WiFi: ${wifisString.ifEmpty { "Unavailable/Timed out" }}
+        """.trimIndent()
+
+        transport.send(context, reply)
     }
 }

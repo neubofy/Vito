@@ -43,29 +43,36 @@ export async function POST(req: Request) {
       const docsToDelete = existingPhotosSnap.docs.slice(1); // keep only the newest 1
       for (const doc of docsToDelete) {
         const data = doc.data();
-        if (data.url) {
+        if (data.path) {
           try {
-            await del(data.url); // delete from Vercel Blob
+            await adminStorage.bucket().file(data.path).delete();
           } catch (e) {
-            console.error('Failed to delete blob', data.url, e);
+            console.error('Failed to delete storage file', data.path, e);
           }
         }
         await doc.ref.delete(); // delete from Firestore
       }
     }
 
-    // Upload to Vercel Blob using the authenticated userId
-    const blob = await put(`theft-mode/${userId}/${Date.now()}-${file.name}`, file, {
-      access: 'public',
+    // Upload to Firebase Storage
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const bucket = adminStorage.bucket();
+    const filename = `theft-mode/${userId}/${Date.now()}-${file.name}`;
+    const fileRef = bucket.file(filename);
+
+    await fileRef.save(buffer, {
+      metadata: { contentType: file.type },
+      public: false // private to the user
     });
 
-    // Save the photo URL to Firestore so the user can see it on the dashboard
+    // Save the photo path to Firestore so the user can see it on the dashboard
     await photosRef.add({
-      url: blob.url,
+      path: filename,
       timestamp: new Date().toISOString()
     });
 
-    return NextResponse.json(blob);
+    return NextResponse.json({ success: true, path: filename });
   } catch (error: any) {
     console.error('Error uploading file:', error);
     return NextResponse.json(

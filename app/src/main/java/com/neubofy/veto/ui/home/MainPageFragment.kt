@@ -45,6 +45,13 @@ class MainPageFragment : TaggedFragment() {
                 .commit()
         }
 
+        view.findViewById<MaterialCardView>(R.id.card_sms_commands).setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, SmsCommandsFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
         return view
     }
 }

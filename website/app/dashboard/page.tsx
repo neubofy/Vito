@@ -14,6 +14,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [activeCmd, setActiveCmd] = useState<string | null>(null);
+  const [isCommandPending, setIsCommandPending] = useState<boolean>(false);
   const [deviceLinked, setDeviceLinked] = useState<boolean>(false);
   const [lastResult, setLastResult] = useState<string | null>(null);
   const [lastUpdateTime, setLastUpdateTime] = useState<string | null>(null);
@@ -36,7 +37,18 @@ export default function Home() {
               if (data) {
                 setDeviceLinked(!!data.fcmToken);
                 if (data.latestCommandResult) setLastResult(data.latestCommandResult);
-                if (data.latestCommandTime) setLastUpdateTime(new Date(data.latestCommandTime).toLocaleString());
+                if (data.latestCommandTime) {
+                  const newTime = new Date(data.latestCommandTime).toLocaleString();
+                  setLastUpdateTime((prevTime) => {
+                    if (prevTime && prevTime !== newTime) {
+                      setIsCommandPending(false);
+                      setActiveCmd(null);
+                      setFeedback({ type: 'success', text: 'Telemetry updated!' });
+                      setTimeout(() => setFeedback(null), 3000);
+                    }
+                    return newTime;
+                  });
+                }
               }
               if (photos) {
                 setPhotos(photos);
@@ -69,8 +81,15 @@ export default function Home() {
   const sendCommand = async (command: string) => {
     if (!user) return;
     
+    if (isCommandPending) {
+      setFeedback({ type: 'error', text: 'Please wait! A previous command is still pending.' });
+      setTimeout(() => setFeedback(null), 3000);
+      return;
+    }
+    
     // Start animation and feedback state
     setActiveCmd(command.startsWith('delete') ? 'delete' : command);
+    setIsCommandPending(true);
     setFeedback({ type: 'info', text: 'Executing command...' });
     
     try {
@@ -86,17 +105,24 @@ export default function Home() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       
-      setFeedback({ type: 'success', text: 'Command executed successfully!' });
+      setFeedback({ type: 'success', text: 'Command sent! Waiting for device...' });
+      
+      // Auto-unlock after 30 seconds as fallback
       setTimeout(() => {
-        setFeedback(null);
-        setActiveCmd(null);
-      }, 4000);
+        setIsCommandPending((prev) => {
+          if (prev) {
+            setFeedback(null);
+            setActiveCmd(null);
+            return false;
+          }
+          return prev;
+        });
+      }, 30000);
     } catch (error: any) {
       setFeedback({ type: 'error', text: `Failed: ${error.message}` });
-      setTimeout(() => {
-        setFeedback(null);
-        setActiveCmd(null);
-      }, 5000);
+      setIsCommandPending(false);
+      setActiveCmd(null);
+      setTimeout(() => setFeedback(null), 5000);
     }
   };
 
@@ -118,8 +144,7 @@ export default function Home() {
     if (latMatch && lonMatch) {
       const lat = parseFloat(latMatch[1]);
       const lon = parseFloat(lonMatch[1]);
-      const bbox = `${lon - 0.01},${lat - 0.01},${lon + 0.01},${lat + 0.01}`;
-      const osmEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`;
+      const googleEmbedUrl = `https://maps.google.com/maps?q=${lat},${lon}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
       const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
       
       return (
@@ -133,7 +158,7 @@ export default function Home() {
               scrolling="no" 
               marginHeight={0} 
               marginWidth={0} 
-              src={osmEmbedUrl} 
+              src={googleEmbedUrl} 
               style={{ border: 'none' }}
             ></iframe>
           </div>

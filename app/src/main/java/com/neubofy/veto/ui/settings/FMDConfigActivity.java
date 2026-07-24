@@ -100,14 +100,44 @@ public class FMDConfigActivity extends FmdActivity implements CompoundButton.OnC
         updateDeletePasswordButton();
 
         switchAutoUpload = findViewById(R.id.switchAutoUpload);
-        switchAutoUpload.setChecked(isAutoLocActive());
-        switchAutoUpload.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                startAutoLoc();
-            } else {
-                stopAutoLoc();
+        android.widget.CompoundButton.OnCheckedChangeListener autoUploadListener = new android.widget.CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(android.widget.CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    CharSequence[] options = new CharSequence[]{"15 Minutes", "30 Minutes", "1 Hour", "2 Hours", "6 Hours"};
+                    int[] values = new int[]{15, 30, 60, 120, 360};
+                    
+                    int currentVal = (int) settings.get(Settings.SET_FMDSERVER_UPDATE_TIME);
+                    int defaultSelection = 0;
+                    for (int i = 0; i < values.length; i++) {
+                        if (values[i] == currentVal) {
+                            defaultSelection = i;
+                            break;
+                        }
+                    }
+
+                    new com.google.android.material.dialog.MaterialAlertDialogBuilder(FMDConfigActivity.this)
+                        .setTitle("Select Update Interval")
+                        .setCancelable(false)
+                        .setSingleChoiceItems(options, defaultSelection, (dialog, which) -> {
+                            settings.set(Settings.SET_FMDSERVER_UPDATE_TIME, values[which]);
+                            startAutoLoc();
+                            dialog.dismiss();
+                        })
+                        .setNegativeButton("Cancel", (dialog, which) -> {
+                            switchAutoUpload.setOnCheckedChangeListener(null);
+                            switchAutoUpload.setChecked(false);
+                            switchAutoUpload.setOnCheckedChangeListener(this);
+                        })
+                        .show();
+                } else {
+                    stopAutoLoc();
+                }
             }
-        });
+        };
+
+        switchAutoUpload.setChecked(isAutoLocActive());
+        switchAutoUpload.setOnCheckedChangeListener(autoUploadListener);
 
         buttonManualLocate = findViewById(R.id.buttonManualLocate);
         buttonManualLocate.setOnClickListener(v -> manualUpdateLocation());

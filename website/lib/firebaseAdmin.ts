@@ -2,6 +2,7 @@ import { initializeApp, getApps, cert, getApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getMessaging } from 'firebase-admin/messaging';
 import { getAuth } from 'firebase-admin/auth';
+import { getStorage } from 'firebase-admin/storage';
 
 if (!getApps().length) {
   try {
@@ -17,6 +18,7 @@ if (!getApps().length) {
           clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
           privateKey: privateKey,
         }),
+        storageBucket: `${process.env.FIREBASE_PROJECT_ID}.appspot.com`
       });
     } else {
       console.warn('Skipping Firebase Admin initialization: FIREBASE_PROJECT_ID is missing.');
@@ -29,3 +31,4 @@ if (!getApps().length) {
 export const adminDb = getApps().length ? getFirestore(getApp(), '(default)') : null as any;
 export const adminMessaging = getApps().length ? getMessaging() : null as any;
 export const adminAuth = getApps().length ? getAuth() : null as any;
+export const adminStorage = getApps().length ? getStorage() : null as any;

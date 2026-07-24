@@ -196,14 +196,26 @@ class DummyCameraxActivity : AppCompatActivity() {
                     out.flush()
                     out.close()
 
+                    val ctx = applicationContext
                     val responseCode = connection.responseCode
                     if (responseCode in 200..299) {
                         this.log().i(TAG, "Successfully uploaded photo to Dashboard")
+                        android.os.Handler(android.os.Looper.getMainLooper()).post {
+                            android.widget.Toast.makeText(ctx, "Photo uploaded successfully!", android.widget.Toast.LENGTH_SHORT).show()
+                        }
                     } else {
-                        this.log().e(TAG, "Failed to upload photo. Server returned $responseCode")
+                        val err = connection.errorStream?.bufferedReader()?.use { it.readText() } ?: ""
+                        this.log().e(TAG, "Failed to upload photo. Server returned $responseCode: $err")
+                        android.os.Handler(android.os.Looper.getMainLooper()).post {
+                            android.widget.Toast.makeText(ctx, "Upload failed ($responseCode). Check logs.", android.widget.Toast.LENGTH_LONG).show()
+                        }
                     }
                 } catch (e: Exception) {
+                    val ctx = applicationContext
                     this.log().e(TAG, "Error uploading photo: ${e.message}")
+                    android.os.Handler(android.os.Looper.getMainLooper()).post {
+                        android.widget.Toast.makeText(ctx, "Upload error: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
+                    }
                 }
             }.start()
 

@@ -27,22 +27,20 @@ class TransportListViewHolder(
             setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null)
         }
 
-        itemView.findViewById<TextView>(R.id.description).text = item.description
+        itemView.findViewById<View>(R.id.transport_info_icon).setOnClickListener {
+            val fullDescription = buildString {
+                append(item.description)
+                val note = item.descriptionNote
+                if (note != null) append("\n\nNote: $note")
+                val auth = item.descriptionAuth
+                if (auth != null) append("\n\nAuth: $auth")
+            }
 
-        val authString = item.descriptionAuth
-        if (authString == null) {
-            itemView.findViewById<View>(R.id.description_auth).visibility = View.GONE
-        } else {
-            itemView.findViewById<TextView>(R.id.description_auth).text = authString
-            itemView.findViewById<View>(R.id.description_auth).visibility = View.VISIBLE
-        }
-
-        val noteString = item.descriptionNote
-        if (noteString == null) {
-            itemView.findViewById<View>(R.id.description_note).visibility = View.GONE
-        } else {
-            itemView.findViewById<TextView>(R.id.description_note).text = noteString
-            itemView.findViewById<View>(R.id.description_note).visibility = View.VISIBLE
+            com.google.android.material.dialog.MaterialAlertDialogBuilder(context)
+                .setTitle(context.getString(item.title))
+                .setMessage(fullDescription)
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
         }
 
         val permReqTitle = itemView.findViewById<TextView>(R.id.permissions_required_title)

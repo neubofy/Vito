@@ -86,8 +86,6 @@ public class AllowlistActivity extends VetoActivity {
                 .show();
     }
 
-    }
-
     private void addContactToAllowList(@Nullable Contact contact) {
         if (contact == null) {
             Toast.makeText(this, R.string.allowlist_invalid_number, Toast.LENGTH_LONG).show();

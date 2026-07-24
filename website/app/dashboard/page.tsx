@@ -4,6 +4,8 @@ import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebaseClient';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
+import { db } from '@/lib/firebaseClient';
+import { collection, doc, onSnapshot } from 'firebase/firestore';
 
 type FeedbackType = 'info' | 'success' | 'error';
 interface Feedback { type: FeedbackType; text: string; }
@@ -33,58 +35,72 @@ export default function Home() {
     return {};
   });
   
+  const [commandStartTime, setCommandStartTime] = useState<number>(0);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedOutput, setSelectedOutput] = useState<string | null>(null);
 
-  const fetchData = useCallback(async (currentUser: User, currentActiveCmd: string | null) => {
-    try {
-      const token = await currentUser.getIdToken();
-      const res = await fetch('/api/data', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const { data, photos: newPhotos, results: newResults } = await res.json();
-        if (data) {
-          setDeviceLinked(!!data.fcmToken);
-        }
-        if (newPhotos) {
-          setPhotos(newPhotos);
-          localStorage.setItem('veto_photos', JSON.stringify(newPhotos));
-        }
-        if (newResults) {
-          setResults((prev) => {
-            if (currentActiveCmd) {
-              const baseCmd = currentActiveCmd.split(' ')[0];
-              const prevCmdResult = prev[baseCmd];
-              const newCmdResult = newResults[baseCmd];
-              
-              if (newCmdResult && (!prevCmdResult || prevCmdResult.timestamp !== newCmdResult.timestamp)) {
-                 setIsCommandPending(false);
-                 setActiveCmd(null);
-                 setFeedback({ type: 'success', text: 'Telemetry updated!' });
-                 setTimeout(() => setFeedback(null), 5000);
-              }
-            }
-            localStorage.setItem('veto_results', JSON.stringify(newResults));
-            return newResults;
-          });
-        }
+
+  // Real-time Firestore Listeners
+  useEffect(() => {
+    if (!user || !db) return;
+
+    const unsubUser = onSnapshot(doc(db, 'users', user.uid), (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setDeviceLinked(!!data?.fcmToken);
       }
-    } catch (e) {
-      console.error('Data fetch error:', e);
+    }, (error) => {
+      console.error('Snapshot error (Check Firestore Rules!):', error);
+      if (error.code === 'permission-denied') {
+        setFeedback({ type: 'error', text: 'Database Access Denied: Please update Firebase Firestore Rules to allow client reads.' });
+      }
+    });
+
+    const unsubResults = onSnapshot(collection(db, 'users', user.uid, 'results'), (snapshot) => {
+      const newResults: Record<string, any> = {};
+      snapshot.forEach(d => { newResults[d.id] = d.data(); });
+      setResults(newResults);
+      localStorage.setItem('veto_results', JSON.stringify(newResults));
+    });
+
+    const unsubPhotos = onSnapshot(collection(db, 'users', user.uid, 'photos'), (snapshot) => {
+      const newPhotos: Record<string, any> = {};
+      snapshot.forEach(d => { newPhotos[d.id] = d.data(); });
+      setPhotos(newPhotos);
+      localStorage.setItem('veto_photos', JSON.stringify(newPhotos));
+    });
+
+    return () => {
+      unsubUser();
+      unsubResults();
+      unsubPhotos();
+    };
+  }, [user]);
+
+  // Watch for command completion
+  useEffect(() => {
+    if (!activeCmd || !isCommandPending) return;
+    const baseCmd = activeCmd.split(' ')[0];
+    const res = results[baseCmd];
+    const phto = photos[baseCmd];
+    
+    // Check if result OR photo is newer than command start time
+    const resIsNew = res && new Date(res.timestamp).getTime() > commandStartTime;
+    const photoIsNew = phto && new Date(phto.timestamp).getTime() > commandStartTime;
+    
+    if (resIsNew || photoIsNew) {
+      setIsCommandPending(false);
+      setActiveCmd(null);
+      setFeedback({ type: 'success', text: 'Data updated instantly! ✨' });
+      setTimeout(() => setFeedback(null), 4000);
     }
-  }, []);
+  }, [results, photos, activeCmd, isCommandPending, commandStartTime]);
 
   // Initial fetch when auth state changes
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        // Only fetch automatically if we don't have cached data yet
-        const hasCache = localStorage.getItem('veto_results') || localStorage.getItem('veto_photos');
-        if (!hasCache) {
-          fetchData(currentUser, null);
-        }
       } else {
         setUser(null);
         router.push('/login');
@@ -92,34 +108,14 @@ export default function Home() {
       setLoading(false);
     });
     return () => unsubscribeAuth();
-  }, [router, fetchData]);
-
-  // Polling ONLY when a command is pending
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-    if (user && isCommandPending) {
-      intervalId = setInterval(() => {
-        fetchData(user, activeCmd);
-      }, 5000);
-    }
-    return () => {
-      if (intervalId) clearInterval(intervalId);
-    };
-  }, [user, isCommandPending, activeCmd, fetchData]);
+  }, [router]);
 
   const handleLogout = async () => {
     await signOut(auth);
     router.push('/login');
   };
 
-  const handleRefresh = async () => {
-    if (!user) return;
-    setRefreshing(true);
-    await fetchData(user, activeCmd);
-    setRefreshing(false);
-    setFeedback({ type: 'success', text: 'Data refreshed!' });
-    setTimeout(() => setFeedback(null), 3000);
-  };
+
 
   const sendCommand = async (command: string) => {
     if (!user) return;
@@ -132,6 +128,7 @@ export default function Home() {
     
     setActiveCmd(command.startsWith('delete') ? 'delete' : command);
     setIsCommandPending(true);
+    setCommandStartTime(Date.now());
     setFeedback({ type: 'info', text: 'Executing command...' });
     
     try {
@@ -164,6 +161,81 @@ export default function Home() {
       setFeedback({ type: 'error', text: `Failed: ${error.message}` });
       setIsCommandPending(false);
       setActiveCmd(null);
+      setTimeout(() => setFeedback(null), 5000);
+    }
+  };
+
+  const deleteData = async (commandName?: string, all?: boolean) => {
+    if (!user || (!commandName && !all)) return;
+    if (!confirm(`Are you sure you want to delete ${all ? 'ALL telemetry and photos' : `the ${commandName} data`}? This cannot be undone.`)) return;
+
+    setFeedback({ type: 'info', text: 'Deleting data...' });
+    try {
+      const token = await user.getIdToken();
+      const res = await fetch('/api/data/delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ commandName, all })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      setFeedback({ type: 'success', text: data.message });
+      setTimeout(() => setFeedback(null), 3000);
+      
+      if (all) {
+        setResults({});
+        setPhotos({});
+        localStorage.removeItem('veto_results');
+        localStorage.removeItem('veto_photos');
+      } else if (commandName) {
+        setResults(prev => {
+          const next = { ...prev };
+          delete next[commandName];
+          localStorage.setItem('veto_results', JSON.stringify(next));
+          return next;
+        });
+        setPhotos(prev => {
+          const next = { ...prev };
+          delete next[commandName];
+          localStorage.setItem('veto_photos', JSON.stringify(next));
+          return next;
+        });
+        setSelectedOutput(null);
+      }
+    } catch (error: any) {
+      setFeedback({ type: 'error', text: `Delete failed: ${error.message}` });
+      setTimeout(() => setFeedback(null), 5000);
+    }
+  };
+
+  const deleteAccount = async () => {
+    if (!user) return;
+    const confirmText = prompt('Type "DELETE" to permanently delete your account and all data. This cannot be undone.');
+    if (confirmText !== 'DELETE') {
+      alert('Account deletion cancelled.');
+      return;
+    }
+
+    setFeedback({ type: 'info', text: 'Deleting account...' });
+    try {
+      const token = await user.getIdToken();
+      const res = await fetch('/api/user/delete', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      localStorage.removeItem('veto_results');
+      localStorage.removeItem('veto_photos');
+      await signOut(auth);
+      router.push('/login');
+    } catch (error: any) {
+      setFeedback({ type: 'error', text: `Account deletion failed: ${error.message}` });
       setTimeout(() => setFeedback(null), 5000);
     }
   };
@@ -203,15 +275,15 @@ export default function Home() {
 
   const renderResult = (baseCmd: string) => {
     const res = results[baseCmd];
-    if (!res) return <div style={{ marginTop: '1rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No data yet</div>;
+    const phto = photos[baseCmd];
+    if (!res && !phto) return <div style={{ marginTop: '1rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No data yet</div>;
+    const timestamp = Math.max(res?.timestamp || 0, phto?.timestamp || 0);
     return (
       <button onClick={() => setSelectedOutput(baseCmd)} className="btn" style={{ marginTop: '1rem', width: '100%', fontSize: '0.9rem', backgroundColor: 'rgba(255,255,255,0.1)' }}>
-        View Output ({new Date(res.timestamp).toLocaleTimeString()})
+        View Output ({new Date(timestamp).toLocaleTimeString()})
       </button>
     );
   };
-
-  const latestGlobalResult = Object.values(results).sort((a: any, b: any) => b.timestamp - a.timestamp)[0] as any;
 
   if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading Veto...</div>;
   if (!user) return null;
@@ -230,9 +302,7 @@ export default function Home() {
           <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Device control & telemetry</p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-          <button onClick={handleRefresh} disabled={refreshing} className="btn" style={{ padding: '8px 16px', fontSize: '0.9rem', backgroundColor: 'rgba(255,255,255,0.1)' }}>
-            {refreshing ? 'Refreshing...' : '🔄 Refresh Data'}
-          </button>
+          
           
           <div className="glass-panel" style={{ padding: '8px 16px', display: 'flex', flexDirection: 'column', gap: '4px', borderRadius: '12px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -255,54 +325,7 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Captured Photos Gallery */}
-      {Object.values(photos).length > 0 && (
-        <div className="glass-panel" style={{ marginBottom: '1.5rem', padding: '1.5rem', border: '1px solid rgba(235, 163, 54, 0.3)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <h2 style={{ fontSize: '1.3rem', color: '#eba336', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#eba336', animation: 'pulseGlow 2s infinite' }}></div>
-              Captured Photos
-            </h2>
-          </div>
-          <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
-            {Object.entries(photos).map(([cmd, photo]) => (
-              <div key={cmd} style={{ flexShrink: 0, position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={photo.url} alt="Captured" style={{ height: '250px', width: 'auto', objectFit: 'cover' }} />
-                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(0,0,0,0.7)', padding: '4px 8px', fontSize: '0.75rem', color: '#fff', display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
-                  <span style={{fontWeight: 'bold', textTransform: 'uppercase'}}>{cmd}</span>
-                  <span>{new Date(photo.timestamp).toLocaleString()}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
-      {/* Latest Command Result Box */}
-      {latestGlobalResult && (
-        <div className="glass-panel" style={{ marginBottom: '3rem', padding: '1.5rem', border: '1px solid rgba(47, 129, 247, 0.3)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <h2 style={{ fontSize: '1.3rem', color: '#2f81f7', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#2f81f7', animation: 'pulseGlow 2s infinite' }}></div>
-              Latest Device Telemetry
-            </h2>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Received: {new Date(latestGlobalResult.timestamp).toLocaleString()}</span>
-          </div>
-          <div style={{ 
-            backgroundColor: 'rgba(0,0,0,0.4)', 
-            padding: '1rem', 
-            borderRadius: '8px', 
-            fontFamily: 'monospace', 
-            whiteSpace: 'pre-wrap',
-            color: '#e6edf3',
-            fontSize: '0.95rem',
-            border: '1px solid rgba(255,255,255,0.05)'
-          }}>
-            {renderTelemetryContent(latestGlobalResult.result)}
-          </div>
-        </div>
-      )}
 
       <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>Core Commands</h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
@@ -426,9 +449,27 @@ export default function Home() {
             {activeCmd === 'delete' ? 'Wiping...' : 'Wipe Device'}
           </button>
         </div>
+
+        <div className="glass-panel" style={{ padding: '1.5rem', border: '1px solid rgba(248, 81, 73, 0.3)' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🧹</div>
+          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--danger-color)' }}>Delete Cloud Data</h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Erase all stored telemetry and photos from the database.</p>
+          <button onClick={() => deleteData(undefined, true)} className="btn btn-danger" style={{ width: '100%' }}>
+            Delete All Data
+          </button>
+        </div>
+
+        <div className="glass-panel" style={{ padding: '1.5rem', border: '1px solid rgba(248, 81, 73, 0.3)' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>☠️</div>
+          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--danger-color)' }}>Delete Account</h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Permanently delete your account and all associated data.</p>
+          <button onClick={() => deleteAccount()} className="btn btn-danger" style={{ width: '100%' }}>
+            Delete Account
+          </button>
+        </div>
       </div>
       {/* Reusable Output Modal */}
-      {selectedOutput && results[selectedOutput] && (
+      {selectedOutput && (results[selectedOutput] || photos[selectedOutput]) && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 1000,
@@ -442,18 +483,31 @@ export default function Home() {
               position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none',
               color: '#fff', fontSize: '1.5rem', cursor: 'pointer'
             }}>×</button>
-            <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', textTransform: 'capitalize' }}>
-              {selectedOutput} Output
+            <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', textTransform: 'capitalize', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>{selectedOutput} Output</span>
+              <button onClick={() => deleteData(selectedOutput)} className="btn btn-danger" style={{ padding: '4px 12px', fontSize: '0.8rem', marginRight: '2rem' }}>
+                Delete Data
+              </button>
             </h2>
             <div style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
-              Received: {new Date(results[selectedOutput].timestamp).toLocaleString()}
+              Received: {new Date(Math.max(results[selectedOutput]?.timestamp || 0, photos[selectedOutput]?.timestamp || 0)).toLocaleString()}
             </div>
-            <div style={{ 
-              backgroundColor: 'rgba(0,0,0,0.4)', padding: '1rem', borderRadius: '8px', 
-              fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: '#e6edf3', fontSize: '0.95rem'
-            }}>
-              {renderTelemetryContent(results[selectedOutput].result)}
-            </div>
+            
+            {photos[selectedOutput] && (
+              <div style={{ marginBottom: '1.5rem', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={photos[selectedOutput].url} alt="Captured" style={{ width: '100%', height: 'auto', objectFit: 'contain' }} />
+              </div>
+            )}
+
+            {results[selectedOutput] && (
+              <div style={{ 
+                backgroundColor: 'rgba(0,0,0,0.4)', padding: '1rem', borderRadius: '8px', 
+                fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: '#e6edf3', fontSize: '0.95rem'
+              }}>
+                {renderTelemetryContent(results[selectedOutput].result)}
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { signInWithPopup } from 'firebase/auth';
+import { useState, useEffect } from 'react';
+import { signInWithPopup, onAuthStateChanged } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebaseClient';
 import { useRouter } from 'next/navigation';
 
@@ -9,12 +9,20 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.push('/dashboard');
+      }
+    });
+    return () => unsubscribe();
+  }, [router]);
+
   const handleGoogleSignIn = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      // Ensure only you can login, you can check result.user.email here if you want
       console.log('Logged in as:', result.user.email);
-      router.push('/');
+      router.push('/dashboard');
     } catch (err: any) {
       console.error(err);
       setError(err.message);

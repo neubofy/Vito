@@ -15,6 +15,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [activeCmd, setActiveCmd] = useState<string | null>(null);
+  const [deviceLinked, setDeviceLinked] = useState<boolean>(false);
 
   useEffect(() => {
     let unsubscribeSnap: (() => void) | undefined;
@@ -27,12 +28,15 @@ export default function Home() {
         unsubscribeSnap = onSnapshot(userRef, (docSnap) => {
           if (docSnap.exists()) {
             const data = docSnap.data();
+            setDeviceLinked(!!data.fcmToken);
             if (data.latestCommandResult) {
                setFeedback({ type: 'success', text: `App Response: ${data.latestCommandResult}` });
                setActiveCmd(null); // Clear active state
                // Hide the message after 8 seconds
                setTimeout(() => setFeedback(null), 8000);
             }
+          } else {
+            setDeviceLinked(false);
           }
         });
 
@@ -105,12 +109,31 @@ export default function Home() {
           <h1 style={{ fontSize: '2.5rem', fontWeight: '700', marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>Veto Dashboard</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Device control & telemetry</p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div className="glass-panel" style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '12px', borderRadius: '30px' }}>
-            <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#2ea043', boxShadow: '0 0 10px #2ea043' }}></div>
-            <span style={{ fontSize: '0.9rem', fontWeight: '600' }}>{user.email}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          
+          <div className="glass-panel" style={{ padding: '8px 16px', display: 'flex', flexDirection: 'column', gap: '4px', borderRadius: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ fontSize: '0.9rem', fontWeight: '600', color: '#fff' }}>
+                {user.displayName ? `${user.displayName} (` : ''}
+                {user.email}
+                {user.displayName ? ')' : ''}
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+              <div style={{ 
+                width: '8px', 
+                height: '8px', 
+                borderRadius: '50%', 
+                backgroundColor: deviceLinked ? '#2ea043' : '#f85149', 
+                boxShadow: deviceLinked ? '0 0 10px #2ea043' : '0 0 10px #f85149' 
+              }}></div>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                {deviceLinked ? 'App Connected (FCM Linked)' : 'App Not Connected'}
+              </span>
+            </div>
           </div>
-          <button onClick={handleLogout} className="btn" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>Logout</button>
+
+          <button onClick={handleLogout} className="btn btn-danger" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>Logout</button>
         </div>
       </header>
 

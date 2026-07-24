@@ -1,7 +1,23 @@
 'use client';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { auth } from '@/lib/firebaseClient';
+import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 
 export default function LandingPage() {
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+  };
+
   return (
     <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* Navbar */}
@@ -12,7 +28,14 @@ export default function LandingPage() {
         <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
           <Link href="/privacy" className="nav-link">Privacy</Link>
           <Link href="/terms" className="nav-link">Terms</Link>
-          <Link href="/login" className="btn btn-primary" style={{ padding: '0.6rem 1.5rem', borderRadius: '30px' }}>Login</Link>
+          {user ? (
+            <>
+              <Link href="/dashboard" className="btn btn-primary" style={{ padding: '0.6rem 1.5rem', borderRadius: '30px' }}>Dashboard</Link>
+              <button onClick={handleLogout} className="btn btn-danger" style={{ padding: '0.6rem 1.5rem', borderRadius: '30px' }}>Logout</button>
+            </>
+          ) : (
+            <Link href="/login" className="btn btn-primary" style={{ padding: '0.6rem 1.5rem', borderRadius: '30px' }}>Login</Link>
+          )}
         </div>
       </nav>
 
@@ -31,9 +54,15 @@ export default function LandingPage() {
         </p>
 
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-          <Link href="/login" className="btn btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', borderRadius: '40px', boxShadow: '0 8px 24px rgba(47, 129, 247, 0.3)' }}>
-            Access Dashboard
-          </Link>
+          {user ? (
+            <Link href="/dashboard" className="btn btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', borderRadius: '40px', boxShadow: '0 8px 24px rgba(47, 129, 247, 0.3)' }}>
+              Go to Dashboard
+            </Link>
+          ) : (
+            <Link href="/login" className="btn btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', borderRadius: '40px', boxShadow: '0 8px 24px rgba(47, 129, 247, 0.3)' }}>
+              Access Dashboard
+            </Link>
+          )}
           <a href="https://github.com/pawanwashudev-official/Veto/releases" target="_blank" rel="noreferrer" className="btn" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', borderRadius: '40px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
             Download App
           </a>

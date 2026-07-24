@@ -16,12 +16,12 @@
             android:layout_height="wrap_content">
 
             <EditText
-                android:id="@+id/editTextFMDID"
+                android:id="@+id/editTextVetoID"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/margin_normal"
                 android:autofillHints="username"
-                android:hint="@string/server_fmd_id"
+                android:hint="@string/server_veto_id"
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 

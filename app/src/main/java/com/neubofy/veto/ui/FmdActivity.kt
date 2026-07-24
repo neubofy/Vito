@@ -12,7 +12,7 @@ import com.neubofy.veto.data.Settings
 import com.neubofy.veto.data.SettingsRepository
 
 
-abstract class FmdActivity : AppCompatActivity() {
+abstract class VetoActivity : AppCompatActivity() {
 
     private lateinit var settings: SettingsRepository
 

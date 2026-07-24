@@ -20,10 +20,10 @@ class EncryptedSettingsRepository private constructor(context: Context) {
         val TAG = EncryptedSettingsRepository::class.simpleName
 
         // This file should be EXCLUDED from backups
-        private const val FILENAME = "fmd_encrypted_settings"
+        private const val FILENAME = "veto_encrypted_settings"
 
         private const val KEY_SERVER_CACHED_ACCESS_TOKEN = "KEY_SERVER_CACHED_ACCESS_TOKEN"
-        private const val KEY_FMD_PIN = "KEY_FMD_PIN"
+        private const val KEY_Veto_PIN = "KEY_Veto_PIN"
         private const val KEY_DELETE_PASSWORD = "KEY_DELETE_PASSWORD"
     }
 
@@ -52,14 +52,14 @@ class EncryptedSettingsRepository private constructor(context: Context) {
     }
 
     fun getFmdPin(): String? {
-        return sharedPrefs.getString(KEY_FMD_PIN, null)
+        return sharedPrefs.getString(KEY_Veto_PIN, null)
     }
 
     fun setFmdPin(new: String?) {
         if (new.isNullOrBlank()) {
-            sharedPrefs.edit().remove(KEY_FMD_PIN).apply()
+            sharedPrefs.edit().remove(KEY_Veto_PIN).apply()
         } else {
-            sharedPrefs.edit().putString(KEY_FMD_PIN, new).apply()
+            sharedPrefs.edit().putString(KEY_Veto_PIN, new).apply()
         }
     }
 

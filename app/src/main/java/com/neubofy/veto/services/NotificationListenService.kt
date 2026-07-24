@@ -18,7 +18,7 @@ import kotlinx.coroutines.cancel
 class NotificationListenService : NotificationListenerService() {
 
     companion object {
-        // Give other code in the FMD app access to this service via a static field,
+        // Give other code in the Veto app access to this service via a static field,
         // but only while the service is connected to the NotificationManager.
         var instance: NotificationListenService? = null
     }
@@ -56,14 +56,14 @@ class NotificationListenService : NotificationListenerService() {
             // Texts in notifications from SchildiChat start with this control character,
             // even if the message is otherwise ASCII-only (Android 16 GrapheneOS, Android 15 LineageOS).
             // HACK: Remove it, to get the notification transport working on a basic level.
-            // This will break things that actually do need it (e.g., `fmd mypin lock my-message-with-rtl-text`.
+            // This will break things that actually do need it (e.g., `veto mypin lock my-message-with-rtl-text`.
             // TODO: Come back to this and think about how to properly support Unicode.
             .trimStart('\u2068')
             .toString()
 
         // Early sanity check + abort
-        val fmdTriggerWord = (settings.get(Settings.SET_FMD_COMMAND) as String)
-        if (!message.startsWith(fmdTriggerWord, ignoreCase = true)) {
+        val vetoTriggerWord = (settings.get(Settings.SET_Veto_COMMAND) as String)
+        if (!message.startsWith(vetoTriggerWord, ignoreCase = true)) {
             return
         }
 

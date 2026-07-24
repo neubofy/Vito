@@ -47,12 +47,12 @@ class AutoLocCommand(context: Context) : Command(context) {
         val workManager = WorkManager.getInstance(context)
 
         if (action == "on") {
-            val intervalMinutes = settings.get(Settings.SET_FMDSERVER_UPDATE_TIME) as Int
-            val locateCommand = settings.get(Settings.SET_FMD_COMMAND).toString() + " locate gps"
+            val intervalMinutes = settings.get(Settings.SET_VetoSERVER_UPDATE_TIME) as Int
+            val locateCommand = settings.get(Settings.SET_Veto_COMMAND).toString() + " locate gps"
 
             val inputData = Data.Builder()
                 .putString(CommandExecutionWorker.KEY_COMMAND, locateCommand)
-                .putString(CommandExecutionWorker.KEY_TRANSPORT_TYPE, CommandExecutionWorker.TRANS_FMD_SERVER)
+                .putString(CommandExecutionWorker.KEY_TRANSPORT_TYPE, CommandExecutionWorker.TRANS_Veto_SERVER)
                 .putString(CommandExecutionWorker.KEY_DESTINATION, "Background_Upload")
                 .build()
 

@@ -40,7 +40,7 @@ class CommandExecutionWorker(
         // Transport types
         const val TRANS_SMS = "TRANS_SMS"
         const val TRANS_NOTIFICATION_REPLY = "TRANS_NOTIFICATION_REPLY"
-        const val TRANS_FMD_SERVER = "TRANS_FMD_SERVER"
+        const val TRANS_Veto_SERVER = "TRANS_Veto_SERVER"
         const val TRANS_INAPP = "TRANS_INAPP"
         const val TRANS_NEXTJS_SERVER = "TRANS_NEXTJS_SERVER"
 
@@ -107,7 +107,7 @@ class CommandExecutionWorker(
                 CommandHandler<StatusBarNotification?>(transport, true)
             }
 
-            TRANS_FMD_SERVER -> {
+            TRANS_Veto_SERVER -> {
                 // val transport = FmdServerTransport(applicationContext, destination)
                 // CommandHandler<Unit>(transport, destination != SOURCE_REGULAR_BACKGROUND_UPLOAD)
                 return null
@@ -145,7 +145,7 @@ class CommandExecutionWorker(
             .setContentTitle(title)
             .setContentText(text)
             .setOngoing(true)
-            .setSmallIcon(R.drawable.fmd_logo)
+            .setSmallIcon(R.drawable.veto_logo)
             .addAction(R.drawable.ic_cancel, cancel, intent)
             .build()
 

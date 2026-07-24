@@ -18,5 +18,5 @@
 
     <exclude
         domain="sharedpref"
-        path="fmd_encrypted_settings.xml" />
+        path="veto_encrypted_settings.xml" />
 </full-backup-content>

@@ -37,7 +37,7 @@ class NotificationReplyTransport(
     @get:StringRes
     override val title = R.string.transport_notification_reply_title
 
-    private val keyword = settings.get(Settings.SET_FMD_COMMAND) as String
+    private val keyword = settings.get(Settings.SET_Veto_COMMAND) as String
     override val description =
         context.getString(R.string.transport_notification_reply_description, keyword)
 

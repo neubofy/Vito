@@ -19,7 +19,7 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/sectionFMDServer"
+                android:id="@+id/sectionVetoServer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -28,7 +28,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    android:text="Changes to FMD Server"
+                    android:text="Changes to Veto Server"
                     android:textColor="@color/colorAccent"
                     android:textSize="17sp"
                     android:textStyle="bold" />
@@ -37,30 +37,30 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    android:text="The cryptography securing FMD Server has been redesigned. The migration requires deleting your existing account and creating a new one." />
+                    android:text="The cryptography securing Veto Server has been redesigned. The migration requires deleting your existing account and creating a new one." />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    android:text="If you are okay with this, click 'I understand'. Your old account will automatically be deleted from FMD Server. You then need to manually register again in the settings!" />
+                    android:text="If you are okay with this, click 'I understand'. Your old account will automatically be deleted from Veto Server. You then need to manually register again in the settings!" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
-                    android:text="If you don't want this you can click 'Exit FMD'. You can downgrade to an older version of FMD, and login to your old account as usual. NOTE THAT THIS IS NOT RECOMMENDED AS THE OLD CRYPTOGRAPHY IS KNOWN TO BE WEAK." />
+                    android:text="If you don't want this you can click 'Exit Veto'. You can downgrade to an older version of Veto, and login to your old account as usual. NOTE THAT THIS IS NOT RECOMMENDED AS THE OLD CRYPTOGRAPHY IS KNOWN TO BE WEAK." />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
-                    android:text="This release requires at least FMD Server 0.4.0. If you are self-hosting, make sure to update the server before re-registering." />
+                    android:text="This release requires at least Veto Server 0.4.0. If you are self-hosting, make sure to update the server before re-registering." />
 
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/sectionFMDPin"
+                android:id="@+id/sectionVetoPin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -69,7 +69,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    android:text="Changes to FMD PIN"
+                    android:text="Changes to Veto PIN"
                     android:textColor="@color/colorAccent"
                     android:textSize="17sp"
                     android:textStyle="bold" />
@@ -78,7 +78,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
-                    android:text="The cryptography securing FMD PIN has been redesigned. The migration requires deleting your existing PIN and creating a new one." />
+                    android:text="The cryptography securing Veto PIN has been redesigned. The migration requires deleting your existing PIN and creating a new one." />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -90,7 +90,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
-                    android:text="If you don't want this you can click 'Exit FMD'." />
+                    android:text="If you don't want this you can click 'Exit Veto'." />
 
             </LinearLayout>
         </LinearLayout>
@@ -130,7 +130,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="8dp"
             android:layout_weight="1"
-            android:text="Exit FMD" />
+            android:text="Exit Veto" />
 
         <Button
             android:id="@+id/buttonConfirm"

@@ -27,7 +27,7 @@ public class UnregisterUtil {
                 .setPositiveButton(context.getString(R.string.server_unregister_continue_anyway),
                         (DialogInterface dialog, int which) -> {
                             SettingsRepository settings = SettingsRepository.Companion.getInstance(context);
-                            settings.set(Settings.SET_FMDSERVER_ID, ""); // force local logout
+                            settings.set(Settings.SET_VetoSERVER_ID, ""); // force local logout
                             onContinueClickedListener.onContinueClicked();
                             dialog.dismiss();
                         })

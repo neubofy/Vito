@@ -20,11 +20,11 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.neubofy.veto.R
 import com.neubofy.veto.data.Settings
 import com.neubofy.veto.data.SettingsRepository
-import com.neubofy.veto.ui.FmdActivity
+import com.neubofy.veto.ui.VetoActivity
 import com.neubofy.veto.utils.DashboardSync
 import com.neubofy.veto.utils.log
 
-class AccountActivity : FmdActivity() {
+class AccountActivity : VetoActivity() {
 
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var auth: FirebaseAuth
@@ -81,7 +81,7 @@ class AccountActivity : FmdActivity() {
             }
         }
 
-        val currentUrl = settings.get(Settings.SET_FMDSERVER_URL) as String
+        val currentUrl = settings.get(Settings.SET_VetoSERVER_URL) as String
         if (currentUrl.isNotEmpty()) etDashboardUrl.setText(currentUrl)
 
         // Google Sign In Setup
@@ -188,7 +188,7 @@ class AccountActivity : FmdActivity() {
         btnSignOut.setOnClickListener {
             auth.signOut()
             googleSignInClient.signOut()
-            settings.set(Settings.SET_FMDSERVER_ID, "")
+            settings.set(Settings.SET_VetoSERVER_ID, "")
             updateUI()
             Snackbar.make(btnSignOut, "Signed Out Successfully", Snackbar.LENGTH_SHORT).show()
         }
@@ -219,7 +219,7 @@ class AccountActivity : FmdActivity() {
             Snackbar.make(btnGoogleSignIn, "Please enter a Dashboard URL in Advanced Settings.", Snackbar.LENGTH_SHORT).show()
             return false
         }
-        settings.set(Settings.SET_FMDSERVER_URL, url)
+        settings.set(Settings.SET_VetoSERVER_URL, url)
         return true
     }
 
@@ -257,7 +257,7 @@ class AccountActivity : FmdActivity() {
         val user = auth.currentUser
         if (user != null) {
             val settings = SettingsRepository.getInstance(this)
-            settings.set(Settings.SET_FMDSERVER_ID, user.uid)
+            settings.set(Settings.SET_VetoSERVER_ID, user.uid)
 
             tvStatus.text = "Pairing... Sending FCM Token to Dashboard"
             DashboardSync.uploadTokenIfPaired(this) { statusMsg, isSuccess ->

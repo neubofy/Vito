@@ -48,7 +48,7 @@ class CommandHandler<T>
 ) {
 
     /**
-     * Parses and executes a command of the form "triggerWord command options", e.g. "fmd locate cell"
+     * Parses and executes a command of the form "triggerWord command options", e.g. "veto locate cell"
      */
     @JvmOverloads
     suspend fun execute(
@@ -57,14 +57,14 @@ class CommandHandler<T>
         onHandlingStarted: () -> Unit = {},
     ) {
         val settings = SettingsRepository.getInstance(context)
-        val fmdTriggerWord = settings.get(Settings.SET_FMD_COMMAND) as String
+        val vetoTriggerWord = settings.get(Settings.SET_Veto_COMMAND) as String
 
         val encSettings = EncryptedSettingsRepository.getInstance(context)
         val expectedPin = encSettings.getFmdPin()
 
         val cmds = availableCommands(context)
         val parser =
-            CommandParser(fmdTriggerWord, expectedPin, HelpCommand(cmds, context), cmds)
+            CommandParser(vetoTriggerWord, expectedPin, HelpCommand(cmds, context), cmds)
         val parsed = parser.parse(rawCommand)
 
         when (parsed) {

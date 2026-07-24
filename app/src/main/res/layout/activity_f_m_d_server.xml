@@ -55,7 +55,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    tools:text="https://fmd.example.com" />
+                    tools:text="https://veto.example.com" />
 
                 <ImageView
                     android:id="@+id/buttonOpenWebClient"
@@ -239,7 +239,7 @@
                 android:text="@string/Settings_LCLDServer_Update_Interval_Description_Constraint" />
 
             <EditText
-                android:id="@+id/editTextFMDServerUpdateTime"
+                android:id="@+id/editTextVetoServerUpdateTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/margin_normal"
@@ -262,7 +262,7 @@
                 android:text="@string/Settings_LCLDServer_Location_Type_Description" />
 
             <CheckBox
-                android:id="@+id/checkBoxFMDServerGPS"
+                android:id="@+id/checkBoxVetoServerGPS"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/margin_small"
@@ -288,7 +288,7 @@
                 android:text="@string/Settings_LCLDServer_LOW_BAT_Upload_Description" />
 
             <CheckBox
-                android:id="@+id/checkBoxFMDServerLowBatUpload"
+                android:id="@+id/checkBoxVetoServerLowBatUpload"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/margin_small"

@@ -51,7 +51,7 @@ class LocateCommand(context: Context) : Command(context) {
         args: List<String>,
         transport: Transport<T>,
     ) {
-        // fmd locate last
+        // veto locate last
         if (args.contains("last")) {
             withContext(Dispatchers.IO) {
                 val provider = GpsLocationProvider(context, transport, GPS_PROVIDER, null, keyword)

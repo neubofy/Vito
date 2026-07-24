@@ -42,9 +42,9 @@ class LogRepository private constructor(private val context: Context) {
         fun filenameForExport(): String {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val date = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
-                "fmd-logs-$date.json"
+                "veto-logs-$date.json"
             } else {
-                "fmd-logs.json"
+                "veto-logs.json"
             }
         }
     }
@@ -76,7 +76,7 @@ class LogRepository private constructor(private val context: Context) {
         list = try {
             gson.fromJson(reader, LogModel::class.java) ?: LogModel()
         } catch (e: JsonSyntaxException) {
-            // https://gitlab.com/Nulide/findmydevice/-/issues/271
+            // https://gitlab.com/Neubofy/veto/-/issues/271
             // Log the error to ADB.
             // We do NOT log the error to the new, empty LogModel created below, in order to avoid
             // running into loops (in case this stack trace is what causes the JsonSyntaxException).

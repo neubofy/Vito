@@ -11,7 +11,7 @@ import com.neubofy.veto.ui.UiUtil.Companion.setupEdgeToEdgeAppBar
 import com.neubofy.veto.ui.UiUtil.Companion.setupEdgeToEdgeScrollView
 
 
-class SetupWarningsActivity : FmdActivity() {
+class SetupWarningsActivity : VetoActivity() {
 
     private lateinit var viewBinding: ActivitySetupWarningsBinding
 

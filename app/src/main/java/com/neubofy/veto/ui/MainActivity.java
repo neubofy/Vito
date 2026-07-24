@@ -27,7 +27,7 @@ import com.neubofy.veto.ui.settings.AboutActivity;
 import com.neubofy.veto.utils.UpdateManager;
 import kotlin.Unit;
 
-public class MainActivity extends FmdActivity {
+public class MainActivity extends VetoActivity {
 
     SettingsRepository settings;
 

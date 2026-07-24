@@ -35,9 +35,9 @@ class SettingsImportExporter(
         fun filenameForExport(): String {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val date = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
-                "fmd-settings-$date.zip"
+                "veto-settings-$date.zip"
             } else {
-                "fmd-settings.zip"
+                "veto-settings.zip"
             }
         }
     }
@@ -94,7 +94,7 @@ class SettingsImportExporter(
         // We need to open a new stream (or would need to reset the old stream).
         // Otherwise the ZIP reader starts reading wherever the JSON reader stopped.
 
-        // New format, "fmd-export.zip" (contains settings.json and other data)
+        // New format, "veto-export.zip" (contains settings.json and other data)
         try {
             context.log().i(TAG, "Trying to import ZIP")
             inputStream = context.contentResolver.openInputStream(uri) ?: return@withContext

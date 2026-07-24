@@ -19,7 +19,7 @@ class JsonObjectRequest(
 ) {
     override fun getHeaders(): Map<String, String> {
         return mapOf<String, String>(
-            Pair(HEADER_USER_AGENT, FMD_USER_AGENT)
+            Pair(HEADER_USER_AGENT, Veto_USER_AGENT)
         )
     }
 }

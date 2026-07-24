@@ -39,10 +39,10 @@ public class UpdateboardingModernCryptoActivity extends AppCompatActivity {
             completeAndContinueToMain();
         } else {
             if (!isPinSet) {
-                findViewById(R.id.sectionFMDPin).setVisibility(View.GONE);
+                findViewById(R.id.sectionVetoPin).setVisibility(View.GONE);
             }
             if (!isRegisteredWithServer) {
-                findViewById(R.id.sectionFMDServer).setVisibility(View.GONE);
+                findViewById(R.id.sectionVetoServer).setVisibility(View.GONE);
             }
         }
         findViewById(R.id.buttonExport).setOnClickListener(this::onExportSettingsClicked);
@@ -84,7 +84,7 @@ public class UpdateboardingModernCryptoActivity extends AppCompatActivity {
         if (isPinSet) {
             settings.set(Settings.SET_PIN, "");
         }
-            // We removed the FMD server API entirely. Just continue.
+            // We removed the Veto server API entirely. Just continue.
             completeAndContinueToMain();
     }
 

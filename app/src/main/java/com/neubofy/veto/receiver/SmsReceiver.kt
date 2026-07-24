@@ -47,8 +47,8 @@ class SmsReceiver : BroadcastReceiver() {
 
             // Early sanity check + abort
             val settings = SettingsRepository.getInstance(context)
-            val fmdTriggerWord = (settings.get(Settings.SET_FMD_COMMAND) as String).lowercase()
-            if (!msg.lowercase().startsWith(fmdTriggerWord)) {
+            val vetoTriggerWord = (settings.get(Settings.SET_Veto_COMMAND) as String).lowercase()
+            if (!msg.lowercase().startsWith(vetoTriggerWord)) {
                 return
             }
 

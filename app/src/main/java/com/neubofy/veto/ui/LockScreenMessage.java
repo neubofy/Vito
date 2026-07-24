@@ -19,7 +19,7 @@ import com.neubofy.veto.R;
 import com.neubofy.veto.data.SettingsRepository;
 import com.neubofy.veto.utils.SingletonHolder;
 
-public class LockScreenMessage extends FmdActivity {
+public class LockScreenMessage extends VetoActivity {
 
     public static final String CUSTOM_TEXT = "CUSTOM_TEXT";
     private SettingsRepository settings;

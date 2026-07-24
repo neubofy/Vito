@@ -70,7 +70,7 @@ class UncaughtExceptionHandler(
         report.appendLine("SDK: ${Build.VERSION.SDK_INT}")
         report.appendLine("Release: ${Build.VERSION.RELEASE}")
         report.appendLine("Incremental: ${Build.VERSION.INCREMENTAL}")
-        report.appendLine("FMD-Version: ${getAppVersion()}")
+        report.appendLine("Veto-Version: ${getAppVersion()}")
         report.appendLine()
 
         return report.toString()

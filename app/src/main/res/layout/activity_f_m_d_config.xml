@@ -64,7 +64,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/margin_small"
-                android:text="FMD via PIN" />
+                android:text="Veto via PIN" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -73,7 +73,7 @@
                 android:text="@string/Settings_LCLD_via_Pin_Description" />
 
             <CheckBox
-                android:id="@+id/checkBoxFMDviaPin"
+                android:id="@+id/checkBoxVetoviaPin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/margin_small"
@@ -104,7 +104,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/margin_small"
-                android:text="fmd command" />
+                android:text="veto command" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -120,7 +120,7 @@
                 android:ems="10"
                 android:importantForAutofill="no"
                 android:inputType="text"
-                android:text="fmd" />
+                android:text="veto" />
 
             <View
                 android:layout_width="match_parent"
@@ -134,7 +134,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/margin_small"
-                android:text="fmd ring" />
+                android:text="veto ring" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -161,7 +161,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/margin_small"
-                android:text="fmd lock" />
+                android:text="veto lock" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -191,7 +191,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/margin_small"
-                android:text="fmd delete" />
+                android:text="veto delete" />
 
             <CheckBox
                 android:id="@+id/checkBoxWipeData"

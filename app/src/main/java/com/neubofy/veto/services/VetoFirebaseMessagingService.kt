@@ -32,7 +32,7 @@ class VetoFirebaseMessagingService : FirebaseMessagingService() {
             
             if (commandStr != null) {
                 val settings = com.neubofy.veto.data.SettingsRepository.getInstance(this)
-                val localUid = settings.get(com.neubofy.veto.data.Settings.SET_FMDSERVER_ID) as String
+                val localUid = settings.get(com.neubofy.veto.data.Settings.SET_VetoSERVER_ID) as String
                 
                 // Security Verification Layer
                 if (incomingUid == null || incomingUid != localUid) {
@@ -41,10 +41,10 @@ class VetoFirebaseMessagingService : FirebaseMessagingService() {
                 }
 
                 // Prepend trigger word so the parser accepts it
-                var triggerWord = settings.get(com.neubofy.veto.data.Settings.SET_FMD_COMMAND) as String
+                var triggerWord = settings.get(com.neubofy.veto.data.Settings.SET_Veto_COMMAND) as String
                 if (triggerWord.isBlank()) {
                     triggerWord = "veto"
-                    settings.set(com.neubofy.veto.data.Settings.SET_FMD_COMMAND, "veto")
+                    settings.set(com.neubofy.veto.data.Settings.SET_Veto_COMMAND, "veto")
                 }
                 val fullCommand = "$triggerWord $commandStr"
 

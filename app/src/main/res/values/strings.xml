@@ -38,9 +38,9 @@
     <!-- Settings (main screen, with the list) -->
     <string name="Settings_Settings">Settings</string>
     <string name="Settings_LCLDConfig">General</string>
-    <string name="Settings_FMDConfig">General</string>
+    <string name="Settings_VetoConfig">General</string>
     <string name="Settings_LCLDServer" translatable="false">Veto Server</string>
-    <string name="Settings_FMDServer" translatable="false">Veto Server</string>
+    <string name="Settings_VetoServer" translatable="false">Veto Server</string>
     <string name="Settings_WhiteList">Allowed contacts</string>
     <string name="Settings_OpenCellId" translatable="false">OpenCelliD</string>
     <string name="Settings_Appearance">Appearance</string>
@@ -51,7 +51,7 @@
 
     <!-- Settings: General -->
     <string name="Settings_LCLD_via_Pin_Description">Allows you to communicate with Veto via a PIN. This allows you to send commands from a phone number that is not in the allowed contacts list.</string>
-    <string name="Settings_FMD_via_Pin_Description">Allows you to communicate with Veto via a PIN. This allows you to send commands from a phone number that is not in the allowed contacts list.</string>
+    <string name="Settings_Veto_via_Pin_Description">Allows you to communicate with Veto via a PIN. This allows you to send commands from a phone number that is not in the allowed contacts list.</string>
     <string name="Settings_Pin_Not_Backed_Up">Warning: The PIN is not included in the app backup.</string>
     <string name="Settings_Set_Pin">Set PIN</string>
     <string name="Settings_Change_Pin">Change PIN</string>
@@ -60,9 +60,9 @@
     <string name="pin_min_length">The PIN must be at least 8 characters. 16 or more are recommended.</string>
     <string name="pin_match_command_keyword">The PIN must not equal one of the commands!</string>
     <string name="Settings_LCLDCommand_Description">The command used to communicate with the Veto.</string>
-    <string name="Settings_FMDCommand_Description">The command used to communicate with the Veto.</string>
+    <string name="Settings_VetoCommand_Description">The command used to communicate with the Veto.</string>
     <string name="Toast_Empty_LCLDCommand">Empty command not allowed, using default.</string>
-    <string name="Toast_Empty_FMDCommand">Empty command not allowed, using default.</string>
+    <string name="Toast_Empty_VetoCommand">Empty command not allowed, using default.</string>
     <string name="Settings_Ringer_Tone_Description">Select a ringtone for the \"ring\" command.</string>
     <string name="Settings_Select_Ringtone">Select ringtone</string>
     <string name="Settings_no_ringtone_picker">No ringtone picker found!</string>
@@ -72,69 +72,69 @@
 
     <!-- Settings: Veto Server -->
     <string name="Settings_LCLD_Server_General">General</string>
-    <string name="Settings_FMD_Server_General">General</string>
+    <string name="Settings_Veto_Server_General">General</string>
     <string name="Settings_LCLD_Server_Server_URL">Server URL:</string>
-    <string name="Settings_FMD_Server_Server_URL">Server URL:</string>
+    <string name="Settings_Veto_Server_Server_URL">Server URL:</string>
     <string name="Settings_LCLD_Server_User_ID">User ID:</string>
-    <string name="Settings_FMD_Server_User_ID">User ID:</string>
+    <string name="Settings_Veto_Server_User_ID">User ID:</string>
     <string name="Settings_LCLD_Server_ID_Desc">You need the user ID to find your device with Veto Server. Write it down and keep it safe.</string>
-    <string name="Settings_FMD_Server_ID_Desc">You need the user ID to find your device with Veto Server. Write it down and keep it safe.</string>
+    <string name="Settings_Veto_Server_ID_Desc">You need the user ID to find your device with Veto Server. Write it down and keep it safe.</string>
     <string name="Settings_LCLD_Server_Connection_Status">Connection status:</string>
-    <string name="Settings_FMD_Server_Connection_Status">Connection status:</string>
+    <string name="Settings_Veto_Server_Connection_Status">Connection status:</string>
     <string name="Settings_LCLD_Server_Connection_Status_Success">Success</string>
-    <string name="Settings_FMD_Server_Connection_Status_Success">Success</string>
+    <string name="Settings_Veto_Server_Connection_Status_Success">Success</string>
     <string name="Settings_LCLDServer_Change_Password_Button">Change password</string>
-    <string name="Settings_FMDServer_Change_Password_Button">Change password</string>
+    <string name="Settings_VetoServer_Change_Password_Button">Change password</string>
     <string name="Settings_LCLDServer_Logout_Button">Log out</string>
-    <string name="Settings_FMDServer_Logout_Button">Log out</string>
+    <string name="Settings_VetoServer_Logout_Button">Log out</string>
     <string name="Settings_LCLDServer_Logout_Text">Do you really want to log out from your Veto Server account?</string>
-    <string name="Settings_FMDServer_Logout_Text">Do you really want to log out from your Veto Server account?</string>
+    <string name="Settings_VetoServer_Logout_Text">Do you really want to log out from your Veto Server account?</string>
     <string name="Settings_LCLDServer_Delete_Account">Delete account</string>
-    <string name="Settings_FMDServer_Delete_Account">Delete account</string>
+    <string name="Settings_VetoServer_Delete_Account">Delete account</string>
     <string name="Settings_LCLDServer_Alert_DeleteData_Desc">This will delete all data from the server! Are you sure?</string>
-    <string name="Settings_FMDServer_Alert_DeleteData_Desc">This will delete all data from the server! Are you sure?</string>
+    <string name="Settings_VetoServer_Alert_DeleteData_Desc">This will delete all data from the server! Are you sure?</string>
     <string name="Settings_LCLDServer_Unregister_Success">Unregistering and data deletion successful!</string>
-    <string name="Settings_FMDServer_Unregister_Success">Unregistering and data deletion successful!</string>
+    <string name="Settings_VetoServer_Unregister_Success">Unregistering and data deletion successful!</string>
     <string name="Settings_LCLDServer_Push_Title" translatable="false">Push</string>
-    <string name="Settings_FMDServer_Push_Title" translatable="false">Push</string>
+    <string name="Settings_VetoServer_Push_Title" translatable="false">Push</string>
     <string name="Settings_LCLDServer_Push_Description">Sending commands from Veto Server to your device requires a UnifiedPush distributor app.</string>
-    <string name="Settings_FMDServer_Push_Description">Sending commands from Veto Server to your device requires a UnifiedPush distributor app.</string>
+    <string name="Settings_VetoServer_Push_Description">Sending commands from Veto Server to your device requires a UnifiedPush distributor app.</string>
     <string name="Settings_LCLDServer_Push_Distributor">Distributor: %s</string>
-    <string name="Settings_FMDServer_Push_Distributor">Distributor: %s</string>
+    <string name="Settings_VetoServer_Push_Distributor">Distributor: %s</string>
     <string name="Settings_LCLDServer_Push_Url">Push URL: %s</string>
-    <string name="Settings_FMDServer_Push_Url">Push URL: %s</string>
+    <string name="Settings_VetoServer_Push_Url">Push URL: %s</string>
     <string name="Settings_LCLDServer_Push_Open_Help">More information about push</string>
-    <string name="Settings_FMDServer_Push_Open_Help">More information about push</string>
+    <string name="Settings_VetoServer_Push_Open_Help">More information about push</string>
     <string name="Settings_LCLDServer_Push_Register">Register</string>
-    <string name="Settings_FMDServer_Push_Register">Register</string>
+    <string name="Settings_VetoServer_Push_Register">Register</string>
     <string name="Settings_LCLDServer_Push_Register_Again">Register again</string>
-    <string name="Settings_FMDServer_Push_Register_Again">Register again</string>
+    <string name="Settings_VetoServer_Push_Register_Again">Register again</string>
     <string name="Settings_LCLDServer_Push_Install_Sunup">Install Sunup</string>
-    <string name="Settings_FMDServer_Push_Install_Sunup">Install Sunup</string>
+    <string name="Settings_VetoServer_Push_Install_Sunup">Install Sunup</string>
     <string name="Settings_LCLDServer_Push_Info_Sunup">The recommended UnifiedPush distributor app is Sunup. Sunup is easy set up and uses push servers from Mozilla.</string>
-    <string name="Settings_FMDServer_Push_Info_Sunup">The recommended UnifiedPush distributor app is Sunup. Sunup is easy set up and uses push servers from Mozilla.</string>
+    <string name="Settings_VetoServer_Push_Info_Sunup">The recommended UnifiedPush distributor app is Sunup. Sunup is easy set up and uses push servers from Mozilla.</string>
     <string name="Settings_LCLDServer_Check_Interval_Title">Connectivity check interval</string>
-    <string name="Settings_FMDServer_Check_Interval_Title">Connectivity check interval</string>
+    <string name="Settings_VetoServer_Check_Interval_Title">Connectivity check interval</string>
     <string name="Settings_LCLDServer_Check_Interval_Description">Veto checks the connectivity to Veto Server every X hours. Set this to 0 to disable the connectivity check.</string>
-    <string name="Settings_FMDServer_Check_Interval_Description">Veto checks the connectivity to Veto Server every X hours. Set this to 0 to disable the connectivity check.</string>
+    <string name="Settings_VetoServer_Check_Interval_Description">Veto checks the connectivity to Veto Server every X hours. Set this to 0 to disable the connectivity check.</string>
     <string name="Settings_LCLDServer_Check_Notify_After_Title">Maximum allowed time without connectivity</string>
-    <string name="Settings_FMDServer_Check_Notify_After_Title">Maximum allowed time without connectivity</string>
+    <string name="Settings_VetoServer_Check_Notify_After_Title">Maximum allowed time without connectivity</string>
     <string name="Settings_LCLDServer_Check_Notify_After_Description">Veto will notify you if the last successful connection to Veto Server is more than X hours ago. This has no effect if the connectivity check is disabled.</string>
-    <string name="Settings_FMDServer_Check_Notify_After_Description">Veto will notify you if the last successful connection to Veto Server is more than X hours ago. This has no effect if the connectivity check is disabled.</string>
+    <string name="Settings_VetoServer_Check_Notify_After_Description">Veto will notify you if the last successful connection to Veto Server is more than X hours ago. This has no effect if the connectivity check is disabled.</string>
     <string name="Settings_LCLDServer_Update_Interval_Title">Background location upload interval</string>
-    <string name="Settings_FMDServer_Update_Interval_Title">Background location upload interval</string>
+    <string name="Settings_VetoServer_Update_Interval_Title">Background location upload interval</string>
     <string name="Settings_LCLDServer_Update_Interval_Description">Veto uploads the device\'s location every X minutes.</string>
-    <string name="Settings_FMDServer_Update_Interval_Description">Veto uploads the device\'s location every X minutes.</string>
+    <string name="Settings_VetoServer_Update_Interval_Description">Veto uploads the device\'s location every X minutes.</string>
     <string name="Settings_LCLDServer_Update_Interval_Description_Constraint">Values below 15 minutes are not recommended.</string>
-    <string name="Settings_FMDServer_Update_Interval_Description_Constraint">Values below 15 minutes are not recommended.</string>
+    <string name="Settings_VetoServer_Update_Interval_Description_Constraint">Values below 15 minutes are not recommended.</string>
     <string name="Settings_LCLDServer_Location_Type_Title">Location source</string>
-    <string name="Settings_FMDServer_Location_Type_Title">Location source</string>
+    <string name="Settings_VetoServer_Location_Type_Title">Location source</string>
     <string name="Settings_LCLDServer_Location_Type_Description">The source(s) from which the location data is uploaded at regular intervals in the background.\nIf none is selected, no locations are uploaded regularly. (You can still use the web interface to force an upload. This requires push.)</string>
-    <string name="Settings_FMDServer_Location_Type_Description">The source(s) from which the location data is uploaded at regular intervals in the background.\nIf none is selected, no locations are uploaded regularly. (You can still use the web interface to force an upload. This requires push.)</string>
+    <string name="Settings_VetoServer_Location_Type_Description">The source(s) from which the location data is uploaded at regular intervals in the background.\nIf none is selected, no locations are uploaded regularly. (You can still use the web interface to force an upload. This requires push.)</string>
     <string name="Settings_LCLDServer_LOW_BAT_Upload_Title">Upload on low battery</string>
-    <string name="Settings_FMDServer_LOW_BAT_Upload_Title">Upload on low battery</string>
+    <string name="Settings_VetoServer_LOW_BAT_Upload_Title">Upload on low battery</string>
     <string name="Settings_LCLDServer_LOW_BAT_Upload_Description">Upload the location of this device when the battery level goes low.</string>
-    <string name="Settings_FMDServer_LOW_BAT_Upload_Description">Upload the location of this device when the battery level goes low.</string>
+    <string name="Settings_VetoServer_LOW_BAT_Upload_Description">Upload the location of this device when the battery level goes low.</string>
     <string name="password_set">Set password</string>
     <string name="password_change">Change password</string>
     <string name="password_enter">Enter password</string>
@@ -162,27 +162,27 @@
     <string name="server_version_error">Error getting server version</string>
     <string name="server_version_error_low_version">At least server version {MIN} is required, but the selected server has version {CURRENT}. Continue at your own risk.</string>
     <string name="Settings_LCLDServer_AddAccount">Veto Server: Login</string>
-    <string name="Settings_FMDServer_AddAccount">Veto Server: Login</string>
+    <string name="Settings_VetoServer_AddAccount">Veto Server: Login</string>
     <string name="Settings_LCLDServer_Info">With Veto Server you can send commands over the internet, from the server to the app. You can also view the device location on a map or view pictures taken by the device. For self-hosting instructions, see the website.</string>
-    <string name="Settings_FMDServer_Info">With Veto Server you can send commands over the internet, from the server to the app. You can also view the device location on a map or view pictures taken by the device. For self-hosting instructions, see the website.</string>
+    <string name="Settings_VetoServer_Info">With Veto Server you can send commands over the internet, from the server to the app. You can also view the device location on a map or view pictures taken by the device. For self-hosting instructions, see the website.</string>
     <string name="Settings_LCLDServer_open_website">Open Veto Server website</string>
-    <string name="Settings_FMDServer_open_website">Open Veto Server website</string>
+    <string name="Settings_VetoServer_open_website">Open Veto Server website</string>
     <string name="Settings_LCLDServer_use_default_server">Use the public server</string>
-    <string name="Settings_FMDServer_use_default_server">Use the public server</string>
+    <string name="Settings_VetoServer_use_default_server">Use the public server</string>
     <string name="Settings_LCLDServer_Server_Url">Server URL</string>
-    <string name="Settings_FMDServer_Server_Url">Server URL</string>
+    <string name="Settings_VetoServer_Server_Url">Server URL</string>
     <string name="Settings_LCLDServer_Login">Login</string>
-    <string name="Settings_FMDServer_Login">Login</string>
+    <string name="Settings_VetoServer_Login">Login</string>
     <string name="Settings_LCLDServer_Register">Register</string>
-    <string name="Settings_FMDServer_Register">Register</string>
+    <string name="Settings_VetoServer_Register">Register</string>
     <string name="Settings_LCLDServer_Alert_PrivacyPolicy_Title">Privacy policy</string>
-    <string name="Settings_FMDServer_Alert_PrivacyPolicy_Title">Privacy policy</string>
-    <string name="server_fmd_id" translatable="false">Veto ID</string>
-    <string name="server_fmd_id_hint">The Veto ID identifies your account on the Veto Server. Leave this empty to let the server generate an ID. The server administrator can see the Veto ID.</string>
+    <string name="Settings_VetoServer_Alert_PrivacyPolicy_Title">Privacy policy</string>
+    <string name="server_veto_id" translatable="false">Veto ID</string>
+    <string name="server_veto_id_hint">The Veto ID identifies your account on the Veto Server. Leave this empty to let the server generate an ID. The server administrator can see the Veto ID.</string>
     <string name="password">Password</string>
     <string name="server_password_hint">Choose a password that cannot be guessed, but that you can recover when you lose your device. The password grants access to remotely running commands on your device. The server administrator cannot access or reset your password.</string>
     <string name="Settings_LCLDServer_Error_id_or_pw_empty">The Veto ID and password must not be empty.</string>
-    <string name="Settings_FMDServer_Error_id_or_pw_empty">The Veto ID and password must not be empty.</string>
+    <string name="Settings_VetoServer_Error_id_or_pw_empty">The Veto ID and password must not be empty.</string>
     <string name="registration_token">Registration token</string>
     <string name="registration_token_hint">Private instances may require a secret token. Leave this empty if the instance is public.</string>
     <string name="server_registration_token_error">Network request failed with HTTP 401. This can happen if the server requires a registration token and the token you provided was wrong.</string>
@@ -236,7 +236,7 @@
     <string name="about">About</string>
     <string name="about_source_code">Source code</string>
     <string name="about_wiki">Wiki</string>
-    <string name="about_gratitude">Veto (Locate &amp; Control Lost Device) is developed by Pawan Washudev.\n\nThis project is a fork of \'Find My Device\' (Veto) by Nulide. ❤️ HUGE THANKS to Nulide and the original Veto team for their incredible open-source work which made this project possible.</string>
+    <string name="about_gratitude">Veto (Locate &amp; Control Lost Device) is developed by Pawan Washudev.\n\nThis project is a fork of \'Veto\' (Veto) by Neubofy. ❤️ HUGE THANKS to Neubofy and the original Veto team for their incredible open-source work which made this project possible.</string>
     <string name="app_description">Veto (Locate &amp; Control Lost Device) allows you to remotely locate your device. You can communicate with Veto over SMS, instant messengers, or using Veto Server. Locate your device, make it ring, lock it, or wipe it - all from remote.</string>
 
     <!-- Crypto update boarding -->
@@ -251,7 +251,7 @@
     <string name="update_pin_hash_change_text">The Veto PIN was reset during an app update. To continue using Veto with a PIN, please set the PIN again.</string>
 
     <!-- LCLD Edge launch info -->
-    <string name="fmd_edge_info_message">This is the edge variant of Veto. Here, the default command keyword is \"vetoe\" (instead of \"veto\"). For example, to send the locate command, use \"vetoe locate\". This allows having both edge and prod installed on the same device, and targeting commands to one of the two.</string>
+    <string name="veto_edge_info_message">This is the edge variant of Veto. Here, the default command keyword is \"vetoe\" (instead of \"veto\"). For example, to send the locate command, use \"vetoe locate\". This allows having both edge and prod installed on the same device, and targeting commands to one of the two.</string>
 
     <!-- Commands -->
 
@@ -266,7 +266,7 @@
 
     <string name="cmd_camera_description_short">Take a picture</string>
     <string name="cmd_camera_description_long">Takes a picture of with the front/back camera and uploads it to Veto Server. Currently only uploading to Veto Server is supported. You can send this command via other transport channels, too, and the picture will be uploaded to Veto Server (if an account exists).</string>
-    <string name="cmd_camera_response_no_fmd_server">Cannot take picture: no Veto Server account exists.</string>
+    <string name="cmd_camera_response_no_veto_server">Cannot take picture: no Veto Server account exists.</string>
     <string name="cmd_camera_response_success">The device is taking a picture and will send it to Veto Server. You can view it here soon: %s</string>
 
     <string name="cmd_delete_description_short">Factory-reset the device</string>
@@ -364,10 +364,10 @@
     <string name="transport_notification_reply_description">You can allow Veto to read your notifications to listen for commands. Veto can then reply via Android\'s built-in notification reply feature. This allows you to control Veto using a messaging application of your choice, as long as it posts notifications that can be replied to. E.g., you can send a Signal message \"%s mypin help\" to your phone.</string>
     <string name="transport_notification_reply_description_auth">Controlling Veto via notification reply requires the Veto PIN to be set. Every message must contain the correct PIN.</string>
 
-    <string name="transport_fmd_server_title" translatable="false">Veto Server</string>
-    <string name="transport_fmd_server_description">Veto Server provides a web interface to control your device, view its location, and view pictures it sent. You can self-host Veto Server or use the provided instance. Data is stored encrypted on the server, protected by your password.</string>
-    <string name="transport_fmd_server_description_auth">Anyone who knows your username and password can log in to Veto Server and control your device.</string>
-    <string name="transport_fmd_server_description_note">Veto Server requires an internet connection. This can be a mobile network (thus the SIM needs to be unlocked) or WiFi.</string>
+    <string name="transport_veto_server_title" translatable="false">Veto Server</string>
+    <string name="transport_veto_server_description">Veto Server provides a web interface to control your device, view its location, and view pictures it sent. You can self-host Veto Server or use the provided instance. Data is stored encrypted on the server, protected by your password.</string>
+    <string name="transport_veto_server_description_auth">Anyone who knows your username and password can log in to Veto Server and control your device.</string>
+    <string name="transport_veto_server_description_note">Veto Server requires an internet connection. This can be a mobile network (thus the SIM needs to be unlocked) or WiFi.</string>
 
     <string name="transport_inapp_title">In-app</string>
     <string name="transport_inapp_description">Send commands locally from within Veto to your device. This is useful for testing. Veto will reply with a notification.</string>

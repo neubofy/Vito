@@ -20,7 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autofillHints="username"
-                android:hint="@string/server_fmd_id"
+                android:hint="@string/server_veto_id"
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -28,7 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_small"
-            android:text="@string/server_fmd_id_hint" />
+            android:text="@string/server_veto_id_hint" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"

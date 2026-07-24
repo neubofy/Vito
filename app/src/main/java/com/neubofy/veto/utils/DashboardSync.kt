@@ -15,8 +15,8 @@ object DashboardSync {
 
     fun uploadTokenIfPaired(context: Context, callback: ((String, Boolean) -> Unit)? = null) {
         val settings = SettingsRepository.getInstance(context)
-        val dashboardUrl = settings.get(Settings.SET_FMDSERVER_URL) as String
-        val userId = settings.get(Settings.SET_FMDSERVER_ID) as String
+        val dashboardUrl = settings.get(Settings.SET_VetoSERVER_URL) as String
+        val userId = settings.get(Settings.SET_VetoSERVER_ID) as String
 
         if (dashboardUrl.isEmpty() || userId.isEmpty()) {
             context.log().i(TAG, "Dashboard not paired. Skipping token upload.")

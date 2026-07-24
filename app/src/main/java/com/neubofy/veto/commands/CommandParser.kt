@@ -4,7 +4,7 @@ package com.neubofy.veto.commands
 sealed class ParserResult {
     // For valid syntax
     data class Success(
-        // fmd
+        // veto
         val triggerWord: String,
         // mypin
         val pin: String?,
@@ -28,7 +28,7 @@ sealed class ParserResult {
 
 
 /**
- * Parses a raw command string (such as `fmd mypin locate gps`) into a [ParserResult].
+ * Parses a raw command string (such as `veto mypin locate gps`) into a [ParserResult].
  */
 class CommandParser(
     val expectedTriggerWord: String,
@@ -46,7 +46,7 @@ class CommandParser(
         }
         val firstToken = iter.next()
 
-        // Not an FMD command
+        // Not an Veto command
         if (firstToken.lowercase() != expectedTriggerWord.lowercase()) {
             return ParserResult.TriggerWordMismatch(firstToken, expectedTriggerWord)
         }

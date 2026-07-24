@@ -63,7 +63,7 @@ class SettingsFragment : TaggedFragment() {
 
         var settingIntent: Intent? = null
         when (position) {
-            0 -> settingIntent = Intent(context, FMDConfigActivity::class.java)
+            0 -> settingIntent = Intent(context, VetoConfigActivity::class.java)
             1 -> settingIntent = Intent(context, com.neubofy.veto.ui.settings.AccountActivity::class.java)
             2 -> settingIntent = Intent(context, AppearanceActivity::class.java)
             3 -> {

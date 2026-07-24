@@ -14,11 +14,11 @@ import com.neubofy.veto.commands.Command
 import com.neubofy.veto.commands.CommandHandler
 import com.neubofy.veto.commands.availableCommands
 import com.neubofy.veto.transports.InAppTransport
-import com.neubofy.veto.ui.FmdActivity
+import com.neubofy.veto.ui.VetoActivity
 import com.neubofy.veto.ui.UiUtil.Companion.setupEdgeToEdgeAppBar
 import kotlinx.coroutines.launch
 
-class CommandsActivity : FmdActivity() {
+class CommandsActivity : VetoActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

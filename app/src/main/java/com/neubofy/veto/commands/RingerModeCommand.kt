@@ -16,12 +16,12 @@ import com.neubofy.veto.utils.log
  * RINGER_MODE_SILENT also enables DND mode.
  * This is Android's opinionated default.
  *
- * We try to work around this in "fmd ring", because there our goal is to restore the user's settings.
+ * We try to work around this in "veto ring", because there our goal is to restore the user's settings.
  * Here, we stay with Android's default (which is enabling DND).
  *
  * References:
  *
- * - https://gitlab.com/fmd-foss/fmd-android/-/merge_requests/342
+ * - https://gitlab.com/veto-foss/veto-android/-/merge_requests/342
  * - https://stackoverflow.com/questions/58044974/enable-silent-mode-in-android-without-triggering-do-not-disturb
  * - https://issuetracker.google.com/issues/237819541
  */

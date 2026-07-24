@@ -46,7 +46,7 @@ public class TempContactExpiredService extends JobService {
         ComponentName serviceComponent = new ComponentName(context, TempContactExpiredService.class);
 
         // We need a unique jobId so that if multiple different phone numbers access
-        // FMD concurrently, each of them gets their own ExpiredService.
+        // Veto concurrently, each of them gets their own ExpiredService.
         int jobId = ((Long) System.currentTimeMillis()).intValue();
 
         JobInfo.Builder builder = new JobInfo.Builder(jobId, serviceComponent);

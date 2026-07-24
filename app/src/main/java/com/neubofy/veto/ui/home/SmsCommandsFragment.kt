@@ -29,7 +29,7 @@ class SmsCommandsFragment : TaggedFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val settings = SettingsRepository.getInstance(requireContext())
-        val prefix = settings.get(Settings.SET_FMD_COMMAND) as String
+        val prefix = settings.get(Settings.SET_Veto_COMMAND) as String
 
         val textAllowed = view.findViewById<TextView>(R.id.text_sms_format_allowed)
         textAllowed.text = "From Allowed Contact:\n$prefix [command]"

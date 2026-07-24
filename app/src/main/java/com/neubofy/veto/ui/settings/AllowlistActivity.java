@@ -27,12 +27,12 @@ import com.neubofy.veto.data.AllowlistRepository;
 import com.neubofy.veto.data.Contact;
 import com.neubofy.veto.data.Settings;
 import com.neubofy.veto.data.SettingsRepository;
-import com.neubofy.veto.ui.FmdActivity;
+import com.neubofy.veto.ui.VetoActivity;
 import com.neubofy.veto.ui.allowlist.AllowlistAdapter;
 import kotlin.Unit;
 
 
-public class AllowlistActivity extends FmdActivity {
+public class AllowlistActivity extends VetoActivity {
 
     private AllowlistRepository allowlistRepository;
     private SettingsRepository settings;
@@ -179,7 +179,7 @@ public class AllowlistActivity extends FmdActivity {
                 updateScreen();
 
                 if (!(Boolean) settings.get(Settings.SET_FIRST_TIME_CONTACT_ADDED)) {
-                    String keyword = (String) settings.get(Settings.SET_FMD_COMMAND);
+                    String keyword = (String) settings.get(Settings.SET_Veto_COMMAND);
                     String message = getString(R.string.tip_first_contact_added, keyword, keyword, keyword);
                     new MaterialAlertDialogBuilder(this)
                             .setMessage(message)

@@ -55,7 +55,7 @@ export async function POST(req: Request) {
     const filename = `theft-mode/${userId}/${Date.now()}-${file.name}`;
     
     const blob = await put(filename, file, {
-      access: 'public', // Must be public for frontend to view easily without complex signed URLs
+      access: 'private',
     });
 
     // Save the new photo URL to Firestore under the command name document

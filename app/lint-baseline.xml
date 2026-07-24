@@ -11,10 +11,10 @@
     <issue
         id="DefaultLocale"
         message="Implicitly using the default locale is a common source of bugs: Use `toLowerCase(Locale)` instead. For strings meant to be internal use `Locale.ROOT`, otherwise `Locale.getDefault()`."
-        errorLine1="                settings.set(Settings.SET_FMD_COMMAND, edited.toString().toLowerCase());"
+        errorLine1="                settings.set(Settings.SET_Veto_COMMAND, edited.toString().toLowerCase());"
         errorLine2="                                                                         ~~~~~~~~~~~">
         <location
-            file="src/main/java/de/nulide/findmydevice/ui/settings/FMDConfigActivity.java"
+            file="src/main/java/de/neubofy/veto/ui/settings/VetoConfigActivity.java"
             line="111"
             column="74"/>
     </issue>
@@ -25,7 +25,7 @@
         errorLine1="        msg = msg.toLowerCase();"
         errorLine2="                  ~~~~~~~~~~~">
         <location
-            file="src/main/java/de/nulide/findmydevice/logic/MessageHandler.java"
+            file="src/main/java/de/neubofy/veto/logic/MessageHandler.java"
             line="53"
             column="19"/>
     </issue>
@@ -36,7 +36,7 @@
         errorLine1="                String msgLower = msg.toLowerCase();"
         errorLine2="                                      ~~~~~~~~~~~">
         <location
-            file="src/main/java/de/nulide/findmydevice/services/ThirdPartyAccessService.java"
+            file="src/main/java/de/neubofy/veto/services/ThirdPartyAccessService.java"
             line="68"
             column="39"/>
     </issue>
@@ -47,7 +47,7 @@
         errorLine1="                        String phoneNumber = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));"
         errorLine2="                                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/de/nulide/findmydevice/ui/settings/AllowlistActivity.java"
+            file="src/main/java/de/neubofy/veto/ui/settings/AllowlistActivity.java"
             line="104"
             column="58"/>
     </issue>
@@ -58,7 +58,7 @@
         errorLine1="                            String cNumber = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));"
         errorLine2="                                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/de/nulide/findmydevice/ui/settings/AllowlistActivity.java"
+            file="src/main/java/de/neubofy/veto/ui/settings/AllowlistActivity.java"
             line="110"
             column="58"/>
     </issue>
@@ -69,7 +69,7 @@
         errorLine1="                            String cName = c.getString(c.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));"
         errorLine2="                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/de/nulide/findmydevice/ui/settings/AllowlistActivity.java"
+            file="src/main/java/de/neubofy/veto/ui/settings/AllowlistActivity.java"
             line="111"
             column="56"/>
     </issue>
@@ -135,7 +135,7 @@
         errorLine1="        view = inflater.inflate(R.layout.item_settings, null);"
         errorLine2="                                                        ~~~~">
         <location
-            file="src/main/java/de/nulide/findmydevice/ui/helper/SettingsViewAdapter.java"
+            file="src/main/java/de/neubofy/veto/ui/helper/SettingsViewAdapter.java"
             line="42"
             column="57"/>
     </issue>
@@ -179,7 +179,7 @@
         errorLine1="    public static Context context;"
         errorLine2="           ~~~~~~">
         <location
-            file="src/main/java/de/nulide/findmydevice/data/io/IO.java"
+            file="src/main/java/de/neubofy/veto/data/io/IO.java"
             line="24"
             column="12"/>
     </issue>
@@ -190,7 +190,7 @@
         errorLine1="    private static Context context;"
         errorLine2="            ~~~~~~">
         <location
-            file="src/main/java/de/nulide/findmydevice/utils/Logger.java"
+            file="src/main/java/de/neubofy/veto/utils/Logger.java"
             line="27"
             column="13"/>
     </issue>
@@ -223,7 +223,7 @@
         errorLine1="        view = inflater.inflate(R.layout.item_settings, null);"
         errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/de/nulide/findmydevice/ui/helper/SettingsViewAdapter.java"
+            file="src/main/java/de/neubofy/veto/ui/helper/SettingsViewAdapter.java"
             line="42"
             column="16"/>
     </issue>
@@ -478,10 +478,10 @@
     <issue
         id="SetTextI18n"
         message="Number formatting does not take into account locale settings. Consider using `String.format` instead."
-        errorLine1="        editTextFMDServerUpdateTime.setText(((Integer) settings.get(Settings.SET_FMDSERVER_UPDATE_TIME)).toString());"
+        errorLine1="        editTextVetoServerUpdateTime.setText(((Integer) settings.get(Settings.SET_VetoSERVER_UPDATE_TIME)).toString());"
         errorLine2="                                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/de/nulide/findmydevice/ui/settings/FMDServerActivity.java"
+            file="src/main/java/de/neubofy/veto/ui/settings/VetoServerActivity.java"
             line="98"
             column="45"/>
     </issue>
@@ -492,7 +492,7 @@
         errorLine1="        textViewWhiteListCount.setText(Integer.valueOf(allowlist.size()).toString());"
         errorLine2="                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/de/nulide/findmydevice/ui/MainActivity.java"
+            file="src/main/java/de/neubofy/veto/ui/MainActivity.java"
             line="126"
             column="40"/>
     </issue>
@@ -503,7 +503,7 @@
         errorLine1="                    &quot;Paras: $paras\n\nOpenCelliD: ${it.url}\n${geoURI}\nOpenStreetMap: $osm&quot;"
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/de/nulide/findmydevice/ui/settings/OpenCellIdActivity.kt"
+            file="src/main/java/de/neubofy/veto/ui/settings/OpenCellIdActivity.kt"
             line="96"
             column="21"/>
     </issue>
@@ -514,7 +514,7 @@
         errorLine1="                    &quot;Paras: $paras\n\nOpenCelliD: ${it.url}\n${geoURI}\nOpenStreetMap: $osm&quot;"
         errorLine2="                     ~~~~~~~">
         <location
-            file="src/main/java/de/nulide/findmydevice/ui/settings/OpenCellIdActivity.kt"
+            file="src/main/java/de/neubofy/veto/ui/settings/OpenCellIdActivity.kt"
             line="96"
             column="22"/>
     </issue>
@@ -525,7 +525,7 @@
         errorLine1="                    &quot;Paras: $paras\n\nOpenCelliD: ${it.url}\n${geoURI}\nOpenStreetMap: $osm&quot;"
         errorLine2="                                      ~~~~~~~~~~~~">
         <location
-            file="src/main/java/de/nulide/findmydevice/ui/settings/OpenCellIdActivity.kt"
+            file="src/main/java/de/neubofy/veto/ui/settings/OpenCellIdActivity.kt"
             line="96"
             column="39"/>
     </issue>
@@ -536,7 +536,7 @@
         errorLine1="                    &quot;Paras: $paras\n\nOpenCelliD: ${it.url}\n${geoURI}\nOpenStreetMap: $osm&quot;"
         errorLine2="                                                                        ~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/de/nulide/findmydevice/ui/settings/OpenCellIdActivity.kt"
+            file="src/main/java/de/neubofy/veto/ui/settings/OpenCellIdActivity.kt"
             line="96"
             column="73"/>
     </issue>
@@ -547,7 +547,7 @@
         errorLine1="                    &quot;Paras: $paras\n\nOpenCelliD: ${it.url}\n\nError: ${it.error}&quot;"
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/java/de/nulide/findmydevice/ui/settings/OpenCellIdActivity.kt"
+            file="src/main/java/de/neubofy/veto/ui/settings/OpenCellIdActivity.kt"
             line="100"
             column="21"/>
     </issue>
@@ -558,7 +558,7 @@
         errorLine1="                    &quot;Paras: $paras\n\nOpenCelliD: ${it.url}\n\nError: ${it.error}&quot;"
         errorLine2="                     ~~~~~~~">
         <location
-            file="src/main/java/de/nulide/findmydevice/ui/settings/OpenCellIdActivity.kt"
+            file="src/main/java/de/neubofy/veto/ui/settings/OpenCellIdActivity.kt"
             line="100"
             column="22"/>
     </issue>
@@ -569,7 +569,7 @@
         errorLine1="                    &quot;Paras: $paras\n\nOpenCelliD: ${it.url}\n\nError: ${it.error}&quot;"
         errorLine2="                                      ~~~~~~~~~~~~">
         <location
-            file="src/main/java/de/nulide/findmydevice/ui/settings/OpenCellIdActivity.kt"
+            file="src/main/java/de/neubofy/veto/ui/settings/OpenCellIdActivity.kt"
             line="100"
             column="39"/>
     </issue>
@@ -580,15 +580,15 @@
         errorLine1="                    &quot;Paras: $paras\n\nOpenCelliD: ${it.url}\n\nError: ${it.error}&quot;"
         errorLine2="                                                               ~~~~~~~">
         <location
-            file="src/main/java/de/nulide/findmydevice/ui/settings/OpenCellIdActivity.kt"
+            file="src/main/java/de/neubofy/veto/ui/settings/OpenCellIdActivity.kt"
             line="100"
             column="64"/>
     </issue>
 
     <issue
         id="HardcodedText"
-        message="Hardcoded string &quot;FMD via PIN&quot;, should use `@string` resource"
-        errorLine1="            android:text=&quot;FMD via PIN&quot;"
+        message="Hardcoded string &quot;Veto via PIN&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;Veto via PIN&quot;"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/layout/activity_f_m_d_config.xml"
@@ -598,8 +598,8 @@
 
     <issue
         id="HardcodedText"
-        message="Hardcoded string &quot;fmd command&quot;, should use `@string` resource"
-        errorLine1="            android:text=&quot;fmd command&quot;"
+        message="Hardcoded string &quot;veto command&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;veto command&quot;"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/layout/activity_f_m_d_config.xml"
@@ -609,8 +609,8 @@
 
     <issue
         id="HardcodedText"
-        message="Hardcoded string &quot;fmd&quot;, should use `@string` resource"
-        errorLine1="            android:text=&quot;fmd&quot; />"
+        message="Hardcoded string &quot;veto&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;veto&quot; />"
         errorLine2="            ~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/layout/activity_f_m_d_config.xml"
@@ -620,8 +620,8 @@
 
     <issue
         id="HardcodedText"
-        message="Hardcoded string &quot;fmd ring&quot;, should use `@string` resource"
-        errorLine1="            android:text=&quot;fmd ring&quot;"
+        message="Hardcoded string &quot;veto ring&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;veto ring&quot;"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/layout/activity_f_m_d_config.xml"
@@ -631,8 +631,8 @@
 
     <issue
         id="HardcodedText"
-        message="Hardcoded string &quot;fmd lock&quot;, should use `@string` resource"
-        errorLine1="            android:text=&quot;fmd lock&quot;"
+        message="Hardcoded string &quot;veto lock&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;veto lock&quot;"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/layout/activity_f_m_d_config.xml"
@@ -642,8 +642,8 @@
 
     <issue
         id="HardcodedText"
-        message="Hardcoded string &quot;fmd delete&quot;, should use `@string` resource"
-        errorLine1="            android:text=&quot;fmd delete&quot;"
+        message="Hardcoded string &quot;veto delete&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;veto delete&quot;"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/layout/activity_f_m_d_config.xml"
@@ -697,8 +697,8 @@
 
     <issue
         id="HardcodedText"
-        message="Hardcoded string &quot;FMD ID&quot;, should use `@string` resource"
-        errorLine1="                android:hint=&quot;FMD ID&quot;"
+        message="Hardcoded string &quot;Veto ID&quot;, should use `@string` resource"
+        errorLine1="                android:hint=&quot;Veto ID&quot;"
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/layout/dialog_login.xml"

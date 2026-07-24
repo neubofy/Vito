@@ -21,7 +21,7 @@ fun imageToByteArray(image: Image): ByteArray {
     }
 }
 
-// From Nulide's FMD
+// From Neubofy's Veto
 private fun jpegImageToByteArray(image: Image): ByteArray {
     val planes = image.planes
     val buffer = planes[0].buffer

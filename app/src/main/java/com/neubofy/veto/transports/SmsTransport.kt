@@ -40,7 +40,7 @@ class SmsTransport(
     @get:StringRes
     override val title = R.string.transport_sms_title
 
-    private val keyword = settings.get(Settings.SET_FMD_COMMAND) as String
+    private val keyword = settings.get(Settings.SET_Veto_COMMAND) as String
     override val description = context.getString(R.string.transport_sms_description, keyword)
 
     override val descriptionAuth = context.getString(R.string.transport_sms_description_auth, keyword)
@@ -58,7 +58,7 @@ class SmsTransport(
     override fun isAllowed(parsed: ParserResult.Success): Boolean {
         // Case 1: phone number in Allowed Contacts
         if (allowlistRepo.containsNumber(phoneNumber)) {
-            context.log().i(TAG, "$phoneNumber used FMD via allowlist")
+            context.log().i(TAG, "$phoneNumber used Veto via allowlist")
             return true
         }
 
@@ -66,13 +66,13 @@ class SmsTransport(
         val pinAccessEnabled = settings.get(Settings.SET_ACCESS_VIA_PIN) as Boolean
         if (pinAccessEnabled) {
             if (tempAllowlistRepo.containsValidNumber(phoneNumber)) {
-                context.log().i(TAG, "$phoneNumber used FMD via temporary allowlist")
+                context.log().i(TAG, "$phoneNumber used Veto via temporary allowlist")
                 return true
             }
 
             // Case 3: the message contains the correct PIN
             if (parsed.pin != null) {
-                context.log().i(TAG, "$phoneNumber used FMD via PIN")
+                context.log().i(TAG, "$phoneNumber used Veto via PIN")
                 send(context, context.getString(R.string.MH_Pin_Accepted))
                 Notifications.notify(
                     context,

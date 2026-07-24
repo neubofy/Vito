@@ -29,11 +29,11 @@ import com.neubofy.veto.R;
 import com.neubofy.veto.data.EncryptedSettingsRepository;
 import com.neubofy.veto.data.Settings;
 import com.neubofy.veto.data.SettingsRepository;
-import com.neubofy.veto.ui.FmdActivity;
+import com.neubofy.veto.ui.VetoActivity;
 import com.neubofy.veto.ui.common.PasswordSetDialog;
 import kotlin.Unit;
 
-public class FMDConfigActivity extends FmdActivity implements CompoundButton.OnCheckedChangeListener, TextWatcher {
+public class VetoConfigActivity extends VetoActivity implements CompoundButton.OnCheckedChangeListener, TextWatcher {
 
     private SettingsRepository settings;
     private EncryptedSettingsRepository encSettings;
@@ -71,7 +71,7 @@ public class FMDConfigActivity extends FmdActivity implements CompoundButton.OnC
         checkBoxDeviceWipe.setChecked((Boolean) settings.get(Settings.SET_WIPE_ENABLED));
         checkBoxDeviceWipe.setOnCheckedChangeListener(this);
 
-        checkBoxAccessViaPin = findViewById(R.id.checkBoxFMDviaPin);
+        checkBoxAccessViaPin = findViewById(R.id.checkBoxVetoviaPin);
         checkBoxAccessViaPin.setChecked((Boolean) settings.get(Settings.SET_ACCESS_VIA_PIN));
         checkBoxAccessViaPin.setOnCheckedChangeListener(this);
 
@@ -92,7 +92,7 @@ public class FMDConfigActivity extends FmdActivity implements CompoundButton.OnC
         buttonSelectRingtone.setOnClickListener(this::onSelectRingtoneClicked);
 
         editTextFmdCommand = findViewById(R.id.editTextFmdCommand);
-        editTextFmdCommand.setText((String) settings.get(Settings.SET_FMD_COMMAND));
+        editTextFmdCommand.setText((String) settings.get(Settings.SET_Veto_COMMAND));
         editTextFmdCommand.addTextChangedListener(this);
 
         buttonDeletePassword = findViewById(R.id.buttonDeletePassword);
@@ -107,7 +107,7 @@ public class FMDConfigActivity extends FmdActivity implements CompoundButton.OnC
                     CharSequence[] options = new CharSequence[]{"15 Minutes", "30 Minutes", "1 Hour", "2 Hours", "6 Hours"};
                     int[] values = new int[]{15, 30, 60, 120, 360};
                     
-                    int currentVal = (int) settings.get(Settings.SET_FMDSERVER_UPDATE_TIME);
+                    int currentVal = (int) settings.get(Settings.SET_VetoSERVER_UPDATE_TIME);
                     int defaultSelection = 0;
                     for (int i = 0; i < values.length; i++) {
                         if (values[i] == currentVal) {
@@ -116,11 +116,11 @@ public class FMDConfigActivity extends FmdActivity implements CompoundButton.OnC
                         }
                     }
 
-                    new com.google.android.material.dialog.MaterialAlertDialogBuilder(FMDConfigActivity.this)
+                    new com.google.android.material.dialog.MaterialAlertDialogBuilder(VetoConfigActivity.this)
                         .setTitle("Select Update Interval")
                         .setCancelable(false)
                         .setSingleChoiceItems(options, defaultSelection, (dialog, which) -> {
-                            settings.set(Settings.SET_FMDSERVER_UPDATE_TIME, values[which]);
+                            settings.set(Settings.SET_VetoSERVER_UPDATE_TIME, values[which]);
                             startAutoLoc();
                             dialog.dismiss();
                         })
@@ -157,12 +157,12 @@ public class FMDConfigActivity extends FmdActivity implements CompoundButton.OnC
 
     private void startAutoLoc() {
         try {
-            int intervalMinutes = (int) settings.get(Settings.SET_FMDSERVER_UPDATE_TIME);
-            String locateCommand = settings.get(Settings.SET_FMD_COMMAND).toString() + " locate gps";
+            int intervalMinutes = (int) settings.get(Settings.SET_VetoSERVER_UPDATE_TIME);
+            String locateCommand = settings.get(Settings.SET_Veto_COMMAND).toString() + " locate gps";
 
             androidx.work.Data inputData = new androidx.work.Data.Builder()
                 .putString(com.neubofy.veto.workers.CommandExecutionWorker.KEY_COMMAND, locateCommand)
-                .putString(com.neubofy.veto.workers.CommandExecutionWorker.KEY_TRANSPORT_TYPE, com.neubofy.veto.workers.CommandExecutionWorker.TRANS_FMD_SERVER)
+                .putString(com.neubofy.veto.workers.CommandExecutionWorker.KEY_TRANSPORT_TYPE, com.neubofy.veto.workers.CommandExecutionWorker.TRANS_Veto_SERVER)
                 .putString(com.neubofy.veto.workers.CommandExecutionWorker.KEY_DESTINATION, "Background_Upload")
                 .build();
 
@@ -192,11 +192,11 @@ public class FMDConfigActivity extends FmdActivity implements CompoundButton.OnC
     private void manualUpdateLocation() {
         Toast.makeText(this, "Locating...", Toast.LENGTH_SHORT).show();
         SettingsRepository settings = SettingsRepository.Companion.getInstance(this);
-        String locateCommand = (String) settings.get(com.neubofy.veto.data.Settings.SET_FMD_COMMAND) + " locate gps";
+        String locateCommand = (String) settings.get(com.neubofy.veto.data.Settings.SET_Veto_COMMAND) + " locate gps";
         
         androidx.work.Data inputData = new androidx.work.Data.Builder()
                 .putString(com.neubofy.veto.workers.CommandExecutionWorker.KEY_COMMAND, locateCommand)
-                .putString(com.neubofy.veto.workers.CommandExecutionWorker.KEY_TRANSPORT_TYPE, com.neubofy.veto.workers.CommandExecutionWorker.TRANS_FMD_SERVER)
+                .putString(com.neubofy.veto.workers.CommandExecutionWorker.KEY_TRANSPORT_TYPE, com.neubofy.veto.workers.CommandExecutionWorker.TRANS_Veto_SERVER)
                 .putString(com.neubofy.veto.workers.CommandExecutionWorker.KEY_DESTINATION, "Manual_Upload")
                 .build();
 
@@ -235,9 +235,9 @@ public class FMDConfigActivity extends FmdActivity implements CompoundButton.OnC
         } else if (edited == editTextFmdCommand.getText()) {
             if (edited.toString().isEmpty()) {
                 Toast.makeText(this, getString(R.string.Toast_Empty_LCLDCommand), Toast.LENGTH_LONG).show();
-                settings.set(Settings.SET_FMD_COMMAND, "fmd");
+                settings.set(Settings.SET_Veto_COMMAND, "veto");
             } else {
-                settings.set(Settings.SET_FMD_COMMAND, edited.toString().toLowerCase());
+                settings.set(Settings.SET_Veto_COMMAND, edited.toString().toLowerCase());
             }
         }
     }

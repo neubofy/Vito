@@ -8,6 +8,23 @@ import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 type FeedbackType = 'info' | 'success' | 'error';
 interface Feedback { type: FeedbackType; text: string; }
 
+const AuthenticatedImage = ({ url, user }: { url: string, user: User }) => {
+  const [src, setSrc] = useState<string>('');
+  useEffect(() => {
+    user.getIdToken().then(token => {
+      setSrc(`/api/image?url=${encodeURIComponent(url)}&token=${token}`);
+    });
+  }, [url, user]);
+
+  if (!src) return <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading secure image...</div>;
+  return (
+    <a href={src} target="_blank" rel="noreferrer" title="Click to open in new tab" style={{ display: 'block' }}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={src} alt="Captured" style={{ width: '100%', height: 'auto', objectFit: 'contain' }} />
+    </a>
+  );
+};
+
 export default function Home() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
@@ -129,13 +146,23 @@ export default function Home() {
 
 
 
-  const sendCommand = async (command: string) => {
+    const sendCommand = async (command: string) => {
     if (!user) return;
     
     if (isCommandPending) {
       setFeedback({ type: 'error', text: 'Please wait! A previous command is still pending.' });
       setTimeout(() => setFeedback(null), 3000);
       return;
+    }
+    
+    let finalCommand = command;
+    if (command.startsWith('delete ')) {
+      const password = command.slice(7).trim();
+      const msgUint8 = new TextEncoder().encode(password);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      finalCommand = `delete ${hashedPassword}`;
     }
     
     setActiveCmd(command.startsWith('delete') ? 'delete' : command);
@@ -151,7 +178,7 @@ export default function Home() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ command })
+        body: JSON.stringify({ command: finalCommand })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
@@ -553,8 +580,7 @@ export default function Home() {
             
             {photos[selectedOutput] && (
               <div style={{ marginBottom: '1.5rem', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={photos[selectedOutput].url} alt="Captured" style={{ width: '100%', height: 'auto', objectFit: 'contain' }} />
+                <AuthenticatedImage url={photos[selectedOutput].url} user={user} />
               </div>
             )}
 

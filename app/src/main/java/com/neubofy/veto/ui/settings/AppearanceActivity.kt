@@ -17,13 +17,13 @@ import com.neubofy.veto.R
 import com.neubofy.veto.data.Settings
 import com.neubofy.veto.data.SettingsRepository
 import com.neubofy.veto.databinding.ActivityAppearanceBinding
-import com.neubofy.veto.ui.FmdActivity
+import com.neubofy.veto.ui.VetoActivity
 import com.neubofy.veto.ui.UiUtil.Companion.setupEdgeToEdgeAppBar
 import com.neubofy.veto.ui.UiUtil.Companion.setupEdgeToEdgeScrollView
 import com.neubofy.veto.utils.APP_LANGUAGES
 import java.util.Locale
 
-class AppearanceActivity : FmdActivity() {
+class AppearanceActivity : VetoActivity() {
 
     private lateinit var viewBinding: ActivityAppearanceBinding
     private lateinit var settings: SettingsRepository

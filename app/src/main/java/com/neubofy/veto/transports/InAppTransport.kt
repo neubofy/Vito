@@ -82,8 +82,8 @@ fun onTestCommandClicked(activity: AppCompatActivity) {
     val editTextCommand = dialogLayout.findViewById<EditText>(R.id.editTextCommand)
 
     val settings = SettingsRepository.getInstance(context)
-    val fmdTriggerWord = settings.get(Settings.SET_FMD_COMMAND) as String
-    editTextCommand.setText("$fmdTriggerWord ")
+    val vetoTriggerWord = settings.get(Settings.SET_Veto_COMMAND) as String
+    editTextCommand.setText("$vetoTriggerWord ")
 
     MaterialAlertDialogBuilder(context)
         .setTitle(context.getString(R.string.transport_inapp_send_command_title))

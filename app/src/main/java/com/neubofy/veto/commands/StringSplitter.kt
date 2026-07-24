@@ -4,7 +4,7 @@ import kotlin.collections.filter
 
 
 /**
- * Splits strings such as `fmd "this is my password" locate`.
+ * Splits strings such as `veto "this is my password" locate`.
  */
 internal fun splitBySpaceWithQuotes(raw: String): List<String> {
     val tokens = mutableListOf<String>()

@@ -32,8 +32,8 @@ class NextJsServerTransport(
         super.send(context, msg, commandName)
 
         val settings = SettingsRepository.getInstance(context)
-        val dashboardUrl = settings.get(Settings.SET_FMDSERVER_URL) as String
-        val userId = settings.get(Settings.SET_FMDSERVER_ID) as String
+        val dashboardUrl = settings.get(Settings.SET_VetoSERVER_URL) as String
+        val userId = settings.get(Settings.SET_VetoSERVER_ID) as String
 
         if (dashboardUrl.isEmpty() || userId.isEmpty()) {
             context.log().i("NextJsServerTransport", "Dashboard not paired. Skipping result upload.")

@@ -100,24 +100,36 @@ class SettingsRepository private constructor(private val context: Context) {
     }
 
     private fun loadNoSet(): Settings {
-        val file = File(context.filesDir, SETTINGS_FILENAME)
-        if (!file.exists()) {
-            file.createNewFile()
+        val encSettings = EncryptedSettingsRepository.getInstance(context)
+        val json = encSettings.sharedPrefs.getString("KEY_ALL_SETTINGS_JSON", null)
+        
+        if (json != null) {
+            return gson.fromJson(json, Settings::class.java) ?: Settings()
         }
 
-        // Better crash with a JsonSyntaxException than silently resetting the settings (they are important!).
-        // If a user is affected by a crash due to an invalid settings JSON, they can manually fix this
-        // by clearing the entire app storage.
-        FileReader(file).use { reader ->
-            return gson.fromJson(reader, Settings::class.java) ?: Settings()
+        // Migration from old plaintext file
+        val file = File(context.filesDir, SETTINGS_FILENAME)
+        if (file.exists()) {
+            try {
+                FileReader(file).use { reader ->
+                    val oldSettings = gson.fromJson(reader, Settings::class.java) ?: Settings()
+                    // Save to encrypted storage
+                    encSettings.sharedPrefs.edit().putString("KEY_ALL_SETTINGS_JSON", gson.toJson(oldSettings)).apply()
+                    // Delete old plaintext file
+                    file.delete()
+                    return oldSettings
+                }
+            } catch (e: Exception) {
+                context.log().e(TAG, "Failed to migrate old settings: ${e.message}")
+            }
         }
+
+        return Settings()
     }
 
     private fun saveSettings() {
-        val file = File(context.filesDir, SETTINGS_FILENAME)
-        FileWriter(file).use { writer ->
-            gson.toJson(settings, Settings::class.java, writer)
-        }
+        val encSettings = EncryptedSettingsRepository.getInstance(context)
+        encSettings.sharedPrefs.edit().putString("KEY_ALL_SETTINGS_JSON", gson.toJson(settings)).apply()
     }
 
     fun <T> set(key: Int, value: T) {
@@ -160,7 +172,7 @@ class SettingsRepository private constructor(private val context: Context) {
 
 
     private fun migrateDeletePassword() {
-        // For users that upgrade, initialize the new delete password with the existing FMD PIN
+        // For users that upgrade, initialize the new delete password with the existing Veto PIN
         context.log().i(TAG, "Migrating to separate delete password")
         val encSettings = EncryptedSettingsRepository.getInstance(context)
         val pin = encSettings.getFmdPin()
@@ -168,32 +180,32 @@ class SettingsRepository private constructor(private val context: Context) {
     }
 
     private fun migrateBackgroundLocationType() {
-        val oldType = get(Settings.SET_FMDSERVER_LOCATION_TYPE) as Int
+        val oldType = get(Settings.SET_VetoSERVER_LOCATION_TYPE) as Int
         if (oldType < BackgroundLocationType.BASE) {
             val newType = BackgroundLocationType.fromOldEncoding(oldType)
-            set(Settings.SET_FMDSERVER_LOCATION_TYPE, newType.encode())
+            set(Settings.SET_VetoSERVER_LOCATION_TYPE, newType.encode())
         }
     }
 
 // ---------- Convenience helpers ----------
 
     fun serverAccountExists(): Boolean {
-        val id = get(Settings.SET_FMDSERVER_ID) as String
+        val id = get(Settings.SET_VetoSERVER_ID) as String
         return id.isNotEmpty()
     }
 
     fun setKeys(keys: FmdKeyPair) {
-        set(Settings.SET_FMD_CRYPT_PRIVKEY, keys.encryptedPrivateKey)
-        set(Settings.SET_FMD_CRYPT_PUBKEY, CypherUtils.encodeBase64(keys.publicKey.encoded))
+        set(Settings.SET_Veto_CRYPT_PRIVKEY, keys.encryptedPrivateKey)
+        set(Settings.SET_Veto_CRYPT_PUBKEY, CypherUtils.encodeBase64(keys.publicKey.encoded))
     }
 
     fun getKeys(): FmdKeyPair? {
-        if (get(Settings.SET_FMD_CRYPT_PUBKEY) == "") {
+        if (get(Settings.SET_Veto_CRYPT_PUBKEY) == "") {
             return null
         }
 
         val pubKeySpec: EncodedKeySpec = X509EncodedKeySpec(
-            CypherUtils.decodeBase64(get(Settings.SET_FMD_CRYPT_PUBKEY) as String)
+            CypherUtils.decodeBase64(get(Settings.SET_Veto_CRYPT_PUBKEY) as String)
         )
         var publicKey: PublicKey? = null
         try {
@@ -206,17 +218,17 @@ class SettingsRepository private constructor(private val context: Context) {
         }
 
         return if (publicKey != null) {
-            FmdKeyPair(publicKey, get(Settings.SET_FMD_CRYPT_PRIVKEY) as String)
+            FmdKeyPair(publicKey, get(Settings.SET_Veto_CRYPT_PRIVKEY) as String)
         } else {
             null
         }
     }
 
     fun removeServerAccount() {
-        set(Settings.SET_FMDSERVER_ID, "")
-        set(Settings.SET_FMD_CRYPT_HPW, "")
-        set(Settings.SET_FMD_CRYPT_PRIVKEY, "")
-        set(Settings.SET_FMD_CRYPT_PUBKEY, "")
+        set(Settings.SET_VetoSERVER_ID, "")
+        set(Settings.SET_Veto_CRYPT_HPW, "")
+        set(Settings.SET_Veto_CRYPT_PRIVKEY, "")
+        set(Settings.SET_Veto_CRYPT_PUBKEY, "")
     }
 
     fun storeLastKnownLocation(loc: FmdLocation) {
@@ -258,7 +270,7 @@ class SettingsRepository private constructor(private val context: Context) {
         } catch (e: NumberFormatException) {
             null
         } catch (e: ClassCastException) {
-            // https://gitlab.com/fmd-foss/fmd-android/-/issues/379
+            // https://gitlab.com/veto-foss/veto-android/-/issues/379
             // java.lang.ClassCastException: java.lang.String cannot be cast to java.lang.Number
             null
         }

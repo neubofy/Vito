@@ -49,7 +49,7 @@
 
     <application
         android:name=".VetoApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup"
         android:icon="@mipmap/ic_launcher"
@@ -61,10 +61,6 @@
         android:theme="@style/Theme.Fmd"
         android:networkSecurityConfig="@xml/network_security_config"
         android:enableOnBackInvokedCallback="true">
-
-        <meta-data
-            android:name="firebase_analytics_collection_enabled"
-            android:value="false" />
 
         <activity
             android:name=".ui.settings.AccountActivity"
@@ -84,10 +80,10 @@
             android:name=".ui.settings.AppearanceActivity"
             android:label="@string/Settings_Appearance" />
         <activity
-            android:name=".ui.settings.FMDServerActivity"
+            android:name=".ui.settings.VetoServerActivity"
             android:label="@string/Settings_LCLDServer" />
         <activity
-            android:name=".ui.settings.FMDConfigActivity"
+            android:name=".ui.settings.VetoConfigActivity"
             android:label="@string/Settings_LCLDConfig" />
         <activity
             android:name="com.mikepenz.aboutlibraries.ui.LibsActivity"

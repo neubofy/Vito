@@ -67,14 +67,14 @@ public class CypherUtils {
 
     // Contextualise all usages of Argon2 to provide some hacky key separation
     private static final String CONTEXT_STRING_ASYM_KEY_WRAP = "context:asymmetricKeyWrap";
-    private static final String CONTEXT_STRING_FMD_PIN = "context:fmdPin";
+    private static final String CONTEXT_STRING_Veto_PIN = "context:vetoPin";
     private static final String CONTEXT_STRING_LOGIN = "context:loginAuthentication";
     private static final String CONTEXT_PREFIX = "context:";
 
     // ------ Section: Password and hashing ------
 
     public static String hashPasswordForFmdPin(String password) {
-        password = CONTEXT_STRING_FMD_PIN + password;
+        password = CONTEXT_STRING_Veto_PIN + password;
         byte[] salt = generateSecureRandom(ARGON2_SALT_LENGTH);
         Argon2Result result = hashPasswordArgon2(password, salt);
         return Argon2EncodingUtils.encode(result.hash, result.params);
@@ -135,7 +135,7 @@ public class CypherUtils {
     }
 
     public static boolean checkPasswordForFmdPin(String expectedHash, String password) {
-        return checkPassword(expectedHash, CONTEXT_STRING_FMD_PIN + password);
+        return checkPassword(expectedHash, CONTEXT_STRING_Veto_PIN + password);
     }
 
     public static boolean checkPasswordForLogin(String expectedHash, String password) {
@@ -285,7 +285,7 @@ public class CypherUtils {
             } else {
                 // Fallback for ROMs that return an OpenSSLRSAPrivateKey (which is not an instance of RSAPrivateCrtKey).
                 // Guessing the exponent is not great, but for RSA it should work in most cases.
-                // https://gitlab.com/fmd-foss/fmd-android/-/issues/389
+                // https://gitlab.com/veto-foss/veto-android/-/issues/389
                 // https://github.com/google/conscrypt/blob/master/common/src/main/java/org/conscrypt/OpenSSLRSAPrivateKey.java
                 RSAPrivateKey rsaPriv = (RSAPrivateKey) priv;
                 publicKeySpec = new RSAPublicKeySpec(rsaPriv.getModulus(), BigInteger.valueOf(65537));

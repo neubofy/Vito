@@ -2,9 +2,9 @@ package com.neubofy.veto.ui.settings
 
 import android.os.Bundle
 import com.neubofy.veto.R
-import com.neubofy.veto.ui.FmdActivity
+import com.neubofy.veto.ui.VetoActivity
 
-class SettingsActivity : FmdActivity() {
+class SettingsActivity : VetoActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)

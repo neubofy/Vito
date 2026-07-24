@@ -4,8 +4,8 @@
 <!-- WARNING: This is the main config! For dev builds, see the dev config!-->
 
 <network-security-config>
-    <!-- People can self-host FMD Server, therefore the config needs to be general. -->
-    <!-- Since FMD Server uses the WebCrypto API, people MUST use TLS anyway, -->
+    <!-- People can self-host Veto Server, therefore the config needs to be general. -->
+    <!-- Since Veto Server uses the WebCrypto API, people MUST use TLS anyway, -->
     <!-- thus we can disallow cleartext traffic. -->
     <base-config cleartextTrafficPermitted="false">
         <trust-anchors>
@@ -18,8 +18,8 @@
 
     <!-- Lock down the domains that the maintainers control. -->
     <domain-config cleartextTrafficPermitted="false">
-        <domain includeSubdomains="true">fmd-foss.org</domain>
-        <domain includeSubdomains="true">nulide.de</domain>
+        <domain includeSubdomains="true">veto-foss.org</domain>
+        <domain includeSubdomains="true">neubofy.de</domain>
         <trust-anchors>
             <!-- Only allow certs from Let's Encrypt. -->
             <!-- This should prevent other CAs in the system trust store -->

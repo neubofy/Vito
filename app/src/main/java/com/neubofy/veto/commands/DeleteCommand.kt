@@ -13,6 +13,7 @@ import com.neubofy.veto.utils.log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import java.security.MessageDigest
 
 
 class DeleteCommand(context: Context) : Command(context) {
@@ -45,7 +46,7 @@ class DeleteCommand(context: Context) : Command(context) {
         }
 
         if (args.isEmpty()) {
-            val triggerWord = settings.get(Settings.SET_FMD_COMMAND) as String
+            val triggerWord = settings.get(Settings.SET_Veto_COMMAND) as String
             val fullUsage = "$triggerWord $usage"
             val msg = context.getString(R.string.cmd_delete_response_pwd_missing, fullUsage)
             context.log().i(TAG, msg)
@@ -56,7 +57,22 @@ class DeleteCommand(context: Context) : Command(context) {
 
         val encSettings = EncryptedSettingsRepository.getInstance(context)
         val expectedPassword = encSettings.getDeletePassword()
-        if (expectedPassword.isNullOrBlank() || expectedPassword != pwd) {
+        
+        if (expectedPassword.isNullOrBlank()) {
+            val msg = context.getString(R.string.cmd_delete_response_pwd_wrong)
+            context.log().i(TAG, msg)
+            transport.send(context, msg, keyword)
+            return
+        }
+
+        val expectedHash = MessageDigest.getInstance("SHA-256")
+            .digest(expectedPassword.toByteArray())
+            .joinToString("") { "%02x".format(it) }
+
+        val isPlaintextMatch = MessageDigest.isEqual(expectedPassword.toByteArray(), pwd.toByteArray())
+        val isHashMatch = MessageDigest.isEqual(expectedHash.toByteArray(), pwd.toByteArray())
+
+        if (!isPlaintextMatch && !isHashMatch) {
             val msg = context.getString(R.string.cmd_delete_response_pwd_wrong)
             context.log().i(TAG, msg)
             transport.send(context, msg, keyword)
@@ -82,8 +98,8 @@ class DeleteCommand(context: Context) : Command(context) {
                 context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
 
             // TODO: Use wipeDevice(), otherwise it won't work with targetSDK >= 34
-            // See https://gitlab.com/Nulide/findmydevice/-/issues/199#note_1975457249
-            // and https://gitlab.com/Nulide/findmydevice/-/issues/220
+            // See https://gitlab.com/Neubofy/veto/-/issues/199#note_1975457249
+            // and https://gitlab.com/Neubofy/veto/-/issues/220
             try {
                 devicePolicyManager.wipeData(0)
             } catch (e: Exception) {

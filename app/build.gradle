@@ -32,7 +32,7 @@ android {
         // We supported targetSdk 34 until BluetoothCommand was added, which requires max 32 to work:
         // https://developer.android.com/reference/android/bluetooth/BluetoothAdapter#enable()
         // We should implement becoming a Device Owner, and then raise the targetSdk again.
-        // https://gitlab.com/Nulide/findmydevice/-/issues/220
+        // https://gitlab.com/Neubofy/veto/-/issues/220
         // noinspection ExpiredTargetSdkVersion
         targetSdkVersion 32
         versionCode 1
@@ -158,7 +158,6 @@ dependencies {
 
     // Firebase
     implementation platform('com.google.firebase:firebase-bom:33.1.2')
-    implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-auth'
@@ -178,9 +177,9 @@ dependencies {
 sonar {
     androidVariant "devDebug"
     properties {
-        property "sonar.projectName", "FMD Android" // defaults to "app" (from Gradle)
-        property "sonar.projectKey", "fmd-foss_fmd-android"
-        property "sonar.organization", "fmd-foss"
+        property "sonar.projectName", "Veto Android"
+        property "sonar.projectKey", "neubofy_veto-android"
+        property "sonar.organization", "neubofy"
 
 
         property "sonar.scanner.skipJreProvisioning", true

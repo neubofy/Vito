@@ -50,7 +50,7 @@ public class ServerLocationUploadService extends FmdJobService {
         FmdLogKt.log(context).d(TAG, "Scheduling upload service");
         SettingsRepository settings = SettingsRepository.Companion.getInstance(context);
 
-        int locTypeInt = (int) settings.get(Settings.SET_FMDSERVER_LOCATION_TYPE);
+        int locTypeInt = (int) settings.get(Settings.SET_VetoSERVER_LOCATION_TYPE);
         BackgroundLocationType locType = new BackgroundLocationType(locTypeInt);
 
         if (locType.isEmpty()) {
@@ -105,17 +105,17 @@ public class ServerLocationUploadService extends FmdJobService {
 
         long now = System.currentTimeMillis();
         long lastUploadTimeMillis = ((Number) settings.get(Settings.SET_LAST_KNOWN_LOCATION_TIME)).longValue();
-        long uploadIntervalMillis = ((int) settings.get(Settings.SET_FMDSERVER_UPDATE_TIME)) * 60 * 1000L;
+        long uploadIntervalMillis = ((int) settings.get(Settings.SET_VetoSERVER_UPDATE_TIME)) * 60 * 1000L;
         if (lastUploadTimeMillis + uploadIntervalMillis / 2 > now) {
             FmdLogKt.log(this).i(TAG, "Skipping upload, last upload was recent");
             jobFinished();
             return false;
         }
 
-        int locTypeInt = (int) settings.get(Settings.SET_FMDSERVER_LOCATION_TYPE);
+        int locTypeInt = (int) settings.get(Settings.SET_VetoSERVER_LOCATION_TYPE);
         BackgroundLocationType locType = new BackgroundLocationType(locTypeInt);
 
-        String locateCommand = settings.get(Settings.SET_FMD_COMMAND) + " locate";
+        String locateCommand = settings.get(Settings.SET_Veto_COMMAND) + " locate";
         if (locType.getGps()) {
             locateCommand += " gps";
         }
@@ -123,7 +123,7 @@ public class ServerLocationUploadService extends FmdJobService {
         // TODO: Should we use a PeriodicWorkRequest?? Instead of creating Work from a Job?
         Data inputData = new Data.Builder()
                 .putString(CommandExecutionWorker.KEY_COMMAND, locateCommand)
-                .putString(CommandExecutionWorker.KEY_TRANSPORT_TYPE, CommandExecutionWorker.TRANS_FMD_SERVER)
+                .putString(CommandExecutionWorker.KEY_TRANSPORT_TYPE, CommandExecutionWorker.TRANS_Veto_SERVER)
                 .putString(CommandExecutionWorker.KEY_DESTINATION, SOURCE_REGULAR_BACKGROUND_UPLOAD)
                 .build();
         WorkRequest workRequest = new OneTimeWorkRequest.Builder(CommandExecutionWorker.class)
@@ -150,7 +150,7 @@ public class ServerLocationUploadService extends FmdJobService {
     }
 
     private void scheduleNextOccurrence() {
-        long intervalMinutes = ((Integer) settings.get(Settings.SET_FMDSERVER_UPDATE_TIME)).longValue();
+        long intervalMinutes = ((Integer) settings.get(Settings.SET_VetoSERVER_UPDATE_TIME)).longValue();
         if (intervalMinutes <= 0) {
             FmdLogKt.log(this).i(TAG, "Raising interval from " + intervalMinutes + " mins to 1 min");
             intervalMinutes = 1;

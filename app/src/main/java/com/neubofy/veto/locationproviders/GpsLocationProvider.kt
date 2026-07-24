@@ -34,7 +34,7 @@ import kotlin.math.roundToInt
 // It's better to fail fast, inform the user, and let them decide what to do
 // (Resend "locate gps"? Send "locate cell" instead?).
 // A shorter timeout also reduces the battery impact for commands that won't succeed anyway.
-// And it reduces the risk of Android punishing FMD for excessive foreground service usage.
+// And it reduces the risk of Android punishing Veto for excessive foreground service usage.
 const val MAX_GPS_DURATION_MILLIS = 2 * 60 * 1000L
 
 private const val UPDATE_INTERVAL_MILLIS = 2 * 1000L
@@ -162,15 +162,15 @@ class GpsLocationProvider<T>(
     }
 
     override fun onLocationChanged(location: Location) {
-        val fmdLocation = FmdLocation.fromAndroidLocation(context, location)
+        val vetoLocation = FmdLocation.fromAndroidLocation(context, location)
         context.log().d(
             TAG,
-            "Location found by ${fmdLocation.provider} with accuracy ${fmdLocation.accuracy} m."
+            "Location found by ${vetoLocation.provider} with accuracy ${vetoLocation.accuracy} m."
         )
 
         locationCount += 1
-        val isAccDiffLarge = isAccuracyDiffLarge(fmdLocation)
-        updateCurrentBestLocation(fmdLocation)
+        val isAccDiffLarge = isAccuracyDiffLarge(vetoLocation)
+        updateCurrentBestLocation(vetoLocation)
 
         if (requestedAccuracy != null) {
             // If good enough: send location and finish
@@ -192,22 +192,22 @@ class GpsLocationProvider<T>(
             }
             // Return this location and finish
             val settings = SettingsRepository.getInstance(context)
-            settings.storeLastKnownLocation(fmdLocation)
-            transport.sendNewLocation(context, fmdLocation, commandName)
+            settings.storeLastKnownLocation(vetoLocation)
+            transport.sendNewLocation(context, vetoLocation, commandName)
             cleanup()
         }
     }
 
-    private fun isAccuracyDiffLarge(fmdLocation: FmdLocation): Boolean {
-        if (fmdLocation.accuracy == null) {
+    private fun isAccuracyDiffLarge(vetoLocation: FmdLocation): Boolean {
+        if (vetoLocation.accuracy == null) {
             return false
         }
-        val diff = (previousAccuracy - fmdLocation.accuracy).absoluteValue
+        val diff = (previousAccuracy - vetoLocation.accuracy).absoluteValue
         if (diff == 0F) {
             // This is very likely the same location => Keep running.
             return false
         }
-        previousAccuracy = fmdLocation.accuracy
+        previousAccuracy = vetoLocation.accuracy
         return diff > 5 // meter
     }
 

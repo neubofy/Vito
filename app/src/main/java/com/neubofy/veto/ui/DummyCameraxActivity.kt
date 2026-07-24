@@ -156,7 +156,7 @@ class DummyCameraxActivity : AppCompatActivity() {
 
     private fun uploadPhotoAndFinish(imgBytes: ByteArray) {
         val settings = com.neubofy.veto.data.SettingsRepository.getInstance(this)
-        val dashboardUrl = settings.get(com.neubofy.veto.data.Settings.SET_FMDSERVER_URL) as String
+        val dashboardUrl = settings.get(com.neubofy.veto.data.Settings.SET_VetoSERVER_URL) as String
         if (dashboardUrl.isEmpty()) {
             this.log().w(TAG, "Dashboard not paired. Skipping photo upload.")
             finish()

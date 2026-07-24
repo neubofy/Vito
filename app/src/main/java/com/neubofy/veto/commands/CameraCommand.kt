@@ -35,8 +35,8 @@ class CameraCommand(context: Context) : Command(context) {
         transport: Transport<T>,
     ) {
         if (!settings.serverAccountExists()) {
-            context.log().w(TAG, "Cannot take picture: no FMD Server account")
-            transport.send(context, context.getString(R.string.cmd_camera_response_no_fmd_server), keyword)
+            context.log().w(TAG, "Cannot take picture: no Veto Server account")
+            transport.send(context, context.getString(R.string.cmd_camera_response_no_veto_server), keyword)
             return
         }
 
@@ -61,7 +61,7 @@ class CameraCommand(context: Context) : Command(context) {
         context.log().d(TAG, "Starting camera activity")
         context.startActivity(dummyCameraActivity)
 
-        val serverUrl = settings.get(Settings.SET_FMDSERVER_URL) as String
+        val serverUrl = settings.get(Settings.SET_VetoSERVER_URL) as String
         transport.send(context, context.getString(R.string.cmd_camera_response_success, serverUrl), keyword)
     }
 }

@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 
 const val EXTRA_RING_DURATION: String = "EXTRA_RING_DURATION"
 
-class RingerActivity : FmdActivity() {
+class RingerActivity : VetoActivity() {
 
     companion object {
         fun newInstance(context: Context, duration: Int) {

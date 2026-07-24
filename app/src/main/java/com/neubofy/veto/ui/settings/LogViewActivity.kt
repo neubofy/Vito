@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.neubofy.veto.R
 import com.neubofy.veto.data.LogRepository
-import com.neubofy.veto.ui.FmdActivity
+import com.neubofy.veto.ui.VetoActivity
 import com.neubofy.veto.ui.UiUtil.Companion.setupEdgeToEdgeAppBar
 import com.neubofy.veto.ui.UiUtil.Companion.setupEdgeToEdgeScrollView
 import com.neubofy.veto.utils.log
@@ -20,7 +20,7 @@ import java.io.OutputStreamWriter
 
 private const val EXPORT_REQ_CODE = 30
 
-class LogViewActivity : FmdActivity() {
+class LogViewActivity : VetoActivity() {
 
     companion object {
         private val TAG = LogViewActivity::class.simpleName
@@ -94,7 +94,7 @@ class LogViewActivity : FmdActivity() {
 
             // This should be "safe" to log (no personal information), because the format is:
             // content://org.nextcloud.documents/document/d88e9571089101a5c6407b061422b6a4%2F1968
-            // content://com.android.externalstorage.documents/document/primary%3Afmd-logs-2025-08-31.json
+            // content://com.android.externalstorage.documents/document/primary%3Aveto-logs-2025-08-31.json
             this.log().d(TAG, "exporting logs to $uri")
 
             lifecycleScope.launch {

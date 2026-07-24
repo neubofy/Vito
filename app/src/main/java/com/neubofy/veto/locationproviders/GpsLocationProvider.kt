@@ -51,6 +51,7 @@ class GpsLocationProvider<T>(
     private val transport: Transport<T>,
     private var requestedProvider: String,
     private val requestedAccuracy: Int?,
+    private val commandName: String? = null
 ) : LocationProvider(), LocationListener {
 
     companion object {
@@ -101,7 +102,7 @@ class GpsLocationProvider<T>(
         if (!locationManager.isProviderEnabled(requestedProvider)) {
             val msg = context.getString(R.string.cmd_locate_provider_disabled, requestedProvider)
             context.log().d(TAG, msg)
-            transport.send(context, msg)
+            transport.send(context, msg, commandName)
             def.complete(Unit)
             return def
         }
@@ -116,7 +117,7 @@ class GpsLocationProvider<T>(
             Looper.getMainLooper(),
         )
 
-        transport.send(context, context.getString(R.string.cmd_locate_response_gps_will_follow))
+        transport.send(context, context.getString(R.string.cmd_locate_response_gps_will_follow), commandName)
         return def
     }
 
@@ -131,15 +132,16 @@ class GpsLocationProvider<T>(
         if (lastLocationFromAndroid == null) {
             if (asFallBackForCurrentLocation) {
                 // If current location was requested originally, don't fall back to cached location.
-                transport.send(context, context.getString(R.string.cmd_locate_response_gps_fail))
+                transport.send(context, context.getString(R.string.cmd_locate_response_gps_fail), commandName)
             } else if (cachedLoc != null) {
                 // If last location was requested, fall back to cached location.
-                transport.sendNewLocation(context, cachedLoc)
+                transport.sendNewLocation(context, cachedLoc, commandName)
             } else {
                 // No location and nothing to fall back to.
                 transport.send(
                     context,
-                    context.getString(R.string.cmd_locate_last_known_location_not_available)
+                    context.getString(R.string.cmd_locate_last_known_location_not_available),
+                    commandName
                 )
             }
         } else {
@@ -152,7 +154,7 @@ class GpsLocationProvider<T>(
                 if (lastLocationFromAndroid.time > cachedLoc.timeMillis) {
                     onLocationChanged(lastLocationFromAndroid)
                 } else {
-                    transport.sendNewLocation(context, cachedLoc)
+                    transport.sendNewLocation(context, cachedLoc, commandName)
                 }
             }
         }
@@ -175,7 +177,7 @@ class GpsLocationProvider<T>(
             val currBest = currBestLocation
             val currAccuracy = currBest?.accuracy?.roundToInt()
             if (currAccuracy != null && currAccuracy <= requestedAccuracy) {
-                transport.sendNewLocation(context, currBest)
+                transport.sendNewLocation(context, currBest, commandName)
                 cleanup()
                 return
             }
@@ -191,7 +193,7 @@ class GpsLocationProvider<T>(
             // Return this location and finish
             val settings = SettingsRepository.getInstance(context)
             settings.storeLastKnownLocation(fmdLocation)
-            transport.sendNewLocation(context, fmdLocation)
+            transport.sendNewLocation(context, fmdLocation, commandName)
             cleanup()
         }
     }
@@ -226,11 +228,11 @@ class GpsLocationProvider<T>(
     private fun sendBestLocationAndFinish() {
         val currBest = currBestLocation
         if (currBest != null) {
-            transport.sendNewLocation(context, currBest)
+            transport.sendNewLocation(context, currBest, commandName)
         } else {
             val msg = context.getString(R.string.cmd_locate_response_gps_fail)
             context.log().d(TAG, msg)
-            transport.send(context, msg)
+            transport.send(context, msg, commandName)
         }
         cleanup()
     }

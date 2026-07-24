@@ -67,8 +67,8 @@ abstract class Transport<DestinationType>(
         }
     }
 
-    open fun sendNewLocation(context: Context, location: FmdLocation) {
-        send(context, location.toString())
+    open fun sendNewLocation(context: Context, location: FmdLocation, commandName: String? = null) {
+        send(context, location.toString(), commandName)
     }
 
     /**

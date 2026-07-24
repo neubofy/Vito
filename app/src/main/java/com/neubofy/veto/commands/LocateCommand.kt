@@ -54,7 +54,7 @@ class LocateCommand(context: Context) : Command(context) {
         // fmd locate last
         if (args.contains("last")) {
             withContext(Dispatchers.IO) {
-                val provider = GpsLocationProvider(context, transport, GPS_PROVIDER, null)
+                val provider = GpsLocationProvider(context, transport, GPS_PROVIDER, null, keyword)
                 provider.getLastKnownLocation()
             }
             return
@@ -75,7 +75,7 @@ class LocateCommand(context: Context) : Command(context) {
 
         // Force GPS only
         providers.clear()
-        providers.add(GpsLocationProvider(context, transport, GPS_PROVIDER, null))
+        providers.add(GpsLocationProvider(context, transport, GPS_PROVIDER, null, keyword))
 
         // run the providers and get the locations
         withContext(Dispatchers.IO) {

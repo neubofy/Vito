@@ -34,6 +34,7 @@ export default function Home() {
   });
   
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedOutput, setSelectedOutput] = useState<string | null>(null);
 
   const fetchData = useCallback(async (currentUser: User, currentActiveCmd: string | null) => {
     try {
@@ -202,14 +203,15 @@ export default function Home() {
 
   const renderResult = (baseCmd: string) => {
     const res = results[baseCmd];
-    if (!res) return null;
+    if (!res) return <div style={{ marginTop: '1rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No data yet</div>;
     return (
-      <div style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#a5d6ff', backgroundColor: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
-        <div style={{ color: 'var(--text-secondary)', marginBottom: '4px', fontSize: '0.75rem' }}>Last Response: {new Date(res.timestamp).toLocaleString()}</div>
-        {renderTelemetryContent(res.result)}
-      </div>
+      <button onClick={() => setSelectedOutput(baseCmd)} className="btn" style={{ marginTop: '1rem', width: '100%', fontSize: '0.9rem', backgroundColor: 'rgba(255,255,255,0.1)' }}>
+        View Output ({new Date(res.timestamp).toLocaleTimeString()})
+      </button>
     );
   };
+
+  const latestGlobalResult = Object.values(results).sort((a: any, b: any) => b.timestamp - a.timestamp)[0] as any;
 
   if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading Veto...</div>;
   if (!user) return null;
@@ -273,6 +275,31 @@ export default function Home() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Latest Command Result Box */}
+      {latestGlobalResult && (
+        <div className="glass-panel" style={{ marginBottom: '3rem', padding: '1.5rem', border: '1px solid rgba(47, 129, 247, 0.3)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: '1.3rem', color: '#2f81f7', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#2f81f7', animation: 'pulseGlow 2s infinite' }}></div>
+              Latest Device Telemetry
+            </h2>
+            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Received: {new Date(latestGlobalResult.timestamp).toLocaleString()}</span>
+          </div>
+          <div style={{ 
+            backgroundColor: 'rgba(0,0,0,0.4)', 
+            padding: '1rem', 
+            borderRadius: '8px', 
+            fontFamily: 'monospace', 
+            whiteSpace: 'pre-wrap',
+            color: '#e6edf3',
+            fontSize: '0.95rem',
+            border: '1px solid rgba(255,255,255,0.05)'
+          }}>
+            {renderTelemetryContent(latestGlobalResult.result)}
           </div>
         </div>
       )}
@@ -400,6 +427,36 @@ export default function Home() {
           </button>
         </div>
       </div>
+      {/* Reusable Output Modal */}
+      {selectedOutput && results[selectedOutput] && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.8)', zIndex: 1000,
+          display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '1rem'
+        }} onClick={() => setSelectedOutput(null)}>
+          <div className="glass-panel" style={{
+            width: '100%', maxWidth: '600px', maxHeight: '80vh', overflowY: 'auto',
+            padding: '2rem', position: 'relative', border: '1px solid rgba(255,255,255,0.2)'
+          }} onClick={e => e.stopPropagation()}>
+            <button onClick={() => setSelectedOutput(null)} style={{
+              position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none',
+              color: '#fff', fontSize: '1.5rem', cursor: 'pointer'
+            }}>×</button>
+            <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem', textTransform: 'capitalize' }}>
+              {selectedOutput} Output
+            </h2>
+            <div style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+              Received: {new Date(results[selectedOutput].timestamp).toLocaleString()}
+            </div>
+            <div style={{ 
+              backgroundColor: 'rgba(0,0,0,0.4)', padding: '1rem', borderRadius: '8px', 
+              fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: '#e6edf3', fontSize: '0.95rem'
+            }}>
+              {renderTelemetryContent(results[selectedOutput].result)}
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

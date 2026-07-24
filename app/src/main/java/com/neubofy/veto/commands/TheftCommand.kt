@@ -37,5 +37,7 @@ class TheftCommand(context: Context) : Command(context) {
         // Trigger Ring Command for looping Ring and locking
         val ringCommand = RingCommand(context)
         ringCommand.execute(listOf("long"), transport)
+        
+        transport.send(context, context.getString(R.string.command_theft_description), keyword)
     }
 }

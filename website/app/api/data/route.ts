@@ -29,12 +29,12 @@ export async function GET(req: Request) {
     
     // Convert to maps keyed by command name
     const photos: Record<string, any> = {};
-    photosSnap.docs.forEach(doc => {
+    photosSnap.docs.forEach((doc: any) => {
       photos[doc.id] = doc.data();
     });
 
     const results: Record<string, any> = {};
-    resultsSnap.docs.forEach(doc => {
+    resultsSnap.docs.forEach((doc: any) => {
       results[doc.id] = doc.data();
     });
     

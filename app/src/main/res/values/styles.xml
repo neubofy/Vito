@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="Theme.Fmd" parent="AppTheme" />
+    <style name="Theme.Veto" parent="AppTheme" />
 
     <style name="Theme.AppCompat.Translucent" parent="Theme.AppCompat.NoActionBar">
         <item name="android:background">#00000000</item>

@@ -7,16 +7,16 @@ import com.neubofy.veto.data.LogRepository
 
 
 // Helper extension function for shorter code
-fun Context.log() = FmdLog.getInstance(this)
+fun Context.log() = VetoLog.getInstance(this)
 
 
 /**
  * Custom logger that logs both the ADB Logcat and to a file.
  * This allows showing the logs in the UI and exporting them.
  */
-class FmdLog private constructor(context: Context) {
+class VetoLog private constructor(context: Context) {
 
-    companion object : SingletonHolder<FmdLog, Context>(::FmdLog) {}
+    companion object : SingletonHolder<VetoLog, Context>(::VetoLog) {}
 
     private val repo = LogRepository.getInstance(context)
 

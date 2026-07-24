@@ -44,7 +44,7 @@ public class VetoConfigActivity extends VetoActivity implements CompoundButton.O
     private Button buttonSelectRingtone;
     private Button buttonDeletePassword;
     private EditText editTextLockScreenMessage;
-    private EditText editTextFmdCommand;
+    private EditText editTextVetoCommand;
     
     private com.google.android.material.materialswitch.MaterialSwitch switchAutoUpload;
     private Button buttonManualLocate;
@@ -59,7 +59,7 @@ public class VetoConfigActivity extends VetoActivity implements CompoundButton.O
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_f_m_d_config);
+        setContentView(R.layout.activity_veto_config);
 
         setupEdgeToEdgeAppBar(findViewById(R.id.appBar));
         setupEdgeToEdgeScrollView(findViewById(R.id.scrollView));
@@ -91,9 +91,9 @@ public class VetoConfigActivity extends VetoActivity implements CompoundButton.O
         buttonSelectRingtone = findViewById(R.id.buttonSelectRingTone);
         buttonSelectRingtone.setOnClickListener(this::onSelectRingtoneClicked);
 
-        editTextFmdCommand = findViewById(R.id.editTextFmdCommand);
-        editTextFmdCommand.setText((String) settings.get(Settings.SET_Veto_COMMAND));
-        editTextFmdCommand.addTextChangedListener(this);
+        editTextVetoCommand = findViewById(R.id.editTextVetoCommand);
+        editTextVetoCommand.setText((String) settings.get(Settings.SET_Veto_COMMAND));
+        editTextVetoCommand.addTextChangedListener(this);
 
         buttonDeletePassword = findViewById(R.id.buttonDeletePassword);
         buttonDeletePassword.setOnClickListener(this::onEnterDeletePasswordClicked);
@@ -232,7 +232,7 @@ public class VetoConfigActivity extends VetoActivity implements CompoundButton.O
     public void afterTextChanged(Editable edited) {
         if (edited == editTextLockScreenMessage.getText()) {
             settings.set(Settings.SET_LOCKSCREEN_MESSAGE, edited.toString());
-        } else if (edited == editTextFmdCommand.getText()) {
+        } else if (edited == editTextVetoCommand.getText()) {
             if (edited.toString().isEmpty()) {
                 Toast.makeText(this, getString(R.string.Toast_Empty_LCLDCommand), Toast.LENGTH_LONG).show();
                 settings.set(Settings.SET_Veto_COMMAND, "veto");
@@ -256,7 +256,7 @@ public class VetoConfigActivity extends VetoActivity implements CompoundButton.O
                         String pin = editTextPin.getText().toString();
 
                         if (pin.isBlank()) {
-                            encSettings.setFmdPin(null);
+                            encSettings.setVetoPin(null);
                         }
                         // The PIN must not match a command keyword.
                         // Otherwise, we cannot (easily) distinguish between the PIN and the command.
@@ -268,7 +268,7 @@ public class VetoConfigActivity extends VetoActivity implements CompoundButton.O
                         } else if (pin.length() < MIN_PASSWORD_LENGTH) {
                             Toast.makeText(context, R.string.pin_min_length, Toast.LENGTH_LONG).show();
                         } else {
-                            encSettings.setFmdPin(pin);
+                            encSettings.setVetoPin(pin);
                         }
 
                         updatePinButton();
@@ -307,7 +307,7 @@ public class VetoConfigActivity extends VetoActivity implements CompoundButton.O
     }
 
     private void updatePinButton() {
-        String pin = encSettings.getFmdPin();
+        String pin = encSettings.getVetoPin();
         if (pin == null || pin.isBlank()) {
             buttonEnterPin.setBackgroundColor(colorDisabled);
             buttonEnterPin.setTextColor(textColorDisabled);

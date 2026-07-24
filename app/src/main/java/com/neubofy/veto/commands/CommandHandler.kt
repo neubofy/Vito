@@ -60,7 +60,7 @@ class CommandHandler<T>
         val vetoTriggerWord = settings.get(Settings.SET_Veto_COMMAND) as String
 
         val encSettings = EncryptedSettingsRepository.getInstance(context)
-        val expectedPin = encSettings.getFmdPin()
+        val expectedPin = encSettings.getVetoPin()
 
         val cmds = availableCommands(context)
         val parser =

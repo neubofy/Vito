@@ -14,7 +14,7 @@ import com.neubofy.veto.VetoApplication
 import com.neubofy.veto.R
 import com.neubofy.veto.commands.CommandHandler
 import com.neubofy.veto.services.ServerLocationUploadService.SOURCE_REGULAR_BACKGROUND_UPLOAD
-// import com.neubofy.veto.transports.FmdServerTransport
+// import com.neubofy.veto.transports.VetoServerTransport
 import com.neubofy.veto.transports.InAppTransport
 import com.neubofy.veto.transports.NotificationReplyTransport
 import com.neubofy.veto.transports.SmsTransport
@@ -108,7 +108,7 @@ class CommandExecutionWorker(
             }
 
             TRANS_Veto_SERVER -> {
-                // val transport = FmdServerTransport(applicationContext, destination)
+                // val transport = VetoServerTransport(applicationContext, destination)
                 // CommandHandler<Unit>(transport, destination != SOURCE_REGULAR_BACKGROUND_UPLOAD)
                 return null
             }
@@ -145,7 +145,7 @@ class CommandExecutionWorker(
             .setContentTitle(title)
             .setContentText(text)
             .setOngoing(true)
-            .setSmallIcon(R.drawable.fmd_logo)
+            .setSmallIcon(R.drawable.veto_logo)
             .addAction(R.drawable.ic_cancel, cancel, intent)
             .build()
 

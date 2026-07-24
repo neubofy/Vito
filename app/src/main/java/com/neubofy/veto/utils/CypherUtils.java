@@ -73,7 +73,7 @@ public class CypherUtils {
 
     // ------ Section: Password and hashing ------
 
-    public static String hashPasswordForFmdPin(String password) {
+    public static String hashPasswordForVetoPin(String password) {
         password = CONTEXT_STRING_Veto_PIN + password;
         byte[] salt = generateSecureRandom(ARGON2_SALT_LENGTH);
         Argon2Result result = hashPasswordArgon2(password, salt);
@@ -134,7 +134,7 @@ public class CypherUtils {
         return new Argon2Result(out, params);
     }
 
-    public static boolean checkPasswordForFmdPin(String expectedHash, String password) {
+    public static boolean checkPasswordForVetoPin(String expectedHash, String password) {
         return checkPassword(expectedHash, CONTEXT_STRING_Veto_PIN + password);
     }
 

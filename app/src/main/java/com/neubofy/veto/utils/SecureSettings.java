@@ -15,7 +15,7 @@ public class SecureSettings {
             value = android.provider.Settings.Secure.LOCATION_MODE_OFF;
         }
         Settings.Secure.putString(context.getContentResolver(), android.provider.Settings.Secure.LOCATION_MODE, Integer.valueOf(value).toString());
-        FmdLogKt.log(context).d(TAG, "Turned GPS on/off using SecureSettings: " + enable);
+        VetoLogKt.log(context).d(TAG, "Turned GPS on/off using SecureSettings: " + enable);
     }
 
 }

@@ -5,7 +5,7 @@ import androidx.annotation.CallSuper
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.neubofy.veto.commands.ParserResult
-import com.neubofy.veto.data.FmdLocation
+import com.neubofy.veto.data.VetoLocation
 import com.neubofy.veto.permissions.Permission
 import com.neubofy.veto.utils.log
 
@@ -67,7 +67,7 @@ abstract class Transport<DestinationType>(
         }
     }
 
-    open fun sendNewLocation(context: Context, location: FmdLocation, commandName: String? = null) {
+    open fun sendNewLocation(context: Context, location: VetoLocation, commandName: String? = null) {
         send(context, location.toString(), commandName)
     }
 

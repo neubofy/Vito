@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import com.neubofy.veto.data.BackgroundLocationType;
 import com.neubofy.veto.data.Settings;
 import com.neubofy.veto.data.SettingsRepository;
-import com.neubofy.veto.utils.FmdLogKt;
+import com.neubofy.veto.utils.VetoLogKt;
 import com.neubofy.veto.utils.NetworkUtils;
 import com.neubofy.veto.workers.CommandExecutionWorker;
 
@@ -24,7 +24,7 @@ import com.neubofy.veto.workers.CommandExecutionWorker;
 /**
  * Uploads the location at regular intervals in the background
  */
-public class ServerLocationUploadService extends FmdJobService {
+public class ServerLocationUploadService extends VetoJobService {
 
     private static final String TAG = ServerLocationUploadService.class.getSimpleName();
     public static final String SOURCE_REGULAR_BACKGROUND_UPLOAD = "Regular Background Upload";
@@ -47,7 +47,7 @@ public class ServerLocationUploadService extends FmdJobService {
         cancelJob(context);
         if (true) return;
 
-        FmdLogKt.log(context).d(TAG, "Scheduling upload service");
+        VetoLogKt.log(context).d(TAG, "Scheduling upload service");
         SettingsRepository settings = SettingsRepository.Companion.getInstance(context);
 
         int locTypeInt = (int) settings.get(Settings.SET_VetoSERVER_LOCATION_TYPE);
@@ -55,7 +55,7 @@ public class ServerLocationUploadService extends FmdJobService {
 
         if (locType.isEmpty()) {
             // user requested NOT to upload any location at regular intervals
-            FmdLogKt.log(context).d(TAG, "Not scheduling job. Reason: user requested no upload");
+            VetoLogKt.log(context).d(TAG, "Not scheduling job. Reason: user requested no upload");
             return;
         }
 
@@ -80,7 +80,7 @@ public class ServerLocationUploadService extends FmdJobService {
     }
 
     public static void cancelJob(Context context) {
-        FmdLogKt.log(context).d(TAG, "Cancelling upload service");
+        VetoLogKt.log(context).d(TAG, "Cancelling upload service");
         JobScheduler jobScheduler = context.getSystemService(JobScheduler.class);
         jobScheduler.cancel(JOB_ID);
     }
@@ -92,13 +92,13 @@ public class ServerLocationUploadService extends FmdJobService {
         settings = SettingsRepository.Companion.getInstance(this);
 
         if (!settings.serverAccountExists()) {
-            FmdLogKt.log(this).i(TAG, "No account, stopping and cancelling job.");
+            VetoLogKt.log(this).i(TAG, "No account, stopping and cancelling job.");
             cancelJob(this);
             return false;
         }
 
         if (!NetworkUtils.isNetworkAvailable(this)) {
-            FmdLogKt.log(this).i(TAG, "No network connection, stopping job.");
+            VetoLogKt.log(this).i(TAG, "No network connection, stopping job.");
             jobFinished();
             return false;
         }
@@ -107,7 +107,7 @@ public class ServerLocationUploadService extends FmdJobService {
         long lastUploadTimeMillis = ((Number) settings.get(Settings.SET_LAST_KNOWN_LOCATION_TIME)).longValue();
         long uploadIntervalMillis = ((int) settings.get(Settings.SET_VetoSERVER_UPDATE_TIME)) * 60 * 1000L;
         if (lastUploadTimeMillis + uploadIntervalMillis / 2 > now) {
-            FmdLogKt.log(this).i(TAG, "Skipping upload, last upload was recent");
+            VetoLogKt.log(this).i(TAG, "Skipping upload, last upload was recent");
             jobFinished();
             return false;
         }
@@ -152,7 +152,7 @@ public class ServerLocationUploadService extends FmdJobService {
     private void scheduleNextOccurrence() {
         long intervalMinutes = ((Integer) settings.get(Settings.SET_VetoSERVER_UPDATE_TIME)).longValue();
         if (intervalMinutes <= 0) {
-            FmdLogKt.log(this).i(TAG, "Raising interval from " + intervalMinutes + " mins to 1 min");
+            VetoLogKt.log(this).i(TAG, "Raising interval from " + intervalMinutes + " mins to 1 min");
             intervalMinutes = 1;
         }
 

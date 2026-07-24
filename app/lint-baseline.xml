@@ -393,7 +393,7 @@
         errorLine1="            &lt;ImageView"
         errorLine2="             ~~~~~~~~~">
         <location
-            file="src/main/res/layout/activity_f_m_d_server.xml"
+            file="src/main/res/layout/activity_veto_server.xml"
             line="42"
             column="14"/>
     </issue>
@@ -404,7 +404,7 @@
         errorLine1="            &lt;ImageView"
         errorLine2="             ~~~~~~~~~">
         <location
-            file="src/main/res/layout/activity_f_m_d_server.xml"
+            file="src/main/res/layout/activity_veto_server.xml"
             line="70"
             column="14"/>
     </issue>
@@ -437,7 +437,7 @@
         errorLine1="        &lt;EditText"
         errorLine2="         ~~~~~~~~">
         <location
-            file="src/main/res/layout/activity_f_m_d_config.xml"
+            file="src/main/res/layout/activity_veto_config.xml"
             line="86"
             column="10"/>
     </issue>
@@ -448,7 +448,7 @@
         errorLine1="        &lt;EditText"
         errorLine2="         ~~~~~~~~">
         <location
-            file="src/main/res/layout/activity_f_m_d_config.xml"
+            file="src/main/res/layout/activity_veto_config.xml"
             line="147"
             column="10"/>
     </issue>
@@ -459,7 +459,7 @@
         errorLine1="        &lt;EditText"
         errorLine2="         ~~~~~~~~">
         <location
-            file="src/main/res/layout/activity_f_m_d_server.xml"
+            file="src/main/res/layout/activity_veto_server.xml"
             line="162"
             column="10"/>
     </issue>
@@ -591,7 +591,7 @@
         errorLine1="            android:text=&quot;Veto via PIN&quot;"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/res/layout/activity_f_m_d_config.xml"
+            file="src/main/res/layout/activity_veto_config.xml"
             line="18"
             column="13"/>
     </issue>
@@ -602,7 +602,7 @@
         errorLine1="            android:text=&quot;veto command&quot;"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/res/layout/activity_f_m_d_config.xml"
+            file="src/main/res/layout/activity_veto_config.xml"
             line="75"
             column="13"/>
     </issue>
@@ -613,7 +613,7 @@
         errorLine1="            android:text=&quot;veto&quot; />"
         errorLine2="            ~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/res/layout/activity_f_m_d_config.xml"
+            file="src/main/res/layout/activity_veto_config.xml"
             line="94"
             column="13"/>
     </issue>
@@ -624,7 +624,7 @@
         errorLine1="            android:text=&quot;veto ring&quot;"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/res/layout/activity_f_m_d_config.xml"
+            file="src/main/res/layout/activity_veto_config.xml"
             line="107"
             column="13"/>
     </issue>
@@ -635,7 +635,7 @@
         errorLine1="            android:text=&quot;veto lock&quot;"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/res/layout/activity_f_m_d_config.xml"
+            file="src/main/res/layout/activity_veto_config.xml"
             line="136"
             column="13"/>
     </issue>
@@ -646,7 +646,7 @@
         errorLine1="            android:text=&quot;veto delete&quot;"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/res/layout/activity_f_m_d_config.xml"
+            file="src/main/res/layout/activity_veto_config.xml"
             line="168"
             column="13"/>
     </issue>
@@ -657,7 +657,7 @@
         errorLine1="            android:text=&quot;Push&quot;"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/res/layout/activity_f_m_d_server.xml"
+            file="src/main/res/layout/activity_veto_server.xml"
             line="120"
             column="13"/>
     </issue>
@@ -668,7 +668,7 @@
         errorLine1="            android:text=&quot;0&quot; />"
         errorLine2="            ~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/res/layout/activity_f_m_d_server.xml"
+            file="src/main/res/layout/activity_veto_server.xml"
             line="170"
             column="13"/>
     </issue>

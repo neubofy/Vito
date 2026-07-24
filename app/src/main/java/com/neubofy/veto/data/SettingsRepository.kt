@@ -175,7 +175,7 @@ class SettingsRepository private constructor(private val context: Context) {
         // For users that upgrade, initialize the new delete password with the existing Veto PIN
         context.log().i(TAG, "Migrating to separate delete password")
         val encSettings = EncryptedSettingsRepository.getInstance(context)
-        val pin = encSettings.getFmdPin()
+        val pin = encSettings.getVetoPin()
         encSettings.setDeletePassword(pin)
     }
 
@@ -194,12 +194,12 @@ class SettingsRepository private constructor(private val context: Context) {
         return id.isNotEmpty()
     }
 
-    fun setKeys(keys: FmdKeyPair) {
+    fun setKeys(keys: VetoKeyPair) {
         set(Settings.SET_Veto_CRYPT_PRIVKEY, keys.encryptedPrivateKey)
         set(Settings.SET_Veto_CRYPT_PUBKEY, CypherUtils.encodeBase64(keys.publicKey.encoded))
     }
 
-    fun getKeys(): FmdKeyPair? {
+    fun getKeys(): VetoKeyPair? {
         if (get(Settings.SET_Veto_CRYPT_PUBKEY) == "") {
             return null
         }
@@ -218,7 +218,7 @@ class SettingsRepository private constructor(private val context: Context) {
         }
 
         return if (publicKey != null) {
-            FmdKeyPair(publicKey, get(Settings.SET_Veto_CRYPT_PRIVKEY) as String)
+            VetoKeyPair(publicKey, get(Settings.SET_Veto_CRYPT_PRIVKEY) as String)
         } else {
             null
         }
@@ -231,7 +231,7 @@ class SettingsRepository private constructor(private val context: Context) {
         set(Settings.SET_Veto_CRYPT_PUBKEY, "")
     }
 
-    fun storeLastKnownLocation(loc: FmdLocation) {
+    fun storeLastKnownLocation(loc: VetoLocation) {
         // historically stored as String
         set<String>(Settings.SET_LAST_KNOWN_LOCATION_LAT, loc.lat.toString())
         set<String>(Settings.SET_LAST_KNOWN_LOCATION_LON, loc.lon.toString())
@@ -263,7 +263,7 @@ class SettingsRepository private constructor(private val context: Context) {
     /**
      * Return the last known location as cached by the settings.
      */
-    fun getLastKnownLocation(): FmdLocation? {
+    fun getLastKnownLocation(): VetoLocation? {
         return try {
             val loc = getLastKnownLocationInt()
             loc
@@ -276,7 +276,7 @@ class SettingsRepository private constructor(private val context: Context) {
         }
     }
 
-    private fun getLastKnownLocationInt(): FmdLocation {
+    private fun getLastKnownLocationInt(): VetoLocation {
         var acc: Float? = (get(Settings.SET_LAST_KNOWN_LOCATION_ACCURACY) as Number).toFloat()
         if (acc!!.isNaN()) {
             acc = null
@@ -294,7 +294,7 @@ class SettingsRepository private constructor(private val context: Context) {
             speed = null
         }
 
-        return FmdLocation(
+        return VetoLocation(
             lat = (get(Settings.SET_LAST_KNOWN_LOCATION_LAT) as String).toDouble(),
             lon = (get(Settings.SET_LAST_KNOWN_LOCATION_LON) as String).toDouble(),
             accuracy = acc,

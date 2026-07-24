@@ -13,7 +13,7 @@ import com.neubofy.veto.R;
 import com.neubofy.veto.data.TemporaryAllowlistRepository;
 import com.neubofy.veto.transports.SmsTransport;
 import com.neubofy.veto.transports.Transport;
-import com.neubofy.veto.utils.FmdLogKt;
+import com.neubofy.veto.utils.VetoLogKt;
 import kotlin.Pair;
 
 public class TempContactExpiredService extends JobService {
@@ -29,7 +29,7 @@ public class TempContactExpiredService extends JobService {
             String msg = getString(R.string.temporary_allowlist_expired);
             Transport<String> transport = new SmsTransport(this, temporaryPhoneNumber.getFirst(), temporaryPhoneNumber.getSecond());
             transport.send(this, msg, null);
-            FmdLogKt.log(this).i(TAG, "Phone number expired: " + temporaryPhoneNumber.getFirst());
+            VetoLogKt.log(this).i(TAG, "Phone number expired: " + temporaryPhoneNumber.getFirst());
         }
 
         return false;

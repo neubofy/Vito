@@ -38,7 +38,7 @@
                 android:text="@string/Settings_LCLDServer_Info" />
 
             <Button
-                android:id="@+id/buttonOpenFmdServerWebsite"
+                android:id="@+id/buttonOpenVetoServerWebsite"
                 style="?attr/materialButtonOutlinedStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

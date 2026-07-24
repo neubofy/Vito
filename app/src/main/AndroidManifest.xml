@@ -58,7 +58,7 @@
         android:memtagMode="async"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Fmd"
+        android:theme="@style/Theme.Veto"
         android:networkSecurityConfig="@xml/network_security_config"
         android:enableOnBackInvokedCallback="true">
 

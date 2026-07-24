@@ -5,26 +5,26 @@ import java.security.PublicKey;
 
 import com.neubofy.veto.utils.CypherUtils;
 
-public class FmdKeyPair {
+public class VetoKeyPair {
     private PublicKey publicKey;
     private String encryptedPrivateKey;
 
     // TODO make private
-    public FmdKeyPair(PublicKey publicKey, String encryptedPrivateKey) {
+    public VetoKeyPair(PublicKey publicKey, String encryptedPrivateKey) {
         this.publicKey = publicKey;
         this.encryptedPrivateKey = encryptedPrivateKey;
     }
 
-    public FmdKeyPair(KeyPair rsaKeyPair, String passwordProtectKeyPairWith) {
+    public VetoKeyPair(KeyPair rsaKeyPair, String passwordProtectKeyPairWith) {
         String encryptedPrivateKey = CypherUtils.encryptPrivateKeyWithPassword(rsaKeyPair.getPrivate(), passwordProtectKeyPairWith);
         this.publicKey = rsaKeyPair.getPublic();
         this.encryptedPrivateKey = encryptedPrivateKey;
     }
 
-    public static FmdKeyPair generateNewFmdKeyPair(String passwordProtectKeyPairWith) {
+    public static VetoKeyPair generateNewVetoKeyPair(String passwordProtectKeyPairWith) {
         KeyPair rsaKeyPair = CypherUtils.genRsaKeyPair();
         String encryptedPrivateKey = CypherUtils.encryptPrivateKeyWithPassword(rsaKeyPair.getPrivate(), passwordProtectKeyPairWith);
-        return new FmdKeyPair(rsaKeyPair.getPublic(), encryptedPrivateKey);
+        return new VetoKeyPair(rsaKeyPair.getPublic(), encryptedPrivateKey);
     }
 
     public PublicKey getPublicKey() {

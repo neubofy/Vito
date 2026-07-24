@@ -8,7 +8,7 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper
 import com.neubofy.veto.R
-import com.neubofy.veto.data.FmdLocation
+import com.neubofy.veto.data.VetoLocation
 import com.neubofy.veto.data.SettingsRepository
 import com.neubofy.veto.permissions.LocationPermission
 import com.neubofy.veto.transports.Transport
@@ -63,7 +63,7 @@ class GpsLocationProvider<T>(
 
     private var deferred: CompletableDeferred<Unit>? = null
 
-    private var currBestLocation: FmdLocation? = null
+    private var currBestLocation: VetoLocation? = null
     private var locationCount = 0
     private var previousAccuracy = 0F
 
@@ -162,7 +162,7 @@ class GpsLocationProvider<T>(
     }
 
     override fun onLocationChanged(location: Location) {
-        val vetoLocation = FmdLocation.fromAndroidLocation(context, location)
+        val vetoLocation = VetoLocation.fromAndroidLocation(context, location)
         context.log().d(
             TAG,
             "Location found by ${vetoLocation.provider} with accuracy ${vetoLocation.accuracy} m."
@@ -198,7 +198,7 @@ class GpsLocationProvider<T>(
         }
     }
 
-    private fun isAccuracyDiffLarge(vetoLocation: FmdLocation): Boolean {
+    private fun isAccuracyDiffLarge(vetoLocation: VetoLocation): Boolean {
         if (vetoLocation.accuracy == null) {
             return false
         }
@@ -211,7 +211,7 @@ class GpsLocationProvider<T>(
         return diff > 5 // meter
     }
 
-    private fun updateCurrentBestLocation(newLocation: FmdLocation) {
+    private fun updateCurrentBestLocation(newLocation: VetoLocation) {
         val currBest = currBestLocation
         if (
         // any new location is better than no accuracy

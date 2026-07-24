@@ -51,11 +51,11 @@ class EncryptedSettingsRepository private constructor(context: Context) {
         sharedPrefs.edit().putString(KEY_SERVER_CACHED_ACCESS_TOKEN, newToken).apply()
     }
 
-    fun getFmdPin(): String? {
+    fun getVetoPin(): String? {
         return sharedPrefs.getString(KEY_Veto_PIN, null)
     }
 
-    fun setFmdPin(new: String?) {
+    fun setVetoPin(new: String?) {
         if (new.isNullOrBlank()) {
             sharedPrefs.edit().remove(KEY_Veto_PIN).apply()
         } else {

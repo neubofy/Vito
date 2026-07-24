@@ -7,7 +7,7 @@ import com.neubofy.veto.utils.Utils.Companion.getGoogleMapsLink
 import java.util.Date
 
 
-data class FmdLocation(
+data class VetoLocation(
     val lat: Double,
     val lon: Double,
 
@@ -28,8 +28,8 @@ data class FmdLocation(
 ) {
 
     companion object {
-        fun fromAndroidLocation(context: Context, loc: Location): FmdLocation {
-            return FmdLocation(
+        fun fromAndroidLocation(context: Context, loc: Location): VetoLocation {
+            return VetoLocation(
                 lat = loc.latitude,
                 lon = loc.longitude,
                 accuracy = if (loc.hasAccuracy()) loc.accuracy else null,

@@ -14,9 +14,9 @@ import kotlinx.coroutines.cancel
  * coroutineScope for Commands to use to run their asynchronous work in, and
  * to provide a central way to cancel it when the job finishes or is stopped.
  */
-abstract class FmdJobService : JobService() {
+abstract class VetoJobService : JobService() {
 
-    abstract val TAG: String? // = FmdJobService::class.simpleName
+    abstract val TAG: String? // = VetoJobService::class.simpleName
 
     val coroutineScope = CoroutineScope(Dispatchers.IO + Job())
 

@@ -46,13 +46,20 @@ class NextJsServerTransport(
             return
         }
 
-        currentUser.getIdToken(true).addOnCompleteListener { task ->
+        val latch = java.util.concurrent.CountDownLatch(1)
+
+        currentUser.getIdToken(false).addOnCompleteListener { task ->
             if (!task.isSuccessful || task.result == null) {
                 context.log().e("NextJsServerTransport", "Failed to get Firebase Auth token: ${task.exception?.message}")
+                latch.countDown()
                 return@addOnCompleteListener
             }
 
-            val idToken = task.result?.token ?: return@addOnCompleteListener
+            val idToken = task.result?.token
+            if (idToken == null) {
+                latch.countDown()
+                return@addOnCompleteListener
+            }
 
             Thread {
                 try {
@@ -79,8 +86,16 @@ class NextJsServerTransport(
                     }
                 } catch (e: Exception) {
                     context.log().e("NextJsServerTransport", "Error syncing result: ${e.message}")
+                } finally {
+                    latch.countDown()
                 }
             }.start()
+        }
+
+        try {
+            latch.await(30, java.util.concurrent.TimeUnit.SECONDS)
+        } catch (e: InterruptedException) {
+            context.log().e("NextJsServerTransport", "Interrupted while waiting for sync")
         }
     }
 }

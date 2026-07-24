@@ -90,7 +90,7 @@ public class MainActivity extends FmdActivity {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         } else if (item.getItemId() == R.id.menuItemWebsite) {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://veto.neubofy.com"));
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://veto.neubofy.in"));
             startActivity(browserIntent);
             return true;
         } else if (item.getItemId() == R.id.menuItemAbout) {

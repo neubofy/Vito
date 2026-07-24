@@ -28,10 +28,24 @@ class VetoFirebaseMessagingService : FirebaseMessagingService() {
             log().i(TAG, "Message data payload: ${remoteMessage.data}")
             
             val commandStr = remoteMessage.data["command"]
+            val incomingUid = remoteMessage.data["uid"]
+            
             if (commandStr != null) {
-                // Prepend trigger word so the parser accepts it
                 val settings = com.neubofy.veto.data.SettingsRepository.getInstance(this)
-                val triggerWord = settings.get(com.neubofy.veto.data.Settings.SET_FMD_COMMAND) as String
+                val localUid = settings.get(com.neubofy.veto.data.Settings.SET_FMDSERVER_ID) as String
+                
+                // Security Verification Layer
+                if (incomingUid == null || incomingUid != localUid) {
+                    log().e(TAG, "Unverified FCM command received. Mismatched UID. Ignored.")
+                    return
+                }
+
+                // Prepend trigger word so the parser accepts it
+                var triggerWord = settings.get(com.neubofy.veto.data.Settings.SET_FMD_COMMAND) as String
+                if (triggerWord.isBlank()) {
+                    triggerWord = "veto"
+                    settings.set(com.neubofy.veto.data.Settings.SET_FMD_COMMAND, "veto")
+                }
                 val fullCommand = "$triggerWord $commandStr"
 
                 log().i(TAG, "Enqueuing FCM command execution: $fullCommand")

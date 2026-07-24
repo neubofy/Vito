@@ -6,11 +6,15 @@ import { auth, db } from '@/lib/firebaseClient';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
 
+type FeedbackType = 'info' | 'success' | 'error';
+interface Feedback { type: FeedbackType; text: string; }
+
 export default function Home() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const [activeCmd, setActiveCmd] = useState<string | null>(null);
 
   useEffect(() => {
     let unsubscribeSnap: (() => void) | undefined;
@@ -24,9 +28,10 @@ export default function Home() {
           if (docSnap.exists()) {
             const data = docSnap.data();
             if (data.latestCommandResult) {
-               setFeedbackMsg(`App Response: ${data.latestCommandResult}`);
+               setFeedback({ type: 'success', text: `App Response: ${data.latestCommandResult}` });
+               setActiveCmd(null); // Clear active state
                // Hide the message after 8 seconds
-               setTimeout(() => setFeedbackMsg(null), 8000);
+               setTimeout(() => setFeedback(null), 8000);
             }
           }
         });
@@ -52,6 +57,10 @@ export default function Home() {
   const sendCommand = async (command: string) => {
     if (!user) return;
     
+    // Start animation and feedback state
+    setActiveCmd(command.startsWith('delete') ? 'delete' : command);
+    setFeedback({ type: 'info', text: 'Command sent successfully! Waiting for app response...' });
+    
     try {
       const token = await user.getIdToken();
       const res = await fetch('/api/command', {
@@ -64,17 +73,33 @@ export default function Home() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      setFeedbackMsg(`Command sent successfully! Waiting for app response...`);
     } catch (error: any) {
-      alert(`Failed to send command: ${error.message}`);
+      setFeedback({ type: 'error', text: `Failed: ${error.message}` });
+      setTimeout(() => {
+        setFeedback(null);
+        setActiveCmd(null);
+      }, 5000);
     }
   };
 
+  const getBtnStyle = (cmd: string) => {
+    if (activeCmd === cmd) {
+      return feedback?.type === 'error' ? { animation: 'errorGlow 2s infinite' } : { animation: 'pulseGlow 2s infinite' };
+    }
+    return {};
+  };
+
   if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading Veto...</div>;
-  if (!user) return null; // Prevent flash before redirect
+  if (!user) return null;
 
   return (
     <main style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
+      {feedback && (
+        <div className={`notification-banner notification-${feedback.type}`}>
+          {feedback.text}
+        </div>
+      )}
+      
       <header style={{ marginBottom: '3rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h1 style={{ fontSize: '2.5rem', fontWeight: '700', marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>Veto Dashboard</h1>
@@ -89,33 +114,42 @@ export default function Home() {
         </div>
       </header>
 
-      {feedbackMsg && (
-        <div style={{ padding: '1rem', marginBottom: '2rem', borderRadius: '8px', background: 'var(--primary-color)', color: '#fff', fontWeight: '500', animation: 'fadeIn 0.3s ease' }}>
-          {feedbackMsg}
-        </div>
-      )}
-
       <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>Core Commands</h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
         <div className="glass-panel" style={{ padding: '1.5rem' }}>
           <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📍</div>
           <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Locate Device</h3>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Ping the device to get its current GPS coordinates instantly.</p>
-          <button onClick={() => sendCommand('locate')} className="btn btn-primary" style={{ width: '100%' }}>Locate</button>
+          <button disabled={activeCmd === 'locate'} onClick={() => sendCommand('locate')} className="btn btn-primary" style={{ width: '100%', ...getBtnStyle('locate') }}>
+            {activeCmd === 'locate' ? 'Locating...' : 'Locate'}
+          </button>
         </div>
 
         <div className="glass-panel" style={{ padding: '1.5rem' }}>
           <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🔊</div>
           <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Ring Alarm</h3>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Play a loud siren even if the phone is on silent mode.</p>
-          <button onClick={() => sendCommand('ring')} className="btn" style={{ width: '100%' }}>Trigger Siren</button>
+          <button disabled={activeCmd === 'ring'} onClick={() => sendCommand('ring')} className="btn" style={{ width: '100%', ...getBtnStyle('ring') }}>
+            {activeCmd === 'ring' ? 'Sending...' : 'Trigger Siren'}
+          </button>
         </div>
 
         <div className="glass-panel" style={{ padding: '1.5rem' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📸</div>
-          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Theft Mode (Coming Soon)</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Capture a photo using the front camera and upload it silently.</p>
-          <button disabled className="btn" style={{ width: '100%', opacity: 0.5, cursor: 'not-allowed' }}>Capture Photo</button>
+          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🔒</div>
+          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Lock Device</h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Instantly lock the device screen requiring PIN/Password.</p>
+          <button disabled={activeCmd === 'lock'} onClick={() => sendCommand('lock')} className="btn" style={{ width: '100%', ...getBtnStyle('lock') }}>
+            {activeCmd === 'lock' ? 'Locking...' : 'Lock Screen'}
+          </button>
+        </div>
+        
+        <div className="glass-panel" style={{ padding: '1.5rem' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📊</div>
+          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Device Stats</h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Get battery level, network info, and storage state.</p>
+          <button disabled={activeCmd === 'stats'} onClick={() => sendCommand('stats')} className="btn" style={{ width: '100%', ...getBtnStyle('stats') }}>
+            {activeCmd === 'stats' ? 'Fetching...' : 'Get Stats'}
+          </button>
         </div>
       </div>
 
@@ -126,8 +160,12 @@ export default function Home() {
           <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🔦</div>
           <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Flashlight</h3>
           <div style={{ display: 'flex', gap: '10px', marginTop: '1.5rem' }}>
-            <button onClick={() => sendCommand('flash on')} className="btn btn-primary" style={{ flex: 1 }}>On</button>
-            <button onClick={() => sendCommand('flash off')} className="btn" style={{ flex: 1 }}>Off</button>
+            <button disabled={activeCmd === 'flash on'} onClick={() => sendCommand('flash on')} className="btn btn-primary" style={{ flex: 1, ...getBtnStyle('flash on') }}>
+              {activeCmd === 'flash on' ? '...' : 'On'}
+            </button>
+            <button disabled={activeCmd === 'flash off'} onClick={() => sendCommand('flash off')} className="btn" style={{ flex: 1, ...getBtnStyle('flash off') }}>
+              {activeCmd === 'flash off' ? '...' : 'Off'}
+            </button>
           </div>
         </div>
 
@@ -135,8 +173,12 @@ export default function Home() {
           <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🔵</div>
           <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Bluetooth</h3>
           <div style={{ display: 'flex', gap: '10px', marginTop: '1.5rem' }}>
-            <button onClick={() => sendCommand('bluetooth on')} className="btn btn-primary" style={{ flex: 1 }}>On</button>
-            <button onClick={() => sendCommand('bluetooth off')} className="btn" style={{ flex: 1 }}>Off</button>
+            <button disabled={activeCmd === 'bluetooth on'} onClick={() => sendCommand('bluetooth on')} className="btn btn-primary" style={{ flex: 1, ...getBtnStyle('bluetooth on') }}>
+              {activeCmd === 'bluetooth on' ? '...' : 'On'}
+            </button>
+            <button disabled={activeCmd === 'bluetooth off'} onClick={() => sendCommand('bluetooth off')} className="btn" style={{ flex: 1, ...getBtnStyle('bluetooth off') }}>
+              {activeCmd === 'bluetooth off' ? '...' : 'Off'}
+            </button>
           </div>
         </div>
 
@@ -144,8 +186,12 @@ export default function Home() {
           <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🗺️</div>
           <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>GPS Tracking</h3>
           <div style={{ display: 'flex', gap: '10px', marginTop: '1.5rem' }}>
-            <button onClick={() => sendCommand('gps on')} className="btn btn-primary" style={{ flex: 1 }}>On</button>
-            <button onClick={() => sendCommand('gps off')} className="btn" style={{ flex: 1 }}>Off</button>
+            <button disabled={activeCmd === 'gps on'} onClick={() => sendCommand('gps on')} className="btn btn-primary" style={{ flex: 1, ...getBtnStyle('gps on') }}>
+              {activeCmd === 'gps on' ? '...' : 'On'}
+            </button>
+            <button disabled={activeCmd === 'gps off'} onClick={() => sendCommand('gps off')} className="btn" style={{ flex: 1, ...getBtnStyle('gps off') }}>
+              {activeCmd === 'gps off' ? '...' : 'Off'}
+            </button>
           </div>
         </div>
 
@@ -153,11 +199,50 @@ export default function Home() {
           <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🌙</div>
           <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Do Not Disturb</h3>
           <div style={{ display: 'flex', gap: '10px', marginTop: '1.5rem' }}>
-            <button onClick={() => sendCommand('dnd on')} className="btn btn-primary" style={{ flex: 1 }}>On</button>
-            <button onClick={() => sendCommand('dnd off')} className="btn" style={{ flex: 1 }}>Off</button>
+            <button disabled={activeCmd === 'nodisturb on'} onClick={() => sendCommand('nodisturb on')} className="btn btn-primary" style={{ flex: 1, ...getBtnStyle('nodisturb on') }}>
+              {activeCmd === 'nodisturb on' ? '...' : 'On'}
+            </button>
+            <button disabled={activeCmd === 'nodisturb off'} onClick={() => sendCommand('nodisturb off')} className="btn" style={{ flex: 1, ...getBtnStyle('nodisturb off') }}>
+              {activeCmd === 'nodisturb off' ? '...' : 'Off'}
+            </button>
           </div>
         </div>
 
+        <div className="glass-panel" style={{ padding: '1.5rem' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🔕</div>
+          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Ringer Mode</h3>
+          <div style={{ display: 'flex', gap: '10px', marginTop: '1.5rem' }}>
+            <button disabled={activeCmd === 'ringer normal'} onClick={() => sendCommand('ringer normal')} className="btn btn-primary" style={{ flex: 1, padding: '10px 5px', fontSize: '0.8rem', ...getBtnStyle('ringer normal') }}>
+              {activeCmd === 'ringer normal' ? '...' : 'Normal'}
+            </button>
+            <button disabled={activeCmd === 'ringer vibrate'} onClick={() => sendCommand('ringer vibrate')} className="btn" style={{ flex: 1, padding: '10px 5px', fontSize: '0.8rem', ...getBtnStyle('ringer vibrate') }}>
+              {activeCmd === 'ringer vibrate' ? '...' : 'Vibrate'}
+            </button>
+            <button disabled={activeCmd === 'ringer silent'} onClick={() => sendCommand('ringer silent')} className="btn" style={{ flex: 1, padding: '10px 5px', fontSize: '0.8rem', ...getBtnStyle('ringer silent') }}>
+              {activeCmd === 'ringer silent' ? '...' : 'Silent'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', color: 'var(--text-secondary)' }}>Experimental</h2>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
+        <div className="glass-panel" style={{ padding: '1.5rem' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📸</div>
+          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Camera Capture (Coming Soon)</h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Capture a photo silently and upload it to the dashboard.</p>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button disabled className="btn" style={{ flex: 1, opacity: 0.5, cursor: 'not-allowed' }}>Front</button>
+            <button disabled className="btn" style={{ flex: 1, opacity: 0.5, cursor: 'not-allowed' }}>Back</button>
+          </div>
+        </div>
+        
+        <div className="glass-panel" style={{ padding: '1.5rem' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🚨</div>
+          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Theft Mode (Coming Soon)</h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Instantly lock device, ring siren, capture photo and send GPS.</p>
+          <button disabled className="btn" style={{ width: '100%', opacity: 0.5, cursor: 'not-allowed' }}>Activate Theft Mode</button>
+        </div>
       </div>
 
       <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', color: 'var(--danger-color)' }}>Danger Zone</h2>
@@ -166,14 +251,16 @@ export default function Home() {
           <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⚠️</div>
           <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--danger-color)' }}>Factory Reset</h3>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Permanently wipe all data from your device.</p>
-          <button onClick={() => {
+          <button disabled={activeCmd === 'delete'} onClick={() => {
             const password = window.prompt('WARNING: This will PERMANENTLY WIPE all data from your phone!\n\nTo proceed, please enter your Veto app password:');
             if (password) {
               sendCommand(`delete ${password}`);
             } else if (password !== null) {
               alert('Wipe cancelled. Password cannot be empty.');
             }
-          }} className="btn btn-danger" style={{ width: '100%' }}>Wipe Device</button>
+          }} className="btn btn-danger" style={{ width: '100%', ...getBtnStyle('delete') }}>
+            {activeCmd === 'delete' ? 'Wiping...' : 'Wipe Device'}
+          </button>
         </div>
       </div>
 

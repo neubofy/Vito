@@ -85,7 +85,7 @@ export default function Home() {
     if (activeCmd && isCommandPending) {
        const baseCmd = activeCmd.split(' ')[0];
        const phto = photos[baseCmd];
-       if (phto && phto.timestamp > commandStartTime) {
+       if (phto && new Date(phto.timestamp).getTime() > commandStartTime) {
          setIsCommandPending(false);
          setActiveCmd(null);
          setFeedback({ type: 'success', text: 'Photo arrived!' });
@@ -269,27 +269,70 @@ export default function Home() {
       const googleEmbedUrl = `https://maps.google.com/maps?q=${lat},${lon}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
       
       return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <div style={{ width: '100%', height: '200px', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.2)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ width: '100%', height: '350px', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }}>
             <iframe width="100%" height="100%" frameBorder="0" scrolling="no" src={googleEmbedUrl} style={{ border: 'none' }}></iframe>
           </div>
-          <div style={{ fontSize: '0.8rem' }}>{text}</div>
+          <div style={{ 
+            fontSize: '0.9rem', 
+            backgroundColor: 'rgba(255,255,255,0.05)', 
+            padding: '1rem', 
+            borderRadius: '8px',
+            fontFamily: 'monospace',
+            whiteSpace: 'pre-wrap'
+          }}>
+            {text}
+          </div>
+          <a href={`https://maps.google.com/?q=${lat},${lon}`} target="_blank" rel="noreferrer" className="btn btn-primary" style={{ textAlign: 'center', textDecoration: 'none', display: 'block', padding: '0.75rem' }}>
+            Open in Google Maps
+          </a>
         </div>
       );
     }
     
-    if (text.includes('Model:') && text.includes('Battery:')) {
-      return <div style={{ whiteSpace: 'pre-wrap' }}>{text}</div>;
+    // Parse Key-Value pairs (e.g. Device Stats)
+    if (text.includes(':')) {
+      const lines = text.split('\n').filter(line => line.trim().length > 0);
+      const kvLines = lines.filter(line => line.includes(':'));
+      if (kvLines.length > 1) {
+        return (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+            {lines.map((line, i) => {
+              const parts = line.split(':');
+              if (parts.length < 2) return <div key={i} style={{ gridColumn: '1 / -1' }}>{line}</div>;
+              const key = parts[0];
+              const val = parts.slice(1).join(':').trim();
+              return (
+                <div key={i} style={{ 
+                  backgroundColor: 'rgba(255,255,255,0.05)', 
+                  padding: '1rem', 
+                  borderRadius: '8px',
+                  border: '1px solid rgba(255,255,255,0.1)'
+                }}>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>
+                    {key.trim()}
+                  </div>
+                  <div style={{ fontSize: '1.1rem', fontWeight: '500', color: '#fff' }}>
+                    {val}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        );
+      }
     }
     
-    return text;
+    return <div style={{ whiteSpace: 'pre-wrap', lineHeight: '1.5' }}>{text}</div>;
   };
 
   const renderResult = (baseCmd: string) => {
     const res = results[baseCmd];
     const phto = photos[baseCmd];
     if (!res && !phto) return <div style={{ marginTop: '1rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>No data yet</div>;
-    const timestamp = Math.max(res?.timestamp || 0, phto?.timestamp || 0);
+    const resTime = res?.timestamp ? new Date(res.timestamp).getTime() : 0;
+    const phtoTime = phto?.timestamp ? new Date(phto.timestamp).getTime() : 0;
+    const timestamp = Math.max(resTime, phtoTime);
     return (
       <button onClick={() => setSelectedOutput(baseCmd)} className="btn" style={{ marginTop: '1rem', width: '100%', fontSize: '0.9rem', backgroundColor: 'rgba(255,255,255,0.1)' }}>
         View Output ({new Date(timestamp).toLocaleTimeString()})
@@ -488,8 +531,8 @@ export default function Home() {
           display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '1rem'
         }} onClick={() => setSelectedOutput(null)}>
           <div className="glass-panel" style={{
-            width: '100%', maxWidth: '600px', maxHeight: '80vh', overflowY: 'auto',
-            padding: '2rem', position: 'relative', border: '1px solid rgba(255,255,255,0.2)'
+            width: '100%', maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto',
+            padding: '2.5rem', position: 'relative', border: '1px solid rgba(255,255,255,0.2)'
           }} onClick={e => e.stopPropagation()}>
             <button onClick={() => setSelectedOutput(null)} style={{
               position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none',
@@ -514,8 +557,8 @@ export default function Home() {
 
             {results[selectedOutput] && (
               <div style={{ 
-                backgroundColor: 'rgba(0,0,0,0.4)', padding: '1rem', borderRadius: '8px', 
-                fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: '#e6edf3', fontSize: '0.95rem'
+                backgroundColor: 'rgba(0,0,0,0.2)', padding: '1.5rem', borderRadius: '12px', 
+                border: '1px solid rgba(255,255,255,0.05)', color: '#e6edf3'
               }}>
                 {renderTelemetryContent(results[selectedOutput].result)}
               </div>

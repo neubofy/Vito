@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -14,7 +14,15 @@ const firebaseConfig = {
 const app = getApps().length 
   ? getApp() 
   : (process.env.NEXT_PUBLIC_FIREBASE_API_KEY ? initializeApp(firebaseConfig) : null as any);
+
 const auth = process.env.NEXT_PUBLIC_FIREBASE_API_KEY ? getAuth(app) : null as any;
+
+if (auth && typeof window !== 'undefined') {
+  setPersistence(auth, browserLocalPersistence).catch((err) => {
+    console.error("Firebase Auth Persistence Error:", err);
+  });
+}
+
 const googleProvider = process.env.NEXT_PUBLIC_FIREBASE_API_KEY ? new GoogleAuthProvider() : null as any;
 const db = process.env.NEXT_PUBLIC_FIREBASE_API_KEY ? getFirestore(app, '(default)') : null as any;
 

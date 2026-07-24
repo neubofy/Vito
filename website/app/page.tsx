@@ -6,10 +6,17 @@ import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 
 export default function LandingPage() {
   const [user, setUser] = useState<User | null>(null);
+  const [loadingAuth, setLoadingAuth] = useState(true);
 
   useEffect(() => {
+    if (!auth) {
+      setLoadingAuth(false);
+      return;
+    }
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      console.log('Landing page auth state:', currentUser?.email);
       setUser(currentUser);
+      setLoadingAuth(false);
     });
     return () => unsubscribe();
   }, []);
@@ -28,7 +35,9 @@ export default function LandingPage() {
         <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
           <Link href="/privacy" className="nav-link">Privacy</Link>
           <Link href="/terms" className="nav-link">Terms</Link>
-          {user ? (
+          {loadingAuth ? (
+            <div style={{ padding: '0.6rem 1.5rem', width: '80px' }}></div>
+          ) : user ? (
             <>
               <Link href="/dashboard" className="btn btn-primary" style={{ padding: '0.6rem 1.5rem', borderRadius: '30px' }}>Dashboard</Link>
               <button onClick={handleLogout} className="btn btn-danger" style={{ padding: '0.6rem 1.5rem', borderRadius: '30px' }}>Logout</button>
@@ -54,7 +63,11 @@ export default function LandingPage() {
         </p>
 
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-          {user ? (
+          {loadingAuth ? (
+            <div className="btn btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', borderRadius: '40px', visibility: 'hidden' }}>
+              Loading...
+            </div>
+          ) : user ? (
             <Link href="/dashboard" className="btn btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', borderRadius: '40px', boxShadow: '0 8px 24px rgba(47, 129, 247, 0.3)' }}>
               Go to Dashboard
             </Link>

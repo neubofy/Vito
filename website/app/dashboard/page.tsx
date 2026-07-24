@@ -14,11 +14,36 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [activeCmd, setActiveCmd] = useState<string | null>(null);
+  const [deviceLinked, setDeviceLinked] = useState<boolean>(false);
+  const [lastResult, setLastResult] = useState<string | null>(null);
+  const [lastUpdateTime, setLastUpdateTime] = useState<string | null>(null);
 
   useEffect(() => {
+    let intervalId: NodeJS.Timeout;
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
+        // Start polling for data securely from the Next.js API
+        const pollData = async () => {
+          try {
+            const token = await currentUser.getIdToken();
+            const res = await fetch('/api/data', {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+              const { data } = await res.json();
+              if (data) {
+                setDeviceLinked(!!data.fcmToken);
+                if (data.latestCommandResult) setLastResult(data.latestCommandResult);
+                if (data.latestCommandTime) setLastUpdateTime(new Date(data.latestCommandTime).toLocaleString());
+              }
+            }
+          } catch (e) {
+            console.error('Polling error:', e);
+          }
+        };
+        pollData(); // initial fetch
+        intervalId = setInterval(pollData, 5000); // poll every 5 seconds
       } else {
         setUser(null);
         router.push('/login');
@@ -26,7 +51,10 @@ export default function Home() {
       setLoading(false);
     });
     
-    return () => unsubscribeAuth();
+    return () => {
+      unsubscribeAuth();
+      if (intervalId) clearInterval(intervalId);
+    };
   }, [router]);
 
   const handleLogout = async () => {
@@ -106,11 +134,11 @@ export default function Home() {
                 width: '8px', 
                 height: '8px', 
                 borderRadius: '50%', 
-                backgroundColor: '#2ea043', 
-                boxShadow: '0 0 10px #2ea043' 
+                backgroundColor: deviceLinked ? '#2ea043' : '#f85149', 
+                boxShadow: deviceLinked ? '0 0 10px #2ea043' : '0 0 10px #f85149' 
               }}></div>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                Session Active
+                {deviceLinked ? 'App Connected (FCM Linked)' : 'App Not Connected'}
               </span>
             </div>
           </div>
@@ -118,6 +146,31 @@ export default function Home() {
           <button onClick={handleLogout} className="btn btn-danger" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>Logout</button>
         </div>
       </header>
+
+      {/* Latest Command Result Box */}
+      {lastResult && (
+        <div className="glass-panel" style={{ marginBottom: '3rem', padding: '1.5rem', border: '1px solid rgba(47, 129, 247, 0.3)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: '1.3rem', color: '#2f81f7', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#2f81f7', animation: 'pulseGlow 2s infinite' }}></div>
+              Latest Device Telemetry
+            </h2>
+            {lastUpdateTime && <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Received: {lastUpdateTime}</span>}
+          </div>
+          <div style={{ 
+            backgroundColor: 'rgba(0,0,0,0.4)', 
+            padding: '1rem', 
+            borderRadius: '8px', 
+            fontFamily: 'monospace', 
+            whiteSpace: 'pre-wrap',
+            color: '#e6edf3',
+            fontSize: '0.95rem',
+            border: '1px solid rgba(255,255,255,0.05)'
+          }}>
+            {lastResult}
+          </div>
+        </div>
+      )}
 
       <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>Core Commands</h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>

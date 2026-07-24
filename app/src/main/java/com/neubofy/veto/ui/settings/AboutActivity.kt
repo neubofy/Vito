@@ -28,7 +28,7 @@ class AboutActivity : AppCompatActivity() {
     companion object {
         const val ABOUT_MD_URL = "https://raw.githubusercontent.com/neubofy/Vito/main/ABOUT.md"
         const val GITHUB_PROFILE = "https://github.com/pawanwashudev-official"
-        const val WEBSITE = "https://veto.neubofy.com"
+        const val WEBSITE = "https://veto.neubofy.in"
         const val EMAIL = "support@neubofy.in"
         private val TAG = AboutActivity::class.java.simpleName
     }
@@ -44,12 +44,7 @@ class AboutActivity : AppCompatActivity() {
         toolbar.setNavigationOnClickListener { finish() }
 
         val tvVersion = findViewById<TextView>(R.id.tvVersion)
-        try {
-            val pInfo = packageManager.getPackageInfo(packageName, 0)
-            tvVersion.text = "Version \${pInfo.versionName}"
-        } catch (e: PackageManager.NameNotFoundException) {
-            tvVersion.text = "Version Unknown"
-        }
+        tvVersion.text = "Version " + com.neubofy.veto.BuildConfig.VERSION_NAME
 
         // Social Links
         findViewById<LinearLayout>(R.id.btnGithub).setOnClickListener { openUrl(GITHUB_PROFILE) }

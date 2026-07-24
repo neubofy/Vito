@@ -1,269 +1,74 @@
 'use client';
+import Link from 'next/link';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { auth, db } from '@/lib/firebaseClient';
-import { onAuthStateChanged, signOut, User } from 'firebase/auth';
-import { doc, onSnapshot } from 'firebase/firestore';
-
-type FeedbackType = 'info' | 'success' | 'error';
-interface Feedback { type: FeedbackType; text: string; }
-
-export default function Home() {
-  const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [feedback, setFeedback] = useState<Feedback | null>(null);
-  const [activeCmd, setActiveCmd] = useState<string | null>(null);
-
-  useEffect(() => {
-    let unsubscribeSnap: (() => void) | undefined;
-    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-        
-        // Listen for realtime command results from the Android app
-        const userRef = doc(db, 'users', currentUser.uid);
-        unsubscribeSnap = onSnapshot(userRef, (docSnap) => {
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            if (data.latestCommandResult) {
-               setFeedback({ type: 'success', text: `App Response: ${data.latestCommandResult}` });
-               setActiveCmd(null); // Clear active state
-               // Hide the message after 8 seconds
-               setTimeout(() => setFeedback(null), 8000);
-            }
-          }
-        });
-
-      } else {
-        setUser(null);
-        router.push('/login');
-      }
-      setLoading(false);
-    });
-    
-    return () => {
-      unsubscribeAuth();
-      if (unsubscribeSnap) unsubscribeSnap();
-    };
-  }, [router]);
-
-  const handleLogout = async () => {
-    await signOut(auth);
-    router.push('/login');
-  };
-
-  const sendCommand = async (command: string) => {
-    if (!user) return;
-    
-    // Start animation and feedback state
-    setActiveCmd(command.startsWith('delete') ? 'delete' : command);
-    setFeedback({ type: 'info', text: 'Command sent successfully! Waiting for app response...' });
-    
-    try {
-      const token = await user.getIdToken();
-      const res = await fetch('/api/command', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ command })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-    } catch (error: any) {
-      setFeedback({ type: 'error', text: `Failed: ${error.message}` });
-      setTimeout(() => {
-        setFeedback(null);
-        setActiveCmd(null);
-      }, 5000);
-    }
-  };
-
-  const getBtnStyle = (cmd: string) => {
-    if (activeCmd === cmd) {
-      return feedback?.type === 'error' ? { animation: 'errorGlow 2s infinite' } : { animation: 'pulseGlow 2s infinite' };
-    }
-    return {};
-  };
-
-  if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading Veto...</div>;
-  if (!user) return null;
-
+export default function LandingPage() {
   return (
-    <main style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
-      {feedback && (
-        <div className={`notification-banner notification-${feedback.type}`}>
-          {feedback.text}
+    <main style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Navbar */}
+      <nav style={{ padding: '1.5rem 3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', background: 'rgba(10,10,12,0.8)', backdropFilter: 'blur(10px)', position: 'sticky', top: 0, zIndex: 100 }}>
+        <div style={{ fontSize: '1.5rem', fontWeight: '800', background: 'linear-gradient(90deg, #fff, #888)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.5px' }}>
+          VETO
         </div>
-      )}
-      
-      <header style={{ marginBottom: '3rem', display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: '700', marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>Veto Dashboard</h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Device control & telemetry</p>
+        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+          <Link href="/privacy" className="nav-link">Privacy</Link>
+          <Link href="/terms" className="nav-link">Terms</Link>
+          <Link href="/login" className="btn btn-primary" style={{ padding: '0.6rem 1.5rem', borderRadius: '30px' }}>Login</Link>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div className="glass-panel" style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '12px', borderRadius: '30px' }}>
-            <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#2ea043', boxShadow: '0 0 10px #2ea043' }}></div>
-            <span style={{ fontSize: '0.9rem', fontWeight: '600' }}>{user.email}</span>
-          </div>
-          <button onClick={handleLogout} className="btn" style={{ padding: '8px 16px', fontSize: '0.9rem' }}>Logout</button>
-        </div>
-      </header>
+      </nav>
 
-      <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>Core Commands</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
-        <div className="glass-panel" style={{ padding: '1.5rem' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📍</div>
-          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Locate Device</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Ping the device to get its current GPS coordinates instantly.</p>
-          <button disabled={activeCmd === 'locate'} onClick={() => sendCommand('locate')} className="btn btn-primary" style={{ width: '100%', ...getBtnStyle('locate') }}>
-            {activeCmd === 'locate' ? 'Locating...' : 'Locate'}
-          </button>
-        </div>
-
-        <div className="glass-panel" style={{ padding: '1.5rem' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🔊</div>
-          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Ring Alarm</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Play a loud siren even if the phone is on silent mode.</p>
-          <button disabled={activeCmd === 'ring'} onClick={() => sendCommand('ring')} className="btn" style={{ width: '100%', ...getBtnStyle('ring') }}>
-            {activeCmd === 'ring' ? 'Sending...' : 'Trigger Siren'}
-          </button>
-        </div>
-
-        <div className="glass-panel" style={{ padding: '1.5rem' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🔒</div>
-          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Lock Device</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Instantly lock the device screen requiring PIN/Password.</p>
-          <button disabled={activeCmd === 'lock'} onClick={() => sendCommand('lock')} className="btn" style={{ width: '100%', ...getBtnStyle('lock') }}>
-            {activeCmd === 'lock' ? 'Locking...' : 'Lock Screen'}
-          </button>
-        </div>
+      {/* Hero Section */}
+      <section style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '6rem 2rem', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+        <div className="glow-blob" style={{ background: 'rgba(47, 129, 247, 0.15)', width: '600px', height: '600px', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: -1 }}></div>
         
-        <div className="glass-panel" style={{ padding: '1.5rem' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📊</div>
-          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Device Stats</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Get battery level, network info, and storage state.</p>
-          <button disabled={activeCmd === 'stats'} onClick={() => sendCommand('stats')} className="btn" style={{ width: '100%', ...getBtnStyle('stats') }}>
-            {activeCmd === 'stats' ? 'Fetching...' : 'Get Stats'}
-          </button>
-        </div>
-      </div>
-
-      <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>Device Toggles</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
+        <h1 style={{ fontSize: 'clamp(3rem, 6vw, 5.5rem)', fontWeight: '800', lineHeight: 1.1, marginBottom: '1.5rem', letterSpacing: '-2px' }}>
+          Absolute Control.<br/>
+          <span style={{ background: 'linear-gradient(90deg, #2f81f7, #a482d8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Zero Compromise.</span>
+        </h1>
         
-        <div className="glass-panel" style={{ padding: '1.5rem' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🔦</div>
-          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Flashlight</h3>
-          <div style={{ display: 'flex', gap: '10px', marginTop: '1.5rem' }}>
-            <button disabled={activeCmd === 'flash on'} onClick={() => sendCommand('flash on')} className="btn btn-primary" style={{ flex: 1, ...getBtnStyle('flash on') }}>
-              {activeCmd === 'flash on' ? '...' : 'On'}
-            </button>
-            <button disabled={activeCmd === 'flash off'} onClick={() => sendCommand('flash off')} className="btn" style={{ flex: 1, ...getBtnStyle('flash off') }}>
-              {activeCmd === 'flash off' ? '...' : 'Off'}
-            </button>
+        <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', maxWidth: '600px', marginBottom: '3rem', lineHeight: 1.6 }}>
+          Veto is the ultimate Android security and remote management platform. 
+          Track, lock, or wipe your device from anywhere in the world with military-grade precision.
+        </p>
+
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <Link href="/login" className="btn btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', borderRadius: '40px', boxShadow: '0 8px 24px rgba(47, 129, 247, 0.3)' }}>
+            Access Dashboard
+          </Link>
+          <a href="https://github.com/pawanwashudev-official/Veto/releases" target="_blank" rel="noreferrer" className="btn" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', borderRadius: '40px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+            Download App
+          </a>
+        </div>
+      </section>
+
+      {/* Features Grid */}
+      <section style={{ padding: '5rem 2rem', background: 'rgba(0,0,0,0.3)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+          
+          <div className="glass-panel hover-lift" style={{ padding: '2.5rem' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>📍</div>
+            <h3 style={{ fontSize: '1.3rem', marginBottom: '1rem' }}>Global Tracking</h3>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>Ping your device securely and instantly receive precise GPS coordinates displayed right on your dashboard.</p>
           </div>
-        </div>
 
-        <div className="glass-panel" style={{ padding: '1.5rem' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🔵</div>
-          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Bluetooth</h3>
-          <div style={{ display: 'flex', gap: '10px', marginTop: '1.5rem' }}>
-            <button disabled={activeCmd === 'bluetooth on'} onClick={() => sendCommand('bluetooth on')} className="btn btn-primary" style={{ flex: 1, ...getBtnStyle('bluetooth on') }}>
-              {activeCmd === 'bluetooth on' ? '...' : 'On'}
-            </button>
-            <button disabled={activeCmd === 'bluetooth off'} onClick={() => sendCommand('bluetooth off')} className="btn" style={{ flex: 1, ...getBtnStyle('bluetooth off') }}>
-              {activeCmd === 'bluetooth off' ? '...' : 'Off'}
-            </button>
+          <div className="glass-panel hover-lift" style={{ padding: '2.5rem' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>🔒</div>
+            <h3 style={{ fontSize: '1.3rem', marginBottom: '1rem' }}>Instant Lockdown</h3>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>Lock your device screen remotely, preventing unauthorized access the moment you realize it's missing.</p>
           </div>
-        </div>
 
-        <div className="glass-panel" style={{ padding: '1.5rem' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🗺️</div>
-          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>GPS Tracking</h3>
-          <div style={{ display: 'flex', gap: '10px', marginTop: '1.5rem' }}>
-            <button disabled={activeCmd === 'gps on'} onClick={() => sendCommand('gps on')} className="btn btn-primary" style={{ flex: 1, ...getBtnStyle('gps on') }}>
-              {activeCmd === 'gps on' ? '...' : 'On'}
-            </button>
-            <button disabled={activeCmd === 'gps off'} onClick={() => sendCommand('gps off')} className="btn" style={{ flex: 1, ...getBtnStyle('gps off') }}>
-              {activeCmd === 'gps off' ? '...' : 'Off'}
-            </button>
+          <div className="glass-panel hover-lift" style={{ padding: '2.5rem' }}>
+            <div style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>⚠️</div>
+            <h3 style={{ fontSize: '1.3rem', marginBottom: '1rem' }}>Remote Wipe</h3>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.6 }}>In extreme scenarios, trigger a factory reset to permanently delete all sensitive data and protect your identity.</p>
           </div>
-        </div>
 
-        <div className="glass-panel" style={{ padding: '1.5rem' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🌙</div>
-          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Do Not Disturb</h3>
-          <div style={{ display: 'flex', gap: '10px', marginTop: '1.5rem' }}>
-            <button disabled={activeCmd === 'nodisturb on'} onClick={() => sendCommand('nodisturb on')} className="btn btn-primary" style={{ flex: 1, ...getBtnStyle('nodisturb on') }}>
-              {activeCmd === 'nodisturb on' ? '...' : 'On'}
-            </button>
-            <button disabled={activeCmd === 'nodisturb off'} onClick={() => sendCommand('nodisturb off')} className="btn" style={{ flex: 1, ...getBtnStyle('nodisturb off') }}>
-              {activeCmd === 'nodisturb off' ? '...' : 'Off'}
-            </button>
-          </div>
         </div>
+      </section>
 
-        <div className="glass-panel" style={{ padding: '1.5rem' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🔕</div>
-          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Ringer Mode</h3>
-          <div style={{ display: 'flex', gap: '10px', marginTop: '1.5rem' }}>
-            <button disabled={activeCmd === 'ringer normal'} onClick={() => sendCommand('ringer normal')} className="btn btn-primary" style={{ flex: 1, padding: '10px 5px', fontSize: '0.8rem', ...getBtnStyle('ringer normal') }}>
-              {activeCmd === 'ringer normal' ? '...' : 'Normal'}
-            </button>
-            <button disabled={activeCmd === 'ringer vibrate'} onClick={() => sendCommand('ringer vibrate')} className="btn" style={{ flex: 1, padding: '10px 5px', fontSize: '0.8rem', ...getBtnStyle('ringer vibrate') }}>
-              {activeCmd === 'ringer vibrate' ? '...' : 'Vibrate'}
-            </button>
-            <button disabled={activeCmd === 'ringer silent'} onClick={() => sendCommand('ringer silent')} className="btn" style={{ flex: 1, padding: '10px 5px', fontSize: '0.8rem', ...getBtnStyle('ringer silent') }}>
-              {activeCmd === 'ringer silent' ? '...' : 'Silent'}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', color: 'var(--text-secondary)' }}>Experimental</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
-        <div className="glass-panel" style={{ padding: '1.5rem' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📸</div>
-          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Camera Capture (Coming Soon)</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Capture a photo silently and upload it to the dashboard.</p>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button disabled className="btn" style={{ flex: 1, opacity: 0.5, cursor: 'not-allowed' }}>Front</button>
-            <button disabled className="btn" style={{ flex: 1, opacity: 0.5, cursor: 'not-allowed' }}>Back</button>
-          </div>
-        </div>
-        
-        <div className="glass-panel" style={{ padding: '1.5rem' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🚨</div>
-          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Theft Mode (Coming Soon)</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Instantly lock device, ring siren, capture photo and send GPS.</p>
-          <button disabled className="btn" style={{ width: '100%', opacity: 0.5, cursor: 'not-allowed' }}>Activate Theft Mode</button>
-        </div>
-      </div>
-
-      <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', color: 'var(--danger-color)' }}>Danger Zone</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-        <div className="glass-panel" style={{ padding: '1.5rem', border: '1px solid rgba(248, 81, 73, 0.3)' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⚠️</div>
-          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--danger-color)' }}>Factory Reset</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Permanently wipe all data from your device.</p>
-          <button disabled={activeCmd === 'delete'} onClick={() => {
-            const password = window.prompt('WARNING: This will PERMANENTLY WIPE all data from your phone!\n\nTo proceed, please enter your Veto app password:');
-            if (password) {
-              sendCommand(`delete ${password}`);
-            } else if (password !== null) {
-              alert('Wipe cancelled. Password cannot be empty.');
-            }
-          }} className="btn btn-danger" style={{ width: '100%', ...getBtnStyle('delete') }}>
-            {activeCmd === 'delete' ? 'Wiping...' : 'Wipe Device'}
-          </button>
-        </div>
-      </div>
-
+      {/* Footer */}
+      <footer style={{ padding: '3rem 2rem', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.05)', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+        <p>&copy; {new Date().getFullYear()} Veto Security. All rights reserved.</p>
+      </footer>
     </main>
   );
 }

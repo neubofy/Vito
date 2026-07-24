@@ -1,9 +1,12 @@
 import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import './globals.css';
 
+const inter = Inter({ subsets: ['latin'] });
+
 export const metadata: Metadata = {
-  title: 'Veto - Remote Access Dashboard',
-  description: 'Control and monitor your Android device remotely and securely.',
+  title: 'Veto - Next-Gen Android Security',
+  description: 'Control, locate, and secure your Android device remotely with military-grade precision.',
 };
 
 export default function RootLayout({
@@ -13,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }

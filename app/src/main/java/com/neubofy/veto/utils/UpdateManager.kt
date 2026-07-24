@@ -53,7 +53,7 @@ object UpdateManager {
                     var bestVersion = ""
                     var bestNotes = ""
 
-                    val regex = Regex(".*-(\\d{13,})-.*\\.apk")
+                    val regex = Regex(".*?(\\d{13,}).*?\\.apk")
 
                     for (r in 0 until releases.length()) {
                         val release = releases.getJSONObject(r)

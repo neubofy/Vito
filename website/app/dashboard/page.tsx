@@ -17,6 +17,7 @@ export default function Home() {
   const [deviceLinked, setDeviceLinked] = useState<boolean>(false);
   const [lastResult, setLastResult] = useState<string | null>(null);
   const [lastUpdateTime, setLastUpdateTime] = useState<string | null>(null);
+  const [photos, setPhotos] = useState<any[]>([]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -31,11 +32,14 @@ export default function Home() {
               headers: { 'Authorization': `Bearer ${token}` }
             });
             if (res.ok) {
-              const { data } = await res.json();
+              const { data, photos } = await res.json();
               if (data) {
                 setDeviceLinked(!!data.fcmToken);
                 if (data.latestCommandResult) setLastResult(data.latestCommandResult);
                 if (data.latestCommandTime) setLastUpdateTime(new Date(data.latestCommandTime).toLocaleString());
+              }
+              if (photos) {
+                setPhotos(photos);
               }
             }
           } catch (e) {
@@ -106,6 +110,82 @@ export default function Home() {
   if (loading) return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading Veto...</div>;
   if (!user) return null;
 
+  const renderTelemetryContent = (text: string) => {
+    // 1. Detect GPS Telemetry
+    const latMatch = text.match(/Lat:\s*([-\d.]+)/);
+    const lonMatch = text.match(/Lon:\s*([-\d.]+)/);
+    
+    if (latMatch && lonMatch) {
+      const lat = parseFloat(latMatch[1]);
+      const lon = parseFloat(lonMatch[1]);
+      const bbox = `${lon - 0.01},${lat - 0.01},${lon + 0.01},${lat + 0.01}`;
+      const osmEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lon}`;
+      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
+      
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div>{text}</div>
+          <div style={{ width: '100%', height: '300px', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.2)' }}>
+            <iframe 
+              width="100%" 
+              height="100%" 
+              frameBorder="0" 
+              scrolling="no" 
+              marginHeight={0} 
+              marginWidth={0} 
+              src={osmEmbedUrl} 
+              style={{ border: 'none' }}
+            ></iframe>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+             <a href={mapsUrl} target="_blank" rel="noreferrer" style={{ color: '#2f81f7', fontSize: '0.8rem', textDecoration: 'none' }}>View in Google Maps</a>
+          </div>
+        </div>
+      );
+    }
+    
+    // 2. Detect Stats Telemetry
+    if (text.includes('Model:') && text.includes('Battery:')) {
+      const parseValue = (key: string) => {
+        const regex = new RegExp(`${key}\\s*(.+)`);
+        const match = text.match(regex);
+        return match ? match[1].trim() : 'N/A';
+      };
+
+      return (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+          <div style={{ backgroundColor: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px' }}>Device Model</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: '500', color: '#fff', marginTop: '4px' }}>{parseValue('Model:')}</div>
+          </div>
+          <div style={{ backgroundColor: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px' }}>OS Version</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: '500', color: '#fff', marginTop: '4px' }}>{parseValue('OS:')}</div>
+          </div>
+          <div style={{ backgroundColor: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px' }}>Battery</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: '500', color: '#3fb950', marginTop: '4px' }}>{parseValue('Battery:')}</div>
+          </div>
+          <div style={{ backgroundColor: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px' }}>SIM Network</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: '500', color: '#fff', marginTop: '4px' }}>{parseValue('SIM Network:')}</div>
+          </div>
+          <div style={{ backgroundColor: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px', gridColumn: '1 / -1' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px' }}>Advanced Details</div>
+            <div style={{ fontSize: '0.85rem', color: '#a5d6ff', marginTop: '8px', fontFamily: 'monospace' }}>
+              IMEI: {parseValue('IMEI:')}<br/>
+              Phone: {parseValue('Phone Number:')}<br/>
+              IPs: {parseValue('IPs:')}<br/>
+              WiFi: {parseValue('WiFi:')}
+            </div>
+          </div>
+        </div>
+      );
+    }
+    
+    return text;
+  };
+
   return (
     <main style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
       {feedback && (
@@ -147,6 +227,29 @@ export default function Home() {
         </div>
       </header>
 
+      {/* Captured Photos Gallery */}
+      {photos.length > 0 && (
+        <div className="glass-panel" style={{ marginBottom: '1.5rem', padding: '1.5rem', border: '1px solid rgba(235, 163, 54, 0.3)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: '1.3rem', color: '#eba336', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#eba336', animation: 'pulseGlow 2s infinite' }}></div>
+              Captured Photos
+            </h2>
+          </div>
+          <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+            {photos.map((photo, i) => (
+              <div key={i} style={{ flexShrink: 0, position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={photo.url} alt="Captured" style={{ height: '250px', width: 'auto', objectFit: 'cover' }} />
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(0,0,0,0.7)', padding: '4px 8px', fontSize: '0.75rem', color: '#fff' }}>
+                  {new Date(photo.timestamp).toLocaleString()}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Latest Command Result Box */}
       {lastResult && (
         <div className="glass-panel" style={{ marginBottom: '3rem', padding: '1.5rem', border: '1px solid rgba(47, 129, 247, 0.3)' }}>
@@ -167,7 +270,7 @@ export default function Home() {
             fontSize: '0.95rem',
             border: '1px solid rgba(255,255,255,0.05)'
           }}>
-            {lastResult}
+            {renderTelemetryContent(lastResult)}
           </div>
         </div>
       )}
@@ -287,19 +390,39 @@ export default function Home() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
         <div className="glass-panel" style={{ padding: '1.5rem' }}>
           <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📸</div>
-          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Camera Capture (Coming Soon)</h3>
+          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Camera Capture</h3>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Capture a photo silently and upload it to the dashboard.</p>
           <div style={{ display: 'flex', gap: '10px' }}>
-            <button disabled className="btn" style={{ flex: 1, opacity: 0.5, cursor: 'not-allowed' }}>Front</button>
-            <button disabled className="btn" style={{ flex: 1, opacity: 0.5, cursor: 'not-allowed' }}>Back</button>
+            <button disabled={activeCmd === 'camera front'} onClick={() => sendCommand('camera front')} className="btn btn-primary" style={{ flex: 1, ...getBtnStyle('camera front') }}>
+              {activeCmd === 'camera front' ? '...' : 'Front'}
+            </button>
+            <button disabled={activeCmd === 'camera back'} onClick={() => sendCommand('camera back')} className="btn" style={{ flex: 1, ...getBtnStyle('camera back') }}>
+              {activeCmd === 'camera back' ? '...' : 'Back'}
+            </button>
           </div>
         </div>
         
         <div className="glass-panel" style={{ padding: '1.5rem' }}>
           <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🚨</div>
-          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Theft Mode (Coming Soon)</h3>
+          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Theft Mode</h3>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Instantly lock device, ring siren, capture photo and send GPS.</p>
-          <button disabled className="btn" style={{ width: '100%', opacity: 0.5, cursor: 'not-allowed' }}>Activate Theft Mode</button>
+          <button disabled={activeCmd === 'theft'} onClick={() => sendCommand('theft')} className="btn" style={{ width: '100%', borderColor: '#eba336', color: '#eba336', ...getBtnStyle('theft') }}>
+            {activeCmd === 'theft' ? 'Activating...' : 'Activate Theft Mode'}
+          </button>
+        </div>
+
+        <div className="glass-panel" style={{ padding: '1.5rem' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⏱️</div>
+          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Background Upload</h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Toggle periodic background location tracking.</p>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button disabled={activeCmd === 'autoloc on'} onClick={() => sendCommand('autoloc on')} className="btn btn-primary" style={{ flex: 1, ...getBtnStyle('autoloc on') }}>
+              {activeCmd === 'autoloc on' ? '...' : 'Enable'}
+            </button>
+            <button disabled={activeCmd === 'autoloc off'} onClick={() => sendCommand('autoloc off')} className="btn" style={{ flex: 1, ...getBtnStyle('autoloc off') }}>
+              {activeCmd === 'autoloc off' ? '...' : 'Disable'}
+            </button>
+          </div>
         </div>
       </div>
 

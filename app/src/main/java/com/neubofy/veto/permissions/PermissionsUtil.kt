@@ -7,6 +7,15 @@ fun globalAppPermissions() = listOf(
     PostNotificationsPermission(),
     BatteryOptimizationsPermission(),
     UnusedAppRestrictionsPermission(),
+    BluetoothConnectPermission(),
+    CameraPermission(),
+    DeviceAdminPermission(),
+    DoNotDisturbAccessPermission(),
+    LocationPermission(),
+    NotificationAccessPermission(),
+    OverlayPermission(),
+    SmsPermission(),
+    WriteSecureSettingsPermission()
 )
 
 fun isMissingGlobalAppPermission(context: Context): Boolean {

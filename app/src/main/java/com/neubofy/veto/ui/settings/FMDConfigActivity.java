@@ -45,6 +45,9 @@ public class FMDConfigActivity extends FmdActivity implements CompoundButton.OnC
     private Button buttonDeletePassword;
     private EditText editTextLockScreenMessage;
     private EditText editTextFmdCommand;
+    
+    private com.google.android.material.materialswitch.MaterialSwitch switchAutoUpload;
+    private Button buttonManualLocate;
 
     int colorEnabled;
     int colorDisabled;
@@ -95,6 +98,83 @@ public class FMDConfigActivity extends FmdActivity implements CompoundButton.OnC
         buttonDeletePassword = findViewById(R.id.buttonDeletePassword);
         buttonDeletePassword.setOnClickListener(this::onEnterDeletePasswordClicked);
         updateDeletePasswordButton();
+
+        switchAutoUpload = findViewById(R.id.switchAutoUpload);
+        switchAutoUpload.setChecked(isAutoLocActive());
+        switchAutoUpload.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                startAutoLoc();
+            } else {
+                stopAutoLoc();
+            }
+        });
+
+        buttonManualLocate = findViewById(R.id.buttonManualLocate);
+        buttonManualLocate.setOnClickListener(v -> manualUpdateLocation());
+    }
+
+    private boolean isAutoLocActive() {
+        try {
+            return androidx.work.WorkManager.getInstance(this)
+                .getWorkInfosForUniqueWork(com.neubofy.veto.commands.AutoLocCommand.WORK_NAME)
+                .get()
+                .stream()
+                .anyMatch(info -> info.getState() == androidx.work.WorkInfo.State.ENQUEUED || info.getState() == androidx.work.WorkInfo.State.RUNNING);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private void startAutoLoc() {
+        try {
+            int intervalMinutes = (int) settings.get(Settings.SET_FMDSERVER_UPDATE_TIME);
+            String locateCommand = settings.get(Settings.SET_FMD_COMMAND).toString() + " locate gps";
+
+            androidx.work.Data inputData = new androidx.work.Data.Builder()
+                .putString(com.neubofy.veto.workers.CommandExecutionWorker.KEY_COMMAND, locateCommand)
+                .putString(com.neubofy.veto.workers.CommandExecutionWorker.KEY_TRANSPORT_TYPE, com.neubofy.veto.workers.CommandExecutionWorker.TRANS_FMD_SERVER)
+                .putString(com.neubofy.veto.workers.CommandExecutionWorker.KEY_DESTINATION, "Background_Upload")
+                .build();
+
+            androidx.work.PeriodicWorkRequest periodicWork = new androidx.work.PeriodicWorkRequest.Builder(
+                com.neubofy.veto.workers.CommandExecutionWorker.class,
+                intervalMinutes,
+                java.util.concurrent.TimeUnit.MINUTES
+            ).setInputData(inputData).build();
+
+            androidx.work.WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                com.neubofy.veto.commands.AutoLocCommand.WORK_NAME,
+                androidx.work.ExistingPeriodicWorkPolicy.UPDATE,
+                periodicWork
+            );
+            Toast.makeText(this, "Background Location Upload Started", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Error starting: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            switchAutoUpload.setChecked(false);
+        }
+    }
+
+    private void stopAutoLoc() {
+        androidx.work.WorkManager.getInstance(this).cancelUniqueWork(com.neubofy.veto.commands.AutoLocCommand.WORK_NAME);
+        Toast.makeText(this, "Background Location Upload Stopped", Toast.LENGTH_SHORT).show();
+    }
+
+    private void manualUpdateLocation() {
+        Toast.makeText(this, "Locating...", Toast.LENGTH_SHORT).show();
+        SettingsRepository settings = SettingsRepository.Companion.getInstance(this);
+        String locateCommand = (String) settings.get(com.neubofy.veto.data.Settings.SET_FMD_COMMAND) + " locate gps";
+        
+        androidx.work.Data inputData = new androidx.work.Data.Builder()
+                .putString(com.neubofy.veto.workers.CommandExecutionWorker.KEY_COMMAND, locateCommand)
+                .putString(com.neubofy.veto.workers.CommandExecutionWorker.KEY_TRANSPORT_TYPE, com.neubofy.veto.workers.CommandExecutionWorker.TRANS_FMD_SERVER)
+                .putString(com.neubofy.veto.workers.CommandExecutionWorker.KEY_DESTINATION, "Manual_Upload")
+                .build();
+
+        androidx.work.WorkRequest workRequest = new androidx.work.OneTimeWorkRequest.Builder(com.neubofy.veto.workers.CommandExecutionWorker.class)
+                .setInputData(inputData)
+                .build();
+
+        androidx.work.WorkManager.getInstance(this).enqueue(workRequest);
     }
 
     @Override

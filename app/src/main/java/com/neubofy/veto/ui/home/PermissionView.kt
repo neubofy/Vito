@@ -50,6 +50,14 @@ class PermissionView @JvmOverloads constructor(
             binding.permDescription.visibility = View.GONE
         }
 
+        binding.permInfoIcon.setOnClickListener {
+            MaterialAlertDialogBuilder(context)
+                .setTitle(p.name)
+                .setMessage(descId ?: p.name)
+                .setPositiveButton(android.R.string.ok, null)
+                .show()
+        }
+
         if (p.isGranted(context)) {
             binding.icCheck.visibility = View.VISIBLE
             binding.buttonGrant.visibility = View.GONE

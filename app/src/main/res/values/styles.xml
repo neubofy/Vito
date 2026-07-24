@@ -1,8 +1,5 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <!-- Generated with https://material-foundation.github.io/material-theme-builder/ -->
-    <!-- Now lives in themes.xml. The "NoActionBar" part is removed from the generated code. -->
     <style name="Theme.Fmd" parent="AppTheme" />
 
     <style name="Theme.AppCompat.Translucent" parent="Theme.AppCompat.NoActionBar">
@@ -15,7 +12,7 @@
     </style>
 
     <style name="LCLD.Text.SectionTitle" parent="Widget.AppCompat.TextView">
-        <item name="android:textColor">@color/gold_primary</item>
+        <item name="android:textColor">@color/md_theme_primary</item>
         <item name="android:textSize">17sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textAlignment">textStart</item>
@@ -37,7 +34,6 @@
         <item name="android:textSize">11sp</item>
     </style>
 
-    <!-- AboutLibraries requires Material3 with NoActionBar. -->
     <style name="CustomAboutLibrariesStyle" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

@@ -6,9 +6,6 @@ import android.service.notification.StatusBarNotification
 import com.neubofy.veto.data.Settings
 import com.neubofy.veto.data.SettingsRepository
 import com.neubofy.veto.data.UncaughtExceptionHandler.Companion.initUncaughtExceptionHandler
-import com.neubofy.veto.services.FmdBatteryLowService
-
-import com.neubofy.veto.services.ServerLocationUploadService
 import com.neubofy.veto.ui.onboarding.PinUpdate
 import com.neubofy.veto.ui.onboarding.UpdateboardingModernCryptoActivity
 import com.neubofy.veto.utils.Notifications
@@ -60,15 +57,7 @@ class VetoApplication : Application() {
     fun restartServices() {
         val settings = SettingsRepository.getInstance(this)
         if (settings.serverAccountExists()) {
-            // Scheduling a job that is already running should be fine (?),
-            // because they have the same, fixed JOB_ID.
-            if (settings.get(Settings.SET_FMD_LOW_BAT_SEND) as Boolean) {
-                FmdBatteryLowService.scheduleJobNow(this)
-            }
-            ServerLocationUploadService.scheduleRecurring(this)
-        } else {
-            FmdBatteryLowService.cancelJob(this)
-            ServerLocationUploadService.cancelJob(this)
+            // Background location is strictly managed by AutoLocCommand via WorkManager now.
         }
     }
 }

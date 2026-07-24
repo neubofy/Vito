@@ -42,6 +42,6 @@
     </style>
 
     <style name="ShapeAppearance.LCLD.GlassCard" parent="ShapeAppearance.Material3.MediumComponent">
-        <item name="cornerSize">16dp</item>
+        <item name="cornerSize">20dp</item>
     </style>
 </resources>

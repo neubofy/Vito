@@ -83,10 +83,7 @@ public class MainActivity extends FmdActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.menuItemSetupWarnings) {
-            startActivity(new Intent(this, SetupWarningsActivity.class));
-            return true;
-        } else if (item.getItemId() == R.id.menuItemSettings) {
+        if (item.getItemId() == R.id.menuItemSettings) {
             startActivity(new Intent(this, SettingsActivity.class));
             return true;
         } else if (item.getItemId() == R.id.menuItemWebsite) {

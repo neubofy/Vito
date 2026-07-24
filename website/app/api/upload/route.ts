@@ -1,4 +1,4 @@
-import { put } from '@vercel/blob';
+import { put, del } from '@vercel/blob';
 import { NextResponse } from 'next/server';
 import { adminDb, adminAuth } from '@/lib/firebaseAdmin';
 
@@ -34,13 +34,33 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
+    // Enforce 2-photo limit per user
+    const photosRef = adminDb.collection('users').doc(userId).collection('theftPhotos');
+    const existingPhotosSnap = await photosRef.orderBy('timestamp', 'desc').get();
+    
+    // If they already have 2 or more photos, delete the oldest ones until they have 1 left
+    if (existingPhotosSnap.size >= 2) {
+      const docsToDelete = existingPhotosSnap.docs.slice(1); // keep only the newest 1
+      for (const doc of docsToDelete) {
+        const data = doc.data();
+        if (data.url) {
+          try {
+            await del(data.url); // delete from Vercel Blob
+          } catch (e) {
+            console.error('Failed to delete blob', data.url, e);
+          }
+        }
+        await doc.ref.delete(); // delete from Firestore
+      }
+    }
+
     // Upload to Vercel Blob using the authenticated userId
     const blob = await put(`theft-mode/${userId}/${Date.now()}-${file.name}`, file, {
       access: 'public',
     });
 
     // Save the photo URL to Firestore so the user can see it on the dashboard
-    await adminDb.collection('users').doc(userId).collection('theftPhotos').add({
+    await photosRef.add({
       url: blob.url,
       timestamp: new Date().toISOString()
     });

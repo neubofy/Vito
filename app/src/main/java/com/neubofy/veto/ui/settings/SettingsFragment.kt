@@ -65,23 +65,20 @@ class SettingsFragment : TaggedFragment() {
         when (position) {
             0 -> settingIntent = Intent(context, FMDConfigActivity::class.java)
             1 -> settingIntent = Intent(context, com.neubofy.veto.ui.settings.AccountActivity::class.java)
-            2 -> settingIntent = Intent(context, AllowlistActivity::class.java)
-            3 -> settingIntent = Intent(context, AppearanceActivity::class.java)
-            4 -> {
+            2 -> settingIntent = Intent(context, AppearanceActivity::class.java)
+            3 -> {
                 val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
                 intent.putExtra(Intent.EXTRA_TITLE, filenameForExport())
                 intent.setType("*/*")
                 startActivityForResult(intent, EXPORT_REQ_CODE)
             }
-
-            5 -> {
+            4 -> {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
                 intent.setType("*/*")
                 startActivityForResult(intent, IMPORT_REQ_CODE)
             }
-
-            6 -> settingIntent = Intent(context, LogViewActivity::class.java)
-            7 -> settingIntent = Intent(context, com.neubofy.veto.ui.settings.AboutActivity::class.java)
+            5 -> settingIntent = Intent(context, LogViewActivity::class.java)
+            6 -> settingIntent = Intent(context, com.neubofy.veto.ui.settings.AboutActivity::class.java)
         }
 
         if (settingIntent != null) {

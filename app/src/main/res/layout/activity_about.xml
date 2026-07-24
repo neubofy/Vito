@@ -54,7 +54,7 @@
                 android:id="@+id/cardUpdate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="24dp"
+                
                 app:cardBackgroundColor="@android:color/transparent"
                 app:strokeColor="?attr/colorPrimaryContainer"
                 app:strokeWidth="1dp"
@@ -116,7 +116,7 @@
                 android:id="@+id/cardBetaUpdate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="24dp"
+                
                 app:cardBackgroundColor="@android:color/transparent"
                 app:strokeColor="?attr/colorPrimaryContainer"
                 app:strokeWidth="1dp"
@@ -187,7 +187,7 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="24dp"
+                
                 app:cardBackgroundColor="@android:color/transparent"
                 app:strokeColor="?attr/colorPrimaryContainer"
                 app:strokeWidth="1dp"

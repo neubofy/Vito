@@ -152,14 +152,64 @@ class DummyCameraxActivity : AppCompatActivity() {
     }
 
     private fun uploadPhotoAndFinish(imgBytes: ByteArray) {
-        val picture = CypherUtils.encodeBase64(imgBytes)
+        val settings = com.neubofy.veto.data.SettingsRepository.getInstance(this)
+        val dashboardUrl = settings.get(com.neubofy.veto.data.Settings.SET_FMDSERVER_URL) as String
+        if (dashboardUrl.isEmpty()) {
+            this.log().w(TAG, "Dashboard not paired. Skipping photo upload.")
+            finish()
+            return
+        }
 
-        // TODO: upload in a background job so that the activity can finish fast
-        // We will upload to Vercel API in Phase 4.
-        // val repo = FMDServerApiRepository.getInstance(FMDServerApiRepoSpec(this))
-        // repo.sendPicture(picture)
+        val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            this.log().e(TAG, "User not authenticated. Cannot sync photo.")
+            finish()
+            return
+        }
 
-        finish()
+        currentUser.getIdToken(false).addOnCompleteListener { task ->
+            val idToken = task.result?.token
+            if (!task.isSuccessful || idToken == null) {
+                this.log().e(TAG, "Failed to get Firebase Auth token: ${task.exception?.message}")
+                finish()
+                return@addOnCompleteListener
+            }
+
+            Thread {
+                try {
+                    val apiUrl = if (dashboardUrl.endsWith("/")) "${dashboardUrl}api/upload" else "$dashboardUrl/api/upload"
+                    val url = java.net.URL(apiUrl)
+                    val connection = url.openConnection() as java.net.HttpURLConnection
+                    connection.requestMethod = "POST"
+                    connection.doOutput = true
+                    
+                    val boundary = "----WebKitFormBoundary7MA4YWxkTrZu0gW"
+                    connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=$boundary")
+                    connection.setRequestProperty("Authorization", "Bearer $idToken")
+
+                    val out = java.io.DataOutputStream(connection.outputStream)
+                    out.writeBytes("--$boundary\r\n")
+                    out.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"photo.jpg\"\r\n")
+                    out.writeBytes("Content-Type: image/jpeg\r\n\r\n")
+                    out.write(imgBytes)
+                    out.writeBytes("\r\n--$boundary--\r\n")
+                    out.flush()
+                    out.close()
+
+                    val responseCode = connection.responseCode
+                    if (responseCode in 200..299) {
+                        this.log().i(TAG, "Successfully uploaded photo to Dashboard")
+                    } else {
+                        this.log().e(TAG, "Failed to upload photo. Server returned $responseCode")
+                    }
+                } catch (e: Exception) {
+                    this.log().e(TAG, "Error uploading photo: ${e.message}")
+                }
+            }.start()
+
+            // Finish immediately so the camera UI closes, upload happens in background thread
+            finish()
+        }
     }
 
     companion object {

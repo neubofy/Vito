@@ -35,15 +35,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/margin_small"
-                android:text="Dashboard Telemetry" />
+                android:text="Background Tracking" />
 
             <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/switchAutoUpload"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Auto Location Upload (Coming Soon)"
-                android:checked="false"
-                android:enabled="false"
+                android:text="Background Auto-Upload"
+                android:layout_marginBottom="@dimen/margin_small" />
+
+            <Button
+                android:id="@+id/buttonManualLocate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:text="Update Last Location Now"
                 android:layout_marginBottom="@dimen/margin_small" />
 
             <View

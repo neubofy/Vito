@@ -26,7 +26,6 @@ public class SettingsEntry {
         List<SettingsEntry> entries = new ArrayList<>();
         entries.add(new SettingsEntry(context, R.string.Settings_LCLDConfig, R.drawable.ic_settings));
         entries.add(new SettingsEntry(context, R.string.Settings_LCLDServer_AddAccount, R.drawable.ic_cloud));
-        entries.add(new SettingsEntry(context, R.string.Settings_WhiteList, R.drawable.ic_people));
         entries.add(new SettingsEntry(context, R.string.Settings_Appearance, R.drawable.ic_palette));
         entries.add(new SettingsEntry(context, R.string.Settings_Export, R.drawable.ic_import_export));
         entries.add(new SettingsEntry(context, R.string.Settings_Import, R.drawable.ic_import_export));

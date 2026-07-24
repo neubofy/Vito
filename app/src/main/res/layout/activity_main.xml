@@ -21,7 +21,7 @@
             android:minHeight="?attr/actionBarSize"
             android:background="@android:color/transparent"
             app:title="@string/app_name"
-            app:titleTextColor="@color/gold_primary"
+            app:titleTextColor="?attr/colorPrimary"
             android:fitsSystemWindows="true" />
     </com.google.android.material.appbar.AppBarLayout>
 

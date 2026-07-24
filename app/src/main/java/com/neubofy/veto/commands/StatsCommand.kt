@@ -32,15 +32,56 @@ class StatsCommand(context: Context) : Command(context) {
         transport: Transport<T>,
     ) {
         val ips = NetworkUtils.getIps(context)
-        val ipsString = ips.joinToString("\n\n")
+        val ipsString = ips.joinToString(", ")
+
+        // Hardware details
+        val manufacturer = android.os.Build.MANUFACTURER
+        val model = android.os.Build.MODEL
+        val androidVersion = android.os.Build.VERSION.RELEASE
+        val sdkLevel = android.os.Build.VERSION.SDK_INT
+
+        // Battery details
+        val bm = context.getSystemService(Context.BATTERY_SERVICE) as android.os.BatteryManager
+        val batteryPct = bm.getIntProperty(android.os.BatteryManager.BATTERY_PROPERTY_CAPACITY)
+
+        // Telephony details (SIM/IMEI)
+        var imei = "Unknown"
+        var networkOperator = "Unknown"
+        var phoneNumber = "Unknown"
+        
+        val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as android.telephony.TelephonyManager
+        if (androidx.core.app.ActivityCompat.checkSelfPermission(context, android.Manifest.permission.READ_PHONE_STATE) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            try {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    imei = tm.imei ?: "Unknown"
+                } else {
+                    @Suppress("DEPRECATION")
+                    imei = tm.deviceId ?: "Unknown"
+                }
+                networkOperator = tm.networkOperatorName ?: "Unknown"
+                @Suppress("MissingPermission")
+                phoneNumber = tm.line1Number ?: "Unknown"
+            } catch (e: Exception) {
+                // Ignore
+            }
+        }
 
         val deferred = CompletableDeferred<Unit>()
 
         WifiScan(context, { scanResults ->
             val wifisString =
-                scanResults.joinToString("\n\n") { sr -> "SSID: ${sr.getSsidCompat()}\nBSSID: ${sr.BSSID}" }
+                scanResults.joinToString(", ") { sr -> "${sr.getSsidCompat()}" }
 
-            val reply = context.getString(R.string.cmd_stats_response, ipsString, wifisString)
+            val reply = """
+                Model: $manufacturer $model
+                OS: Android $androidVersion (SDK $sdkLevel)
+                Battery: $batteryPct%
+                IMEI: $imei
+                SIM Network: $networkOperator
+                Phone Number: $phoneNumber
+                IPs: $ipsString
+                WiFi: $wifisString
+            """.trimIndent()
 
             transport.send(context, reply)
             deferred.complete(Unit)

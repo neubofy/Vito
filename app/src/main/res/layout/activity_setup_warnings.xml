@@ -40,8 +40,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/margin_normal"
                 app:cardBackgroundColor="#40FFFFFF"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
+                
+                
                 app:strokeWidth="1dp"
                 app:strokeColor="#60FFFFFF">
 
@@ -68,8 +68,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="#40FFFFFF"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="0dp"
+                
+                
                 app:strokeWidth="1dp"
                 app:strokeColor="#60FFFFFF">
 

@@ -18,7 +18,7 @@
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:src="@drawable/ic_security"
-            app:tint="@color/gold_primary"
+            app:tint="?attr/colorPrimary"
             android:layout_marginTop="48dp"
             android:layout_marginBottom="16dp"/>
 
@@ -30,7 +30,7 @@
             android:textSize="24sp"
             android:textStyle="bold"
             android:textAlignment="center"
-            android:textColor="@color/gold_primary"/>
+            android:textColor="?attr/colorPrimary"/>
 
         <TextView
             android:id="@+id/textViewLockScreenMessage"
@@ -47,7 +47,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="DISMISS"
-            android:backgroundTint="@color/gold_primary"
+            android:backgroundTint="?attr/colorPrimary"
             android:textColor="@color/md_theme_onPrimary"
             android:layout_marginBottom="32dp"/>
 

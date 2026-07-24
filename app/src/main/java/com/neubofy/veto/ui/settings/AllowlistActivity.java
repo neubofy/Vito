@@ -145,30 +145,29 @@ public class AllowlistActivity extends FmdActivity {
                 ContactsContract.Contacts.DISPLAY_NAME,
                 ContactsContract.CommonDataKinds.Phone.NUMBER
         };
-        Cursor cursor = managedQuery(uri, projection, null, null, null);
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
 
-        if (!cursor.moveToFirst()) {
+        if (cursor == null || !cursor.moveToFirst()) {
+            if (cursor != null) cursor.close();
             // cursor is empty
             return;
         }
-        do {
-            int nameIdx = cursor.getColumnIndex(ContactsContract.Data.DISPLAY_NAME);
-            String cName = "";
-            if (nameIdx >= 0) {
-                cName = cursor.getString(nameIdx);
-            }
+        try {
+            do {
+                int nameIdx = cursor.getColumnIndex(ContactsContract.Data.DISPLAY_NAME);
+                int numIdx = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+                
+                String cName = nameIdx >= 0 ? cursor.getString(nameIdx) : "";
+                String cNumber = numIdx >= 0 ? cursor.getString(numIdx) : "";
 
-            int numIdx = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-            String cNumber = "";
-            if (numIdx >= 0) {
-                cNumber = cursor.getString(numIdx);
-            }
-
-            Contact contact = Contact.from(this, cName, cNumber);
-            if (contact != null) {
-                addContactToAllowList(contact);
-            }
-        } while (cursor.moveToNext());
+                Contact contact = Contact.from(this, cName, cNumber);
+                if (contact != null) {
+                    addContactToAllowList(contact);
+                }
+            } while (cursor.moveToNext());
+        } finally {
+            cursor.close();
+        }
     }
 
     private void addContactToAllowList(@Nullable Contact contact) {

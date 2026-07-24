@@ -39,8 +39,8 @@
     <string name="Settings_Settings">Settings</string>
     <string name="Settings_LCLDConfig">General</string>
     <string name="Settings_FMDConfig">General</string>
-    <string name="Settings_LCLDServer" translatable="false">LCLD Server</string>
-    <string name="Settings_FMDServer" translatable="false">LCLD Server</string>
+    <string name="Settings_LCLDServer" translatable="false">Veto Server</string>
+    <string name="Settings_FMDServer" translatable="false">Veto Server</string>
     <string name="Settings_WhiteList">Allowed contacts</string>
     <string name="Settings_OpenCellId" translatable="false">OpenCelliD</string>
     <string name="Settings_Appearance">Appearance</string>
@@ -70,15 +70,15 @@
     <string name="delete_pw_warning_no_backup">Warning: The password is not included in the app backup.</string>
     <string name="delete_pw_warning_empty">Warning: Deleting won\'t work because the delete password is empty. You must both enable the feature and set a password.</string>
 
-    <!-- Settings: LCLD Server -->
+    <!-- Settings: Veto Server -->
     <string name="Settings_LCLD_Server_General">General</string>
     <string name="Settings_FMD_Server_General">General</string>
     <string name="Settings_LCLD_Server_Server_URL">Server URL:</string>
     <string name="Settings_FMD_Server_Server_URL">Server URL:</string>
     <string name="Settings_LCLD_Server_User_ID">User ID:</string>
     <string name="Settings_FMD_Server_User_ID">User ID:</string>
-    <string name="Settings_LCLD_Server_ID_Desc">You need the user ID to find your device with LCLD Server. Write it down and keep it safe.</string>
-    <string name="Settings_FMD_Server_ID_Desc">You need the user ID to find your device with LCLD Server. Write it down and keep it safe.</string>
+    <string name="Settings_LCLD_Server_ID_Desc">You need the user ID to find your device with Veto Server. Write it down and keep it safe.</string>
+    <string name="Settings_FMD_Server_ID_Desc">You need the user ID to find your device with Veto Server. Write it down and keep it safe.</string>
     <string name="Settings_LCLD_Server_Connection_Status">Connection status:</string>
     <string name="Settings_FMD_Server_Connection_Status">Connection status:</string>
     <string name="Settings_LCLD_Server_Connection_Status_Success">Success</string>
@@ -87,8 +87,8 @@
     <string name="Settings_FMDServer_Change_Password_Button">Change password</string>
     <string name="Settings_LCLDServer_Logout_Button">Log out</string>
     <string name="Settings_FMDServer_Logout_Button">Log out</string>
-    <string name="Settings_LCLDServer_Logout_Text">Do you really want to log out from your LCLD Server account?</string>
-    <string name="Settings_FMDServer_Logout_Text">Do you really want to log out from your LCLD Server account?</string>
+    <string name="Settings_LCLDServer_Logout_Text">Do you really want to log out from your Veto Server account?</string>
+    <string name="Settings_FMDServer_Logout_Text">Do you really want to log out from your Veto Server account?</string>
     <string name="Settings_LCLDServer_Delete_Account">Delete account</string>
     <string name="Settings_FMDServer_Delete_Account">Delete account</string>
     <string name="Settings_LCLDServer_Alert_DeleteData_Desc">This will delete all data from the server! Are you sure?</string>
@@ -97,8 +97,8 @@
     <string name="Settings_FMDServer_Unregister_Success">Unregistering and data deletion successful!</string>
     <string name="Settings_LCLDServer_Push_Title" translatable="false">Push</string>
     <string name="Settings_FMDServer_Push_Title" translatable="false">Push</string>
-    <string name="Settings_LCLDServer_Push_Description">Sending commands from LCLD Server to your device requires a UnifiedPush distributor app.</string>
-    <string name="Settings_FMDServer_Push_Description">Sending commands from LCLD Server to your device requires a UnifiedPush distributor app.</string>
+    <string name="Settings_LCLDServer_Push_Description">Sending commands from Veto Server to your device requires a UnifiedPush distributor app.</string>
+    <string name="Settings_FMDServer_Push_Description">Sending commands from Veto Server to your device requires a UnifiedPush distributor app.</string>
     <string name="Settings_LCLDServer_Push_Distributor">Distributor: %s</string>
     <string name="Settings_FMDServer_Push_Distributor">Distributor: %s</string>
     <string name="Settings_LCLDServer_Push_Url">Push URL: %s</string>
@@ -115,12 +115,12 @@
     <string name="Settings_FMDServer_Push_Info_Sunup">The recommended UnifiedPush distributor app is Sunup. Sunup is easy set up and uses push servers from Mozilla.</string>
     <string name="Settings_LCLDServer_Check_Interval_Title">Connectivity check interval</string>
     <string name="Settings_FMDServer_Check_Interval_Title">Connectivity check interval</string>
-    <string name="Settings_LCLDServer_Check_Interval_Description">LCLD checks the connectivity to LCLD Server every X hours. Set this to 0 to disable the connectivity check.</string>
-    <string name="Settings_FMDServer_Check_Interval_Description">LCLD checks the connectivity to LCLD Server every X hours. Set this to 0 to disable the connectivity check.</string>
+    <string name="Settings_LCLDServer_Check_Interval_Description">LCLD checks the connectivity to Veto Server every X hours. Set this to 0 to disable the connectivity check.</string>
+    <string name="Settings_FMDServer_Check_Interval_Description">LCLD checks the connectivity to Veto Server every X hours. Set this to 0 to disable the connectivity check.</string>
     <string name="Settings_LCLDServer_Check_Notify_After_Title">Maximum allowed time without connectivity</string>
     <string name="Settings_FMDServer_Check_Notify_After_Title">Maximum allowed time without connectivity</string>
-    <string name="Settings_LCLDServer_Check_Notify_After_Description">LCLD will notify you if the last successful connection to LCLD Server is more than X hours ago. This has no effect if the connectivity check is disabled.</string>
-    <string name="Settings_FMDServer_Check_Notify_After_Description">LCLD will notify you if the last successful connection to LCLD Server is more than X hours ago. This has no effect if the connectivity check is disabled.</string>
+    <string name="Settings_LCLDServer_Check_Notify_After_Description">LCLD will notify you if the last successful connection to Veto Server is more than X hours ago. This has no effect if the connectivity check is disabled.</string>
+    <string name="Settings_FMDServer_Check_Notify_After_Description">LCLD will notify you if the last successful connection to Veto Server is more than X hours ago. This has no effect if the connectivity check is disabled.</string>
     <string name="Settings_LCLDServer_Update_Interval_Title">Background location upload interval</string>
     <string name="Settings_FMDServer_Update_Interval_Title">Background location upload interval</string>
     <string name="Settings_LCLDServer_Update_Interval_Description">LCLD uploads the device\'s location every X minutes.</string>
@@ -148,25 +148,25 @@
     <string name="pw_change_mismatch">The repeated passwords do not match.</string>
     <string name="pw_change_wrong_password">Wrong password</string>
     <string name="pw_change_network_failed">Password change failed due to a network error.</string>
-    <string name="server_login_attempts_title">Failed login attempts to LCLD Server</string>
-    <string name="server_login_attempts_text">Someone tried to log in to your LCLD Server account \"%s\". Due to multiple failed passwords, the account is now locked for 10 minutes.</string>
-    <string name="server_version_upgrade_required_title">LCLD Server upgrade required</string>
-    <string name="server_version_upgrade_required_text">The LCLD Server you are using has version {CURRENT}, but this app requires at least {MIN}. Controlling your device via LCLD Server may not work anymore. Please upgrade your server.</string>
-    <string name="server_connectivity_lost_title">LCLD Server connectivity lost</string>
-    <string name="server_connectivity_lost_text">The LCLD Server at %1$s can no longer be reached. The last successful connection was at %2$s.</string>
+    <string name="server_login_attempts_title">Failed login attempts to Veto Server</string>
+    <string name="server_login_attempts_text">Someone tried to log in to your Veto Server account \"%s\". Due to multiple failed passwords, the account is now locked for 10 minutes.</string>
+    <string name="server_version_upgrade_required_title">Veto Server upgrade required</string>
+    <string name="server_version_upgrade_required_text">The Veto Server you are using has version {CURRENT}, but this app requires at least {MIN}. Controlling your device via Veto Server may not work anymore. Please upgrade your server.</string>
+    <string name="server_connectivity_lost_title">Veto Server connectivity lost</string>
+    <string name="server_connectivity_lost_text">The Veto Server at %1$s can no longer be reached. The last successful connection was at %2$s.</string>
     <string name="server_connectivity_check_not_enabled_title">Enable the server connectivity check</string>
-    <string name="server_connectivity_check_not_enabled_text">LCLD can regularly check whether LCLD Server is still reachable. For privacy reasons this is off by default. But for availability reasons we recommend enabling it.</string>
+    <string name="server_connectivity_check_not_enabled_text">LCLD can regularly check whether Veto Server is still reachable. For privacy reasons this is off by default. But for availability reasons we recommend enabling it.</string>
 
-    <!-- LCLD Server registration/login -->
+    <!-- Veto Server registration/login -->
     <string name="server_version">Server version</string>
     <string name="server_version_error">Error getting server version</string>
     <string name="server_version_error_low_version">At least server version {MIN} is required, but the selected server has version {CURRENT}. Continue at your own risk.</string>
-    <string name="Settings_LCLDServer_AddAccount">LCLD Server: Login</string>
-    <string name="Settings_FMDServer_AddAccount">LCLD Server: Login</string>
-    <string name="Settings_LCLDServer_Info">With LCLD Server you can send commands over the internet, from the server to the app. You can also view the device location on a map or view pictures taken by the device. For self-hosting instructions, see the website.</string>
-    <string name="Settings_FMDServer_Info">With LCLD Server you can send commands over the internet, from the server to the app. You can also view the device location on a map or view pictures taken by the device. For self-hosting instructions, see the website.</string>
-    <string name="Settings_LCLDServer_open_website">Open LCLD Server website</string>
-    <string name="Settings_FMDServer_open_website">Open LCLD Server website</string>
+    <string name="Settings_LCLDServer_AddAccount">Veto Server: Login</string>
+    <string name="Settings_FMDServer_AddAccount">Veto Server: Login</string>
+    <string name="Settings_LCLDServer_Info">With Veto Server you can send commands over the internet, from the server to the app. You can also view the device location on a map or view pictures taken by the device. For self-hosting instructions, see the website.</string>
+    <string name="Settings_FMDServer_Info">With Veto Server you can send commands over the internet, from the server to the app. You can also view the device location on a map or view pictures taken by the device. For self-hosting instructions, see the website.</string>
+    <string name="Settings_LCLDServer_open_website">Open Veto Server website</string>
+    <string name="Settings_FMDServer_open_website">Open Veto Server website</string>
     <string name="Settings_LCLDServer_use_default_server">Use the public server</string>
     <string name="Settings_FMDServer_use_default_server">Use the public server</string>
     <string name="Settings_LCLDServer_Server_Url">Server URL</string>
@@ -178,7 +178,7 @@
     <string name="Settings_LCLDServer_Alert_PrivacyPolicy_Title">Privacy policy</string>
     <string name="Settings_FMDServer_Alert_PrivacyPolicy_Title">Privacy policy</string>
     <string name="server_fmd_id" translatable="false">LCLD ID</string>
-    <string name="server_fmd_id_hint">The LCLD ID identifies your account on the LCLD Server. Leave this empty to let the server generate an ID. The server administrator can see the LCLD ID.</string>
+    <string name="server_fmd_id_hint">The LCLD ID identifies your account on the Veto Server. Leave this empty to let the server generate an ID. The server administrator can see the LCLD ID.</string>
     <string name="password">Password</string>
     <string name="server_password_hint">Choose a password that cannot be guessed, but that you can recover when you lose your device. The password grants access to remotely running commands on your device. The server administrator cannot access or reset your password.</string>
     <string name="Settings_LCLDServer_Error_id_or_pw_empty">The LCLD ID and password must not be empty.</string>
@@ -237,7 +237,7 @@
     <string name="about_source_code">Source code</string>
     <string name="about_wiki">Wiki</string>
     <string name="about_gratitude">LCLD (Locate &amp; Control Lost Device) is developed by Pawan Washudev.\n\nThis project is a fork of \'Find My Device\' (FMD) by Nulide. ❤️ HUGE THANKS to Nulide and the original FMD team for their incredible open-source work which made this project possible.</string>
-    <string name="app_description">LCLD (Locate &amp; Control Lost Device) allows you to remotely locate your device. You can communicate with LCLD over SMS, instant messengers, or using LCLD Server. Locate your device, make it ring, lock it, or wipe it - all from remote.</string>
+    <string name="app_description">LCLD (Locate &amp; Control Lost Device) allows you to remotely locate your device. You can communicate with LCLD over SMS, instant messengers, or using Veto Server. Locate your device, make it ring, lock it, or wipe it - all from remote.</string>
 
     <!-- Crypto update boarding -->
     <string name="notify_crypto_update_title">Action required</string>
@@ -265,9 +265,9 @@
     <string name="cmd_bluetooth_response_is_off">Bluetooth is off.</string>
 
     <string name="cmd_camera_description_short">Take a picture</string>
-    <string name="cmd_camera_description_long">Takes a picture of with the front/back camera and uploads it to LCLD Server. Currently only uploading to LCLD Server is supported. You can send this command via other transport channels, too, and the picture will be uploaded to LCLD Server (if an account exists).</string>
-    <string name="cmd_camera_response_no_fmd_server">Cannot take picture: no LCLD Server account exists.</string>
-    <string name="cmd_camera_response_success">The device is taking a picture and will send it to LCLD Server. You can view it here soon: %s</string>
+    <string name="cmd_camera_description_long">Takes a picture of with the front/back camera and uploads it to Veto Server. Currently only uploading to Veto Server is supported. You can send this command via other transport channels, too, and the picture will be uploaded to Veto Server (if an account exists).</string>
+    <string name="cmd_camera_response_no_fmd_server">Cannot take picture: no Veto Server account exists.</string>
+    <string name="cmd_camera_response_success">The device is taking a picture and will send it to Veto Server. You can view it here soon: %s</string>
 
     <string name="cmd_delete_description_short">Factory-reset the device</string>
     <string name="cmd_delete_description_long">This wipes all data. Afterwards you will no longer be able to communicate with the device. To prevent accidental and malicious usage, this command requires a password and it needs to be explicitly enabled in the settings.</string>
@@ -364,10 +364,10 @@
     <string name="transport_notification_reply_description">You can allow LCLD to read your notifications to listen for commands. LCLD can then reply via Android\'s built-in notification reply feature. This allows you to control LCLD using a messaging application of your choice, as long as it posts notifications that can be replied to. E.g., you can send a Signal message \"%s mypin help\" to your phone.</string>
     <string name="transport_notification_reply_description_auth">Controlling LCLD via notification reply requires the LCLD PIN to be set. Every message must contain the correct PIN.</string>
 
-    <string name="transport_fmd_server_title" translatable="false">LCLD Server</string>
-    <string name="transport_fmd_server_description">LCLD Server provides a web interface to control your device, view its location, and view pictures it sent. You can self-host LCLD Server or use the provided instance. Data is stored encrypted on the server, protected by your password.</string>
-    <string name="transport_fmd_server_description_auth">Anyone who knows your username and password can log in to LCLD Server and control your device.</string>
-    <string name="transport_fmd_server_description_note">LCLD Server requires an internet connection. This can be a mobile network (thus the SIM needs to be unlocked) or WiFi.</string>
+    <string name="transport_fmd_server_title" translatable="false">Veto Server</string>
+    <string name="transport_fmd_server_description">Veto Server provides a web interface to control your device, view its location, and view pictures it sent. You can self-host Veto Server or use the provided instance. Data is stored encrypted on the server, protected by your password.</string>
+    <string name="transport_fmd_server_description_auth">Anyone who knows your username and password can log in to Veto Server and control your device.</string>
+    <string name="transport_fmd_server_description_note">Veto Server requires an internet connection. This can be a mobile network (thus the SIM needs to be unlocked) or WiFi.</string>
 
     <string name="transport_inapp_title">In-app</string>
     <string name="transport_inapp_description">Send commands locally from within LCLD to your device. This is useful for testing. LCLD will reply with a notification.</string>
@@ -380,12 +380,12 @@
     <string name="Notification_Usage_Description">Notifications when LCLD is receiving commands</string>
     <string name="Pin_Usage">PIN usage</string>
     <string name="Notification_Pin_Usage_Description">Notifications when LCLD is accessed is via the PIN</string>
-    <string name="Notification_Server" translatable="false">LCLD Server</string>
-    <string name="Notification_Server_Description">Notifications related to LCLD Server</string>
+    <string name="Notification_Server" translatable="false">Veto Server</string>
+    <string name="Notification_Server_Description">Notifications related to Veto Server</string>
     <string name="Notification_Security">Security</string>
     <string name="Notification_Security_Description">Notifications about security updates</string>
     <string name="Notification_FAIL">Failures</string>
-    <string name="Notification_Fail_Description">Notifications when something fails, like the connection to LCLD Server</string>
+    <string name="Notification_Fail_Description">Notifications when something fails, like the connection to Veto Server</string>
     <string name="Notification_InApp">In-app transport channel</string>
     <string name="Notification_InApp_Description">Notifications from the in-app transport channel</string>
     <string name="Notification_ExecutionService">Command execution</string>
@@ -406,7 +406,7 @@
     <string name="missing_permissions_title">Missing permissions</string>
     <string name="missing_permissions_description">The following permissions are needed for LCLD to run.</string>
     <string name="missing_push_title">Missing UnifiedPush</string>
-    <string name="missing_push_description">Without a UnifiedPush distributor app you cannot receive commands from LCLD Server.</string>
+    <string name="missing_push_description">Without a UnifiedPush distributor app you cannot receive commands from Veto Server.</string>
 
     <!-- Lock screen message-->
     <string name="Locked_Lock_Screen">LCLD\nThis device is locked!\nMessage from the owner:</string>

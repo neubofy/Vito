@@ -38,6 +38,16 @@ class VetoApplication : Application() {
         doUpdateMigrations(this)
 
         restartServices()
+
+        // Enable Firebase Analytics passively on a background thread
+        Thread {
+            try {
+                com.google.firebase.analytics.FirebaseAnalytics.getInstance(this).setAnalyticsCollectionEnabled(true)
+                this.log().i(TAG, "Passive Firebase Analytics enabled")
+            } catch (e: Exception) {
+                this.log().e(TAG, "Failed to init Firebase Analytics: ${e.message}")
+            }
+        }.start()
     }
 
     private fun doUpdateMigrations(context: Context) {

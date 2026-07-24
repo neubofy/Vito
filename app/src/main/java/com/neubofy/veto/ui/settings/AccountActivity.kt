@@ -36,6 +36,8 @@ class AccountActivity : FmdActivity() {
     private lateinit var etEmail: TextInputEditText
     private lateinit var etPassword: TextInputEditText
     private lateinit var btnEmailSignIn: MaterialButton
+    private lateinit var btnEmailSignUp: MaterialButton
+    private lateinit var btnForgotPassword: MaterialButton
     private lateinit var btnGoogleSignIn: MaterialButton
     private lateinit var btnOpenWebsite: MaterialButton
     private lateinit var btnSyncDevice: MaterialButton
@@ -58,6 +60,8 @@ class AccountActivity : FmdActivity() {
         etEmail = findViewById(R.id.etEmail)
         etPassword = findViewById(R.id.etPassword)
         btnEmailSignIn = findViewById(R.id.btnEmailSignIn)
+        btnEmailSignUp = findViewById(R.id.btnEmailSignUp)
+        btnForgotPassword = findViewById(R.id.btnForgotPassword)
         btnGoogleSignIn = findViewById(R.id.btnGoogleSignIn)
         btnOpenWebsite = findViewById(R.id.btnOpenWebsite)
         btnSyncDevice = findViewById(R.id.btnSyncDevice)
@@ -135,6 +139,52 @@ class AccountActivity : FmdActivity() {
                 }
         }
 
+        btnEmailSignUp.setOnClickListener {
+            if (!validateUrl(settings)) return@setOnClickListener
+            val email = etEmail.text.toString().trim()
+            val password = etPassword.text.toString().trim()
+
+            if (email.isEmpty() || password.isEmpty()) {
+                Snackbar.make(btnEmailSignIn, "Please enter email and password.", Snackbar.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            tvStatus.text = "Creating account..."
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        Snackbar.make(btnEmailSignIn, "Account Created Successfully!", Snackbar.LENGTH_LONG).show()
+                        onAuthSuccess()
+                    } else {
+                        val e = task.exception
+                        log().w(TAG, "Account creation failed: ${e?.message}")
+                        Snackbar.make(btnEmailSignIn, "Creation Failed: ${e?.message}", Snackbar.LENGTH_LONG).show()
+                        tvStatus.text = "Account Creation Failed"
+                    }
+                }
+        }
+
+        btnForgotPassword.setOnClickListener {
+            val email = etEmail.text.toString().trim()
+            if (email.isEmpty()) {
+                Snackbar.make(btnEmailSignIn, "Please enter your email to reset password.", Snackbar.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            tvStatus.text = "Sending reset link..."
+            auth.sendPasswordResetEmail(email)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Snackbar.make(btnEmailSignIn, "Password reset link sent to $email", Snackbar.LENGTH_LONG).show()
+                        tvStatus.text = "Reset Link Sent"
+                    } else {
+                        val e = task.exception
+                        Snackbar.make(btnEmailSignIn, "Error: ${e?.message}", Snackbar.LENGTH_LONG).show()
+                        tvStatus.text = "Failed to send reset link"
+                    }
+                }
+        }
+
         btnSignOut.setOnClickListener {
             auth.signOut()
             googleSignInClient.signOut()
@@ -153,7 +203,11 @@ class AccountActivity : FmdActivity() {
 
         btnSyncDevice.setOnClickListener {
             tvStatus.text = "Syncing with Dashboard..."
-            DashboardSync.uploadTokenIfPaired(this)
+            DashboardSync.uploadTokenIfPaired(this) { statusMsg, isSuccess ->
+                runOnUiThread {
+                    tvStatus.text = statusMsg
+                }
+            }
         }
 
         updateUI()
@@ -206,7 +260,11 @@ class AccountActivity : FmdActivity() {
             settings.set(Settings.SET_FMDSERVER_ID, user.uid)
 
             tvStatus.text = "Pairing... Sending FCM Token to Dashboard"
-            DashboardSync.uploadTokenIfPaired(this)
+            DashboardSync.uploadTokenIfPaired(this) { statusMsg, isSuccess ->
+                runOnUiThread {
+                    tvStatus.text = statusMsg
+                }
+            }
 
             Snackbar.make(btnGoogleSignIn, "Paired! Connected as ${user.email}", Snackbar.LENGTH_LONG).show()
             updateUI()

@@ -13,79 +13,76 @@ import java.net.URL
 object DashboardSync {
     private val TAG = DashboardSync::class.java.simpleName
 
-    fun uploadTokenIfPaired(context: Context) {
+    fun uploadTokenIfPaired(context: Context, callback: ((String, Boolean) -> Unit)? = null) {
         val settings = SettingsRepository.getInstance(context)
-        val url = settings.get(Settings.SET_FMDSERVER_URL) as String
+        val dashboardUrl = settings.get(Settings.SET_FMDSERVER_URL) as String
         val userId = settings.get(Settings.SET_FMDSERVER_ID) as String
 
-        if (url.isEmpty() || userId.isEmpty()) {
+        if (dashboardUrl.isEmpty() || userId.isEmpty()) {
             context.log().i(TAG, "Dashboard not paired. Skipping token upload.")
+            callback?.invoke("Dashboard not paired.", false)
             return
         }
 
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                context.log().w(TAG, "Fetching FCM registration token failed: ${task.exception?.message}")
-                return@addOnCompleteListener
-            }
-
-            val token = task.result
-            uploadTokenToServer(context, url, userId, token)
-        }
-    }
-
-    private fun uploadTokenToServer(context: Context, dashboardUrl: String, userId: String, fcmToken: String) {
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser == null) {
             context.log().e(TAG, "User not authenticated. Cannot sync token.")
+            callback?.invoke("User not authenticated.", false)
             return
         }
 
+        callback?.invoke("Fetching Firebase Auth token...", true)
         currentUser.getIdToken(true).addOnCompleteListener { task ->
             if (!task.isSuccessful || task.result == null) {
                 context.log().e(TAG, "Failed to get Firebase Auth token: ${task.exception?.message}")
+                callback?.invoke("Auth Token Error: ${task.exception?.message}", false)
                 return@addOnCompleteListener
             }
 
             val idToken = task.result?.token ?: return@addOnCompleteListener
 
-            Thread {
-                try {
-                    val apiUrl = if (dashboardUrl.endsWith("/")) "${dashboardUrl}api/device/link" else "$dashboardUrl/api/device/link"
-                    val url = URL(apiUrl)
-                    val connection = url.openConnection() as HttpURLConnection
-                    connection.requestMethod = "POST"
-                    connection.setRequestProperty("Content-Type", "application/json")
-                    connection.setRequestProperty("Authorization", "Bearer $idToken")
-                    connection.doOutput = true
-
-                    val jsonParam = JSONObject()
-                    jsonParam.put("fcmToken", fcmToken)
-
-                    val out = OutputStreamWriter(connection.outputStream)
-                    out.write(jsonParam.toString())
-                    out.close()
-
-                    val responseCode = connection.responseCode
-                    if (responseCode in 200..299) {
-                        context.log().i(TAG, "Successfully synced FCM token to Dashboard")
-                        SettingsRepository.getInstance(context).set(Settings.SET_SYNCED_FCM_TOKEN, fcmToken)
-                        android.os.Handler(android.os.Looper.getMainLooper()).post {
-                            android.widget.Toast.makeText(context, "✅ Dashboard Connected!", android.widget.Toast.LENGTH_SHORT).show()
-                        }
-                    } else {
-                        context.log().e(TAG, "Failed to sync FCM token. Server returned $responseCode")
-                        android.os.Handler(android.os.Looper.getMainLooper()).post {
-                            android.widget.Toast.makeText(context, "❌ Dashboard Connection Error: $responseCode", android.widget.Toast.LENGTH_LONG).show()
-                        }
-                    }
-                } catch (e: Exception) {
-                    context.log().e(TAG, "Error syncing FCM token: ${e.message}")
-                    android.os.Handler(android.os.Looper.getMainLooper()).post {
-                        android.widget.Toast.makeText(context, "❌ Network Error connecting to Dashboard", android.widget.Toast.LENGTH_LONG).show()
-                    }
+            callback?.invoke("Fetching FCM token...", true)
+            FirebaseMessaging.getInstance().token.addOnCompleteListener { fcmTask ->
+                if (!fcmTask.isSuccessful) {
+                    context.log().w(TAG, "Fetching FCM registration token failed: ${fcmTask.exception?.message}")
+                    callback?.invoke("FCM Token Error: ${fcmTask.exception?.message}", false)
+                    return@addOnCompleteListener
                 }
-            }.start()
+
+                val fcmToken = fcmTask.result
+
+                Thread {
+                    try {
+                        callback?.invoke("Syncing to server...", true)
+                        val apiUrl = if (dashboardUrl.endsWith("/")) "${dashboardUrl}api/device/link" else "$dashboardUrl/api/device/link"
+                        val url = URL(apiUrl)
+                        val connection = url.openConnection() as HttpURLConnection
+                        connection.requestMethod = "POST"
+                        connection.setRequestProperty("Content-Type", "application/json")
+                        connection.setRequestProperty("Authorization", "Bearer $idToken")
+                        connection.doOutput = true
+
+                        val jsonParam = JSONObject()
+                        jsonParam.put("fcmToken", fcmToken)
+
+                        val out = OutputStreamWriter(connection.outputStream)
+                        out.write(jsonParam.toString())
+                        out.close()
+
+                        val responseCode = connection.responseCode
+                        if (responseCode in 200..299) {
+                            context.log().i(TAG, "Successfully synced token to Dashboard")
+                            callback?.invoke("Synced Successfully!", true)
+                        } else {
+                            context.log().e(TAG, "Failed to sync token. Server returned $responseCode")
+                            callback?.invoke("Server Error: $responseCode", false)
+                        }
+                    } catch (e: Exception) {
+                        context.log().e(TAG, "Error syncing token: ${e.message}")
+                        callback?.invoke("Network Error: ${e.message}", false)
+                    }
+                }.start()
+            }
         }
     }
 }

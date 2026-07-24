@@ -1,18 +1,31 @@
 import { NextResponse } from 'next/server';
-import { adminDb } from '@/lib/firebaseAdmin';
+import { adminDb, adminAuth } from '@/lib/firebaseAdmin';
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { userId, fcmToken } = body;
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-    if (!userId || !fcmToken) {
-      return NextResponse.json({ error: 'Missing userId or fcmToken' }, { status: 400 });
+    const token = authHeader.split('Bearer ')[1];
+    let decodedToken;
+    try {
+      decodedToken = await adminAuth.verifyIdToken(token);
+    } catch (e) {
+      return NextResponse.json({ error: 'Invalid authentication token' }, { status: 401 });
+    }
+
+    const userId = decodedToken.uid;
+    const body = await req.json();
+    const { fcmToken } = body;
+
+    if (!fcmToken) {
+      return NextResponse.json({ error: 'Missing fcmToken' }, { status: 400 });
     }
 
     // Save the device's FCM token directly to the user's Firestore document
-    // We use the admin SDK here so it bypasses Firestore Security Rules
-    // This allows the Android app to register itself without needing full Google Sign-In inside Android.
+    // We use the authenticated userId from the token to ensure users can only update their own device
     await adminDb.collection('users').doc(userId).set({
       fcmToken: fcmToken,
       lastUpdated: new Date().toISOString()

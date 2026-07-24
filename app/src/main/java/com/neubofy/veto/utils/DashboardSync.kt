@@ -1,6 +1,7 @@
 package com.neubofy.veto.utils
 
 import android.content.Context
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
 import com.neubofy.veto.data.Settings
 import com.neubofy.veto.data.SettingsRepository
@@ -34,41 +35,57 @@ object DashboardSync {
     }
 
     private fun uploadTokenToServer(context: Context, dashboardUrl: String, userId: String, fcmToken: String) {
-        Thread {
-            try {
-                val apiUrl = if (dashboardUrl.endsWith("/")) "${dashboardUrl}api/device/link" else "$dashboardUrl/api/device/link"
-                val url = URL(apiUrl)
-                val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "POST"
-                connection.setRequestProperty("Content-Type", "application/json")
-                connection.doOutput = true
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            context.log().e(TAG, "User not authenticated. Cannot sync token.")
+            return
+        }
 
-                val jsonParam = JSONObject()
-                jsonParam.put("userId", userId)
-                jsonParam.put("fcmToken", fcmToken)
-
-                val out = OutputStreamWriter(connection.outputStream)
-                out.write(jsonParam.toString())
-                out.close()
-
-                val responseCode = connection.responseCode
-                if (responseCode in 200..299) {
-                    context.log().i(TAG, "Successfully synced FCM token to Dashboard")
-                    android.os.Handler(android.os.Looper.getMainLooper()).post {
-                        android.widget.Toast.makeText(context, "✅ Dashboard Connected!", android.widget.Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    context.log().e(TAG, "Failed to sync FCM token. Server returned $responseCode")
-                    android.os.Handler(android.os.Looper.getMainLooper()).post {
-                        android.widget.Toast.makeText(context, "❌ Dashboard Connection Error: $responseCode", android.widget.Toast.LENGTH_LONG).show()
-                    }
-                }
-            } catch (e: Exception) {
-                context.log().e(TAG, "Error syncing FCM token: ${e.message}")
-                android.os.Handler(android.os.Looper.getMainLooper()).post {
-                    android.widget.Toast.makeText(context, "❌ Network Error connecting to Dashboard", android.widget.Toast.LENGTH_LONG).show()
-                }
+        currentUser.getIdToken(true).addOnCompleteListener { task ->
+            if (!task.isSuccessful || task.result == null) {
+                context.log().e(TAG, "Failed to get Firebase Auth token: ${task.exception?.message}")
+                return@addOnCompleteListener
             }
-        }.start()
+
+            val idToken = task.result?.token ?: return@addOnCompleteListener
+
+            Thread {
+                try {
+                    val apiUrl = if (dashboardUrl.endsWith("/")) "${dashboardUrl}api/device/link" else "$dashboardUrl/api/device/link"
+                    val url = URL(apiUrl)
+                    val connection = url.openConnection() as HttpURLConnection
+                    connection.requestMethod = "POST"
+                    connection.setRequestProperty("Content-Type", "application/json")
+                    connection.setRequestProperty("Authorization", "Bearer $idToken")
+                    connection.doOutput = true
+
+                    val jsonParam = JSONObject()
+                    jsonParam.put("fcmToken", fcmToken)
+
+                    val out = OutputStreamWriter(connection.outputStream)
+                    out.write(jsonParam.toString())
+                    out.close()
+
+                    val responseCode = connection.responseCode
+                    if (responseCode in 200..299) {
+                        context.log().i(TAG, "Successfully synced FCM token to Dashboard")
+                        SettingsRepository.getInstance(context).set(Settings.SET_SYNCED_FCM_TOKEN, fcmToken)
+                        android.os.Handler(android.os.Looper.getMainLooper()).post {
+                            android.widget.Toast.makeText(context, "✅ Dashboard Connected!", android.widget.Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        context.log().e(TAG, "Failed to sync FCM token. Server returned $responseCode")
+                        android.os.Handler(android.os.Looper.getMainLooper()).post {
+                            android.widget.Toast.makeText(context, "❌ Dashboard Connection Error: $responseCode", android.widget.Toast.LENGTH_LONG).show()
+                        }
+                    }
+                } catch (e: Exception) {
+                    context.log().e(TAG, "Error syncing FCM token: ${e.message}")
+                    android.os.Handler(android.os.Looper.getMainLooper()).post {
+                        android.widget.Toast.makeText(context, "❌ Network Error connecting to Dashboard", android.widget.Toast.LENGTH_LONG).show()
+                    }
+                }
+            }.start()
+        }
     }
 }

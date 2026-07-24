@@ -24,6 +24,9 @@ class AppUpdatedReceiver : BroadcastReceiver() {
 
             // One-shot services that don't need to run on every VetoApplication start
             TempContactExpiredService.scheduleJob(context, 0)
+            
+            // Sync Firebase Token to Dashboard on App Update
+            com.neubofy.veto.utils.DashboardSync.uploadTokenIfPaired(context)
 
         }
     }

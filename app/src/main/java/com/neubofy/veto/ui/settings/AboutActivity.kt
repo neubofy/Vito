@@ -86,6 +86,21 @@ class AboutActivity : AppCompatActivity() {
             })
         }
 
+        // Beta Update Check
+        val progressBetaUpdate = findViewById<CircularProgressIndicator>(R.id.progressBetaUpdate)
+        val tvBetaUpdateStatus = findViewById<TextView>(R.id.tvBetaUpdateStatus)
+        findViewById<MaterialCardView>(R.id.cardBetaUpdate).setOnClickListener {
+            progressBetaUpdate.visibility = View.VISIBLE
+            tvBetaUpdateStatus.text = "Checking for beta updates..."
+            
+            UpdateManager.checkForUpdates(this, silent = false, isBeta = true, onCheckComplete = {
+                runOnUiThread {
+                    progressBetaUpdate.visibility = View.GONE
+                    tvBetaUpdateStatus.text = "Get early access features"
+                }
+            })
+        }
+
         loadAboutContent()
     }
 

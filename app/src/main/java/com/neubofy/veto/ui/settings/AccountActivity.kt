@@ -38,6 +38,7 @@ class AccountActivity : FmdActivity() {
     private lateinit var btnEmailSignIn: MaterialButton
     private lateinit var btnGoogleSignIn: MaterialButton
     private lateinit var btnOpenWebsite: MaterialButton
+    private lateinit var btnSyncDevice: MaterialButton
     private lateinit var btnSignOut: MaterialButton
 
     companion object {
@@ -59,6 +60,7 @@ class AccountActivity : FmdActivity() {
         btnEmailSignIn = findViewById(R.id.btnEmailSignIn)
         btnGoogleSignIn = findViewById(R.id.btnGoogleSignIn)
         btnOpenWebsite = findViewById(R.id.btnOpenWebsite)
+        btnSyncDevice = findViewById(R.id.btnSyncDevice)
         btnSignOut = findViewById(R.id.btnSignOut)
 
         auth = FirebaseAuth.getInstance()
@@ -149,6 +151,11 @@ class AccountActivity : FmdActivity() {
             }
         }
 
+        btnSyncDevice.setOnClickListener {
+            tvStatus.text = "Syncing with Dashboard..."
+            DashboardSync.uploadTokenIfPaired(this)
+        }
+
         updateUI()
     }
 
@@ -169,7 +176,21 @@ class AccountActivity : FmdActivity() {
             layoutLogin.visibility = View.GONE
             layoutLoggedIn.visibility = View.VISIBLE
             val email = user.email ?: "Unknown"
-            tvStatus.text = "Device is Paired!\nLogged in as $email"
+            
+            com.google.firebase.messaging.FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                var isSynced = false
+                if (task.isSuccessful) {
+                    val currentToken = task.result
+                    val syncedToken = SettingsRepository.getInstance(this).get(Settings.SET_SYNCED_FCM_TOKEN) as String
+                    isSynced = currentToken.isNotEmpty() && currentToken == syncedToken
+                }
+                
+                if (isSynced) {
+                    tvStatus.text = "Device is Paired & Synced!\nLogged in as $email"
+                } else {
+                    tvStatus.text = "Device Needs Syncing!\nLogged in as $email\nClick 'Sync Device to Veto'"
+                }
+            }
         } else {
             // Logged Out State
             layoutLogin.visibility = View.VISIBLE

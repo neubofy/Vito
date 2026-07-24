@@ -26,6 +26,6 @@ if (!getApps().length) {
   }
 }
 
-export const adminDb = getApps().length ? getFirestore() : null as any;
+export const adminDb = getApps().length ? getFirestore(getApp(), '(default)') : null as any;
 export const adminMessaging = getApps().length ? getMessaging() : null as any;
 export const adminAuth = getApps().length ? getAuth() : null as any;

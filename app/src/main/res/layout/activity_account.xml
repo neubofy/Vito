@@ -88,6 +88,15 @@
             android:layout_marginBottom="16dp" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSyncDevice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sync Device to Veto"
+            style="@style/Widget.MaterialComponents.Button"
+            app:icon="@drawable/ic_cloud"
+            android:layout_marginBottom="16dp" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSignOut"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

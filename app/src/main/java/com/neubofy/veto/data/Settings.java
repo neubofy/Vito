@@ -28,6 +28,7 @@ public class Settings extends HashMap<Integer, Object> {
     public static final int SET_FMDSERVER_URL = 102;
     public static final int SET_FMDSERVER_UPDATE_TIME = 103;
     public static final int SET_FMDSERVER_ID = 104;
+    public static final int SET_SYNCED_FCM_TOKEN = 1041;
     public static final int SET_FMDSERVER_PASSWORD_SET = 105;
     public static final int SET_FMDSERVER_LOCATION_TYPE = 106; // BackgroundLocationType
     //public static final int SET_FMDSERVER_AUTO_UPLOAD = 107;

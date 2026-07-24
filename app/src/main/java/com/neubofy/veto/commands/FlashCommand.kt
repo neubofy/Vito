@@ -20,7 +20,7 @@ class FlashCommand(context: Context) : Command(context) {
     }
 
     override val keyword = "flash"
-    override val usage = "flash"
+    override val usage = "flash [on | off]"
 
     @get:DrawableRes
     override val icon = R.drawable.ic_flashlight_on
@@ -66,16 +66,29 @@ class FlashCommand(context: Context) : Command(context) {
             return
         }
 
-        // Flash the camera for a few seconds
-        for (i in 1..10) {
+        if (args.contains("on")) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && torchStrength != 1) {
                 cameraManager.turnOnTorchWithStrengthLevel(cameraId, torchStrength)
             } else {
                 cameraManager.setTorchMode(cameraId, true)
             }
-            delay(500)
+            transport.send(context, "Flashlight turned ON")
+        } else if (args.contains("off")) {
             cameraManager.setTorchMode(cameraId, false)
-            delay(500)
+            transport.send(context, "Flashlight turned OFF")
+        } else {
+            // Flash the camera for a few seconds
+            for (i in 1..10) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && torchStrength != 1) {
+                    cameraManager.turnOnTorchWithStrengthLevel(cameraId, torchStrength)
+                } else {
+                    cameraManager.setTorchMode(cameraId, true)
+                }
+                delay(500)
+                cameraManager.setTorchMode(cameraId, false)
+                delay(500)
+            }
+            transport.send(context, "Flashlight blinked")
         }
     }
 }

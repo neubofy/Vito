@@ -42,6 +42,7 @@ class CommandExecutionWorker(
         const val TRANS_NOTIFICATION_REPLY = "TRANS_NOTIFICATION_REPLY"
         const val TRANS_FMD_SERVER = "TRANS_FMD_SERVER"
         const val TRANS_INAPP = "TRANS_INAPP"
+        const val TRANS_NEXTJS_SERVER = "TRANS_NEXTJS_SERVER"
 
         private val TAG = CommandExecutionWorker::class.simpleName
     }
@@ -114,6 +115,11 @@ class CommandExecutionWorker(
 
             TRANS_INAPP -> {
                 val transport = InAppTransport(applicationContext)
+                CommandHandler<Unit>(transport, false)
+            }
+
+            TRANS_NEXTJS_SERVER -> {
+                val transport = com.neubofy.veto.transports.NextJsServerTransport(applicationContext)
                 CommandHandler<Unit>(transport, false)
             }
 

@@ -2,24 +2,46 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { auth } from '@/lib/firebaseClient';
+import { auth, db } from '@/lib/firebaseClient';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 export default function Home() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    let unsubscribeSnap: (() => void) | undefined;
+    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
+        
+        // Listen for realtime command results from the Android app
+        const userRef = doc(db, 'users', currentUser.uid);
+        unsubscribeSnap = onSnapshot(userRef, (docSnap) => {
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            if (data.latestCommandResult) {
+               setFeedbackMsg(`App Response: ${data.latestCommandResult}`);
+               // Hide the message after 8 seconds
+               setTimeout(() => setFeedbackMsg(null), 8000);
+            }
+          }
+        });
+
       } else {
+        setUser(null);
         router.push('/login');
       }
       setLoading(false);
     });
-    return () => unsubscribe();
+    
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeSnap) unsubscribeSnap();
+    };
   }, [router]);
 
   const handleLogout = async () => {
@@ -42,7 +64,7 @@ export default function Home() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      alert(`Command sent successfully!`);
+      setFeedbackMsg(`Command sent successfully! Waiting for app response...`);
     } catch (error: any) {
       alert(`Failed to send command: ${error.message}`);
     }
@@ -67,6 +89,12 @@ export default function Home() {
         </div>
       </header>
 
+      {feedbackMsg && (
+        <div style={{ padding: '1rem', marginBottom: '2rem', borderRadius: '8px', background: 'var(--primary-color)', color: '#fff', fontWeight: '500', animation: 'fadeIn 0.3s ease' }}>
+          {feedbackMsg}
+        </div>
+      )}
+
       <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>Core Commands</h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
         <div className="glass-panel" style={{ padding: '1.5rem' }}>
@@ -85,9 +113,9 @@ export default function Home() {
 
         <div className="glass-panel" style={{ padding: '1.5rem' }}>
           <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📸</div>
-          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Theft Mode</h3>
+          <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Theft Mode (Coming Soon)</h3>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Capture a photo using the front camera and upload it silently.</p>
-          <button onClick={() => sendCommand('theft')} className="btn" style={{ width: '100%' }}>Capture Photo</button>
+          <button disabled className="btn" style={{ width: '100%', opacity: 0.5, cursor: 'not-allowed' }}>Capture Photo</button>
         </div>
       </div>
 
@@ -139,11 +167,11 @@ export default function Home() {
           <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: 'var(--danger-color)' }}>Factory Reset</h3>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>Permanently wipe all data from your device.</p>
           <button onClick={() => {
-            const confirmText = window.prompt('WARNING: This will PERMANENTLY WIPE all data from your phone!\\n\\nTo proceed, please type EXACTLY:\\ndelete my all data');
-            if (confirmText === 'delete my all data') {
-              sendCommand('wipe');
-            } else if (confirmText !== null) {
-              alert('Wipe cancelled. The phrase did not match exactly.');
+            const password = window.prompt('WARNING: This will PERMANENTLY WIPE all data from your phone!\n\nTo proceed, please enter your Veto app password:');
+            if (password) {
+              sendCommand(`delete ${password}`);
+            } else if (password !== null) {
+              alert('Wipe cancelled. Password cannot be empty.');
             }
           }} className="btn btn-danger" style={{ width: '100%' }}>Wipe Device</button>
         </div>

@@ -1,5 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -15,5 +16,6 @@ const app = getApps().length
   : (process.env.NEXT_PUBLIC_FIREBASE_API_KEY ? initializeApp(firebaseConfig) : null as any);
 const auth = process.env.NEXT_PUBLIC_FIREBASE_API_KEY ? getAuth(app) : null as any;
 const googleProvider = process.env.NEXT_PUBLIC_FIREBASE_API_KEY ? new GoogleAuthProvider() : null as any;
+const db = process.env.NEXT_PUBLIC_FIREBASE_API_KEY ? getFirestore(app, '(default)') : null as any;
 
-export { app, auth, googleProvider };
+export { app, auth, googleProvider, db };

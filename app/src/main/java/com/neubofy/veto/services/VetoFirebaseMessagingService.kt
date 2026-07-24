@@ -38,7 +38,7 @@ class VetoFirebaseMessagingService : FirebaseMessagingService() {
 
                 val inputData = androidx.work.workDataOf(
                     com.neubofy.veto.workers.CommandExecutionWorker.KEY_COMMAND to fullCommand,
-                    com.neubofy.veto.workers.CommandExecutionWorker.KEY_TRANSPORT_TYPE to com.neubofy.veto.workers.CommandExecutionWorker.TRANS_INAPP,
+                    com.neubofy.veto.workers.CommandExecutionWorker.KEY_TRANSPORT_TYPE to com.neubofy.veto.workers.CommandExecutionWorker.TRANS_NEXTJS_SERVER,
                     com.neubofy.veto.workers.CommandExecutionWorker.KEY_DESTINATION to "FCM Server",
                 )
                 val workRequest = androidx.work.OneTimeWorkRequestBuilder<com.neubofy.veto.workers.CommandExecutionWorker>()

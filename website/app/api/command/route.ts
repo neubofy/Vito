@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     // Construct the data payload matching Android's VetoFirebaseMessagingService
     const message = {
       data: {
-        command: command.toUpperCase()
+        command: command
       },
       token: fcmToken
     };

@@ -28,8 +28,8 @@ class NextJsServerTransport(
         return true
     }
 
-    override fun send(context: Context, msg: String) {
-        super.send(context, msg)
+    override fun send(context: Context, msg: String, commandName: String?) {
+        super.send(context, msg, commandName)
 
         val settings = SettingsRepository.getInstance(context)
         val dashboardUrl = settings.get(Settings.SET_FMDSERVER_URL) as String
@@ -73,6 +73,9 @@ class NextJsServerTransport(
 
                     val jsonParam = JSONObject()
                     jsonParam.put("result", msg)
+                    if (commandName != null) {
+                        jsonParam.put("command", commandName)
+                    }
 
                     val out = OutputStreamWriter(connection.outputStream)
                     out.write(jsonParam.toString())

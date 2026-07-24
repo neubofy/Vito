@@ -67,7 +67,7 @@ class LocateCommand(context: Context) : Command(context) {
                 TAG,
                 "Cannot locate: Location is off"
             )
-            transport.send(context, context.getString(R.string.cmd_locate_response_location_off))
+            transport.send(context, context.getString(R.string.cmd_locate_response_location_off), keyword)
             return
         }
 

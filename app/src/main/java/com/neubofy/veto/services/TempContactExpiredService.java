@@ -28,7 +28,7 @@ public class TempContactExpiredService extends JobService {
         for (Pair<String, Integer> temporaryPhoneNumber : expired) {
             String msg = getString(R.string.temporary_allowlist_expired);
             Transport<String> transport = new SmsTransport(this, temporaryPhoneNumber.getFirst(), temporaryPhoneNumber.getSecond());
-            transport.send(this, msg);
+            transport.send(this, msg, null);
             FmdLogKt.log(this).i(TAG, "Phone number expired: " + temporaryPhoneNumber.getFirst());
         }
 

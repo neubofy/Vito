@@ -36,14 +36,15 @@ class CameraCommand(context: Context) : Command(context) {
     ) {
         if (!settings.serverAccountExists()) {
             context.log().w(TAG, "Cannot take picture: no FMD Server account")
-            transport.send(context, context.getString(R.string.cmd_camera_response_no_fmd_server))
+            transport.send(context, context.getString(R.string.cmd_camera_response_no_fmd_server), keyword)
             return
         }
 
         val dummyCameraActivity = Intent(context, DummyCameraxActivity::class.java)
         dummyCameraActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        dummyCameraActivity.putExtra(DummyCameraxActivity.EXTRA_COMMAND, keyword)
 
-        if (args.contains("front")) {
+        if (args.getOrNull(0) == "front") {
             dummyCameraActivity.putExtra(
                 DummyCameraxActivity.EXTRA_CAMERA,
                 DummyCameraxActivity.CAMERA_FRONT
@@ -54,13 +55,13 @@ class CameraCommand(context: Context) : Command(context) {
                 DummyCameraxActivity.CAMERA_BACK
             )
         }
-        if (args.contains("flash")) {
+        if (args.getOrNull(1) == "flash") {
             dummyCameraActivity.putExtra(DummyCameraxActivity.EXTRA_FLASH, true)
         }
         context.log().d(TAG, "Starting camera activity")
         context.startActivity(dummyCameraActivity)
 
         val serverUrl = settings.get(Settings.SET_FMDSERVER_URL) as String
-        transport.send(context, context.getString(R.string.cmd_camera_response_success, serverUrl))
+        transport.send(context, context.getString(R.string.cmd_camera_response_success, serverUrl), keyword)
     }
 }

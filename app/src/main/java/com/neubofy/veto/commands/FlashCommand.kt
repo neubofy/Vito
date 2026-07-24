@@ -72,10 +72,10 @@ class FlashCommand(context: Context) : Command(context) {
             } else {
                 cameraManager.setTorchMode(cameraId, true)
             }
-            transport.send(context, "Flashlight turned ON")
+            transport.send(context, "Flashlight turned ON", keyword)
         } else if (args.contains("off")) {
             cameraManager.setTorchMode(cameraId, false)
-            transport.send(context, "Flashlight turned OFF")
+            transport.send(context, "Flashlight turned OFF", keyword)
         } else {
             // Flash the camera for a few seconds
             for (i in 1..10) {
@@ -88,7 +88,7 @@ class FlashCommand(context: Context) : Command(context) {
                 cameraManager.setTorchMode(cameraId, false)
                 delay(500)
             }
-            transport.send(context, "Flashlight blinked")
+            transport.send(context, "Flashlight blinked", keyword)
         }
     }
 }

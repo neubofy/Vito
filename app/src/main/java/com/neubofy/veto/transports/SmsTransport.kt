@@ -92,8 +92,8 @@ class SmsTransport(
         return false
     }
 
-    override fun send(context: Context, msg: String) {
-        super.send(context, msg)
+    override fun send(context: Context, msg: String, commandName: String?) {
+        super.send(context, msg, commandName)
 
         val smsManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             val defaultSmsManager = context.getSystemService(SmsManager::class.java)

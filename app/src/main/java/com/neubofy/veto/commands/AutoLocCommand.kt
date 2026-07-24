@@ -39,7 +39,7 @@ class AutoLocCommand(context: Context) : Command(context) {
         transport: Transport<T>,
     ) {
         if (args.isEmpty()) {
-            transport.send(context, "Usage: autoloc [on|off]")
+            transport.send(context, "Usage: autoloc [on|off]", keyword)
             return
         }
 
@@ -67,12 +67,12 @@ class AutoLocCommand(context: Context) : Command(context) {
                 ExistingPeriodicWorkPolicy.UPDATE, // Update existing job if any
                 periodicWork
             )
-            transport.send(context, "Background auto-location started (Interval: $intervalMinutes mins)")
+            transport.send(context, "Background auto-location started (Interval: $intervalMinutes mins)", keyword)
         } else if (action == "off") {
             workManager.cancelUniqueWork(WORK_NAME)
-            transport.send(context, "Background auto-location stopped.")
+            transport.send(context, "Background auto-location stopped.", keyword)
         } else {
-            transport.send(context, "Invalid action. Usage: $usage")
+            transport.send(context, "Invalid action. Usage: $usage", keyword)
         }
     }
 }

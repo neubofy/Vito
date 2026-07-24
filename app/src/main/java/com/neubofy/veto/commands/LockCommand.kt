@@ -56,6 +56,6 @@ class LockCommand(context: Context) : Command(context) {
             context.startActivity(lockScreenMessage)
         }
 
-        transport.send(context, context.getString(R.string.cmd_lock_response))
+        transport.send(context, context.getString(R.string.cmd_lock_response), keyword)
     }
 }

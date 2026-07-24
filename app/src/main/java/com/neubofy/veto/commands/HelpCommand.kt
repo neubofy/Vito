@@ -36,6 +36,6 @@ class HelpCommand(
         for (cmd in availableCommands) {
             reply.appendLine("${cmd.usage} - ${context.getString(cmd.shortDescription)}")
         }
-        transport.send(context, reply.toString())
+        transport.send(context, reply.toString(), keyword)
     }
 }

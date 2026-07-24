@@ -40,7 +40,7 @@ class DeleteCommand(context: Context) : Command(context) {
         if (!(settings.get(Settings.SET_WIPE_ENABLED) as Boolean)) {
             val msg = context.getString(R.string.cmd_delete_response_disabled)
             context.log().i(TAG, msg)
-            transport.send(context, msg)
+            transport.send(context, msg, keyword)
             return
         }
 
@@ -49,7 +49,7 @@ class DeleteCommand(context: Context) : Command(context) {
             val fullUsage = "$triggerWord $usage"
             val msg = context.getString(R.string.cmd_delete_response_pwd_missing, fullUsage)
             context.log().i(TAG, msg)
-            transport.send(context, msg)
+            transport.send(context, msg, keyword)
             return
         }
         val pwd = args[0]
@@ -59,7 +59,7 @@ class DeleteCommand(context: Context) : Command(context) {
         if (expectedPassword.isNullOrBlank() || expectedPassword != pwd) {
             val msg = context.getString(R.string.cmd_delete_response_pwd_wrong)
             context.log().i(TAG, msg)
-            transport.send(context, msg)
+            transport.send(context, msg, keyword)
             return
         }
 
@@ -67,13 +67,13 @@ class DeleteCommand(context: Context) : Command(context) {
         if (args.getOrNull(1)?.contains("dry") == true) {
             val msg = context.getString(R.string.cmd_delete_response_dry_run)
             context.log().i(TAG, msg)
-            transport.send(context, msg)
+            transport.send(context, msg, keyword)
             return
         }
 
         withContext(Dispatchers.IO) {
             context.log().i(TAG, "Deleting device...")
-            transport.send(context, context.getString(R.string.cmd_delete_response_success))
+            transport.send(context, context.getString(R.string.cmd_delete_response_success), keyword)
 
             // Give the message some time to be sent before the device is wiped
             delay(3000)
@@ -91,7 +91,7 @@ class DeleteCommand(context: Context) : Command(context) {
 
                 val msg = context.getString(R.string.cmd_delete_response_failed)
                 context.log().i(TAG, msg)
-                transport.send(context, msg)
+                transport.send(context, msg, keyword)
             }
         }
     }

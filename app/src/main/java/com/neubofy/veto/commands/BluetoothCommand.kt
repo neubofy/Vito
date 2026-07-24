@@ -44,7 +44,7 @@ class BluetoothCommand(context: Context) : Command(context) {
 
         if (bluetoothAdapter == null) {
             // Device doesn't support Bluetooth
-            transport.send(context, context.getString(R.string.cmd_bluetooth_response_no_bluetooth))
+            transport.send(context, context.getString(R.string.cmd_bluetooth_response_no_bluetooth), keyword)
             return
         }
 
@@ -54,13 +54,13 @@ class BluetoothCommand(context: Context) : Command(context) {
             } else {
                 context.getString(R.string.cmd_bluetooth_response_is_off)
             }
-            transport.send(context, msg)
+            transport.send(context, msg, keyword)
         } else if (args.contains("on")) {
             bluetoothAdapter.enable()
-            transport.send(context, context.getString(R.string.cmd_bluetooth_response_on))
+            transport.send(context, context.getString(R.string.cmd_bluetooth_response_on), keyword)
         } else if (args.contains("off")) {
             bluetoothAdapter.disable()
-            transport.send(context, context.getString(R.string.cmd_bluetooth_response_off))
+            transport.send(context, context.getString(R.string.cmd_bluetooth_response_off), keyword)
         }
     }
 }

@@ -49,8 +49,8 @@ class InAppTransport(
         return true
     }
 
-    override fun send(context: Context, msg: String) {
-        super.send(context, msg)
+    override fun send(context: Context, msg: String, commandName: String?) {
+        super.send(context, msg, commandName)
 
         val title = context.getString(R.string.transport_inapp_title)
 

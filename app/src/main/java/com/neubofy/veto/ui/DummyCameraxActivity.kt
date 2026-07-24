@@ -191,6 +191,12 @@ class DummyCameraxActivity : AppCompatActivity() {
                     connection.setRequestProperty("Authorization", "Bearer $idToken")
 
                     val out = java.io.DataOutputStream(connection.outputStream)
+                    
+                    val commandName = intent.extras?.getString(EXTRA_COMMAND) ?: "camera"
+                    out.writeBytes("--$boundary\r\n")
+                    out.writeBytes("Content-Disposition: form-data; name=\"command\"\r\n\r\n")
+                    out.writeBytes(commandName + "\r\n")
+                    
                     out.writeBytes("--$boundary\r\n")
                     out.writeBytes("Content-Disposition: form-data; name=\"file\"; filename=\"photo.jpg\"\r\n")
                     out.writeBytes("Content-Type: image/jpeg\r\n\r\n")
@@ -230,6 +236,7 @@ class DummyCameraxActivity : AppCompatActivity() {
     companion object {
         val TAG = DummyCameraxActivity::class.simpleName
 
+        const val EXTRA_COMMAND = "EXTRA_COMMAND"
         const val EXTRA_CAMERA = "EXTRA_CAMERA"
         const val EXTRA_FLASH = "EXTRA_FLASH"
         const val CAMERA_BACK = 0

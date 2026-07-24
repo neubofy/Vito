@@ -91,6 +91,6 @@ class StatsCommand(context: Context) : Command(context) {
             WiFi: ${wifisString.ifEmpty { "Unavailable/Timed out" }}
         """.trimIndent()
 
-        transport.send(context, reply)
+        transport.send(context, reply, keyword)
     }
 }

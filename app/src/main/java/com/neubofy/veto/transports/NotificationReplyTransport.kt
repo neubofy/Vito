@@ -56,8 +56,9 @@ class NotificationReplyTransport(
         return parsed.pin != null
     }
 
-    override fun send(context: Context, msg: String) {
-        super.send(context, msg)
+    override fun send(context: Context, msg: String, commandName: String?) {
+        super.send(context, msg, commandName)
+
         if (destination == null) {
             context.log().w(TAG, "Cannot reply, destination is null!")
             return

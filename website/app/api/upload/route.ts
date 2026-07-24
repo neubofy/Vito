@@ -34,23 +34,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Enforce 2-photo limit per user
-    const photosRef = adminDb.collection('users').doc(userId).collection('theftPhotos');
-    const existingPhotosSnap = await photosRef.orderBy('timestamp', 'desc').get();
+    const commandName = formData.get('command') as string || 'camera';
+
+    // Enforce 1-photo limit per command by using the command name as the Document ID
+    const photoDocRef = adminDb.collection('users').doc(userId).collection('photos').doc(commandName);
+    const existingPhotoSnap = await photoDocRef.get();
     
-    // If they already have 2 or more photos, delete the oldest ones until they have 1 left
-    if (existingPhotosSnap.size >= 2) {
-      const docsToDelete = existingPhotosSnap.docs.slice(1); // keep only the newest 1
-      for (const doc of docsToDelete) {
-        const data = doc.data();
-        if (data.url) {
-          try {
-            await del(data.url);
-          } catch (e) {
-            console.error('Failed to delete blob', data.url, e);
-          }
+    // If a photo already exists for this command, delete the old blob from Vercel Blob
+    if (existingPhotoSnap.exists) {
+      const data = existingPhotoSnap.data();
+      if (data?.url) {
+        try {
+          await del(data.url);
+        } catch (e) {
+          console.error('Failed to delete old blob', data.url, e);
         }
-        await doc.ref.delete(); // delete from Firestore
       }
     }
 
@@ -60,8 +58,8 @@ export async function POST(req: Request) {
       access: 'public', // Must be public for frontend to view easily without complex signed URLs
     });
 
-    // Save the photo URL to Firestore so the user can see it on the dashboard
-    await photosRef.add({
+    // Save the new photo URL to Firestore under the command name document
+    await photoDocRef.set({
       url: blob.url,
       path: blob.pathname,
       timestamp: new Date().toISOString()

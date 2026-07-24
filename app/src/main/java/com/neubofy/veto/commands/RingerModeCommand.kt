@@ -57,7 +57,7 @@ class RingerModeCommand(context: Context) : Command(context) {
                 ringerModeToString(oldMode),
             )
             context.log().i(TAG, msg)
-            transport.send(context, msg)
+            transport.send(context, msg, keyword)
             return
         }
 
@@ -79,7 +79,7 @@ class RingerModeCommand(context: Context) : Command(context) {
             ringerModeToString(newMode)
         )
         context.log().i(TAG, msg)
-        transport.send(context, msg)
+        transport.send(context, msg, keyword)
     }
 }
 

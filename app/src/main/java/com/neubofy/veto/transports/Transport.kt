@@ -52,16 +52,19 @@ abstract class Transport<DestinationType>(
      */
     abstract fun isAllowed(parsed: ParserResult.Success): Boolean
 
+    /**
+     * Sends the text back to the remote user via this transport.
+     * The original string might be too long so it gets truncated and chunked.
+     * @param commandName the name of the command that triggered this send, if available.
+     */
     @CallSuper
-    open fun send(context: Context, msg: String) {
+    open fun send(context: Context, msg: String, commandName: String? = null) {
         val missing = missingRequiredPermissions(context)
         if (missing.isNotEmpty()) {
             context.log()
                 .w(TAG, "Cannot send message: missing permissions ${missing.joinToString(", ")}")
             return
         }
-        // continue sending message
-        // (this should be done in the concrete classes that override this function)
     }
 
     open fun sendNewLocation(context: Context, location: FmdLocation) {

@@ -18,16 +18,18 @@ export async function POST(req: Request) {
 
     const userId = decodedToken.uid;
     const body = await req.json();
-    const { result } = body;
+    const { result, command } = body;
 
     if (!result) {
       return NextResponse.json({ error: 'Missing result string' }, { status: 400 });
     }
 
-    // Save the latest command result directly to the user's document for realtime UI feedback
-    await adminDb.collection('users').doc(userId).set({
-      latestCommandResult: result,
-      latestCommandTime: new Date().toISOString()
+    const commandName = command || 'unknown';
+
+    // Save the command result into a command-specific document
+    await adminDb.collection('users').doc(userId).collection('results').doc(commandName).set({
+      result: result,
+      timestamp: new Date().toISOString()
     }, { merge: true });
 
     return NextResponse.json({ success: true });

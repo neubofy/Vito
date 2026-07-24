@@ -32,10 +32,10 @@ class NoDisturbCommand(context: Context) : Command(context) {
 
         if (args.contains("on")) {
             nm.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_NONE)
-            transport.send(context, context.getString(R.string.cmd_nodisturb_response_on))
+            transport.send(context, context.getString(R.string.cmd_nodisturb_response_on), keyword)
         } else if (args.contains("off")) {
             nm.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_ALL)
-            transport.send(context, context.getString(R.string.cmd_nodisturb_response_off))
+            transport.send(context, context.getString(R.string.cmd_nodisturb_response_off), keyword)
         }
     }
 }

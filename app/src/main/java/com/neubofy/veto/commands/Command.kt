@@ -48,7 +48,7 @@ abstract class Command(val context: Context) {
                 missing.joinToString(", ") { it.toString(context) }
             )
             context.log().w(TAG, msg)
-            transport.send(context, msg)
+            transport.send(context, msg, keyword)
             return
         }
 

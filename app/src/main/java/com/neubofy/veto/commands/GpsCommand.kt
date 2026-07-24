@@ -35,13 +35,13 @@ class GpsCommand(context: Context) : Command(context) {
             } else {
                 context.getString(R.string.cmd_gps_response_is_off)
             }
-            transport.send(context, msg)
+            transport.send(context, msg, keyword)
         } else if (args.contains("on")) {
             SecureSettings.turnGPS(context, true)
-            transport.send(context, context.getString(R.string.cmd_gps_response_on))
+            transport.send(context, context.getString(R.string.cmd_gps_response_on), keyword)
         } else if (args.contains("off")) {
             SecureSettings.turnGPS(context, false)
-            transport.send(context, context.getString(R.string.cmd_gps_response_off))
+            transport.send(context, context.getString(R.string.cmd_gps_response_off), keyword)
         }
     }
 }

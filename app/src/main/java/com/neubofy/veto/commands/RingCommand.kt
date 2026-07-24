@@ -46,6 +46,6 @@ class RingCommand(context: Context) : Command(context) {
             }
         }
         RingerActivity.newInstance(context, duration)
-        transport.send(context, context.getString(R.string.cmd_ring_response))
+        transport.send(context, context.getString(R.string.cmd_ring_response), keyword)
     }
 }

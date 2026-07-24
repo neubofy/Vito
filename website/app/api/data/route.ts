@@ -21,16 +21,28 @@ export async function GET(req: Request) {
     // Read the user document directly from adminDb (bypassing Firestore client security rules)
     const userDoc = await adminDb.collection('users').doc(userId).get();
     
-    // Read the user's latest photos
-    const photosSnap = await adminDb.collection('users').doc(userId).collection('theftPhotos').orderBy('timestamp', 'desc').limit(2).get();
+    // Read the user's latest photos from the 'photos' subcollection
+    const photosSnap = await adminDb.collection('users').doc(userId).collection('photos').get();
     
-    const photos = photosSnap.docs.map(doc => doc.data());
+    // Read the user's latest results from the 'results' subcollection
+    const resultsSnap = await adminDb.collection('users').doc(userId).collection('results').get();
+    
+    // Convert to maps keyed by command name
+    const photos: Record<string, any> = {};
+    photosSnap.docs.forEach(doc => {
+      photos[doc.id] = doc.data();
+    });
+
+    const results: Record<string, any> = {};
+    resultsSnap.docs.forEach(doc => {
+      results[doc.id] = doc.data();
+    });
     
     if (!userDoc.exists) {
-      return NextResponse.json({ data: null, photos: photos });
+      return NextResponse.json({ data: null, photos, results });
     }
 
-    return NextResponse.json({ data: userDoc.data(), photos: photos });
+    return NextResponse.json({ data: userDoc.data(), photos, results });
   } catch (error: any) {
     console.error('Error fetching user data:', error);
     return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });

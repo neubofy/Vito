@@ -1,5 +1,7 @@
 package com.neubofy.veto.ui;
 
+import android.app.KeyguardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -48,7 +50,29 @@ public class LockScreenMessage extends VetoActivity {
         Button buttonUnlock = findViewById(R.id.buttonUnlock);
 
         buttonUnlock.setOnClickListener(v -> {
-            finish();
+            KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+            if (km != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                km.requestDismissKeyguard(this, new KeyguardManager.KeyguardDismissCallback() {
+                    @Override
+                    public void onDismissSucceeded() {
+                        super.onDismissSucceeded();
+                        finish();
+                    }
+                    @Override
+                    public void onDismissCancelled() {
+                        super.onDismissCancelled();
+                        // User cancelled the pin pad, the activity remains on screen!
+                    }
+                    @Override
+                    public void onDismissError() {
+                        super.onDismissError();
+                        // Fallback just in case
+                        finish();
+                    }
+                });
+            } else {
+                finish();
+            }
         });
         
         hideSystemUI();

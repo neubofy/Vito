@@ -26,7 +26,7 @@
             android:id="@+id/titleText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="LCLD: DEVICE LOCKED"
+            android:text="VETO: DEVICE LOCKED"
             android:textSize="24sp"
             android:textStyle="bold"
             android:textAlignment="center"

@@ -10,6 +10,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -46,6 +47,7 @@ public class SettingsActivity extends VetoActivity implements CompoundButton.OnC
     private TextView textStatusPin;
     private TextView textStatusLockMsg;
     private TextView textStatusCommand;
+    private TextView textSelectedRingtone;
 
     // Action buttons
     private Button btnEditWipe, btnRemoveWipe;
@@ -84,6 +86,7 @@ public class SettingsActivity extends VetoActivity implements CompoundButton.OnC
         textStatusPin = findViewById(R.id.textStatusPin);
         textStatusLockMsg = findViewById(R.id.textStatusLockMsg);
         textStatusCommand = findViewById(R.id.textStatusCommand);
+        textSelectedRingtone = findViewById(R.id.textSelectedRingtone);
         
         // Action Buttons
         btnEditWipe = findViewById(R.id.btnEditWipe);
@@ -190,6 +193,20 @@ public class SettingsActivity extends VetoActivity implements CompoundButton.OnC
         }
         textStatusCommand.setText("🟢 " + cmd);
         textStatusCommand.setTextColor(getColor(R.color.colorPrimary));
+        
+        // Ringtone
+        String ringtoneUriString = (String) settings.get(Settings.SET_RINGER_TONE);
+        if (ringtoneUriString != null && !ringtoneUriString.isEmpty()) {
+            Uri ringtoneUri = Uri.parse(ringtoneUriString);
+            Ringtone ringtone = RingtoneManager.getRingtone(this, ringtoneUri);
+            if (ringtone != null) {
+                textSelectedRingtone.setText(ringtone.getTitle(this));
+            } else {
+                textSelectedRingtone.setText("Unknown");
+            }
+        } else {
+            textSelectedRingtone.setText("Default");
+        }
     }
     
     private void onEditLockMsgClicked(View v) {
@@ -395,7 +412,12 @@ public class SettingsActivity extends VetoActivity implements CompoundButton.OnC
         super.onActivityResult(requestCode, resultCode, intent);
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_RINGTONE) {
             Uri uri = intent.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
-            settings.set(Settings.SET_RINGER_TONE, uri.toString());
+            if (uri != null) {
+                settings.set(Settings.SET_RINGER_TONE, uri.toString());
+            } else {
+                settings.set(Settings.SET_RINGER_TONE, "");
+            }
+            updateUI();
         }
     }
 

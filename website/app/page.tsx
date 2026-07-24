@@ -162,6 +162,7 @@ export default function LandingPage() {
       {/* Footer */}
       <footer style={{ padding: '3rem 2rem', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.05)', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
         <p>&copy; {new Date().getFullYear()} Veto Security. All rights reserved.</p>
+        <p style={{ marginTop: '0.5rem', opacity: 0.6, fontSize: '0.8rem' }}>Inspired by FMD</p>
       </footer>
     </main>
   );

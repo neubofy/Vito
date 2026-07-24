@@ -4,7 +4,7 @@ import android.content.Context
 import com.neubofy.veto.R
 import com.neubofy.veto.data.Settings
 import com.neubofy.veto.data.SettingsRepository
-import com.neubofy.veto.ui.settings.VetoConfigActivity
+import com.neubofy.veto.ui.settings.SettingsActivity
 import com.neubofy.veto.utils.Notifications
 
 class PinUpdate {
@@ -22,7 +22,7 @@ class PinUpdate {
                     title,
                     text,
                     Notifications.CHANNEL_SECURITY,
-                    cls = VetoConfigActivity::class.java,
+                    cls = SettingsActivity::class.java,
                 )
             }
             settings.remove(Settings.SET_PIN)

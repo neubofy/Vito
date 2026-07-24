@@ -31,17 +31,17 @@ export async function POST(req: Request) {
     });
 
     // Clear photos and blobs
+    const deletePromises = [];
     for (const doc of photosSnap.docs) {
       const data = doc.data();
       if (data?.url) {
-        try {
-          await del(data.url);
-        } catch (e) {
-          console.error('Failed to delete blob', data.url, e);
-        }
+        deletePromises.push(
+          del(data.url).catch(e => console.error('Failed to delete blob', data.url, e))
+        );
       }
       batch.delete(doc.ref);
     }
+    await Promise.all(deletePromises);
 
     // Delete the user document
     batch.delete(userRef);

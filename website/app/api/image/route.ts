@@ -11,6 +11,15 @@ export async function GET(req: Request) {
       return new Response('Missing URL or token', { status: 400 });
     }
 
+    try {
+      const parsedUrl = new URL(url);
+      if (!parsedUrl.hostname.endsWith('.vercel-storage.com')) {
+        return new Response('Invalid image domain', { status: 400 });
+      }
+    } catch (e) {
+      return new Response('Invalid URL format', { status: 400 });
+    }
+
     // Verify Firebase Auth Token
     let decodedToken;
     try {

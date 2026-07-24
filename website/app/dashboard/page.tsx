@@ -119,6 +119,10 @@ export default function Home() {
         unsubUser();
         unsubPhotos();
         unsubResults();
+        setPhotos({});
+        setResults({});
+        localStorage.removeItem('veto_photos');
+        localStorage.removeItem('veto_results');
         router.push('/login');
       }
       setLoading(false);
@@ -133,6 +137,10 @@ export default function Home() {
   }, [router]);
 
   const handleLogout = async () => {
+    localStorage.removeItem('veto_photos');
+    localStorage.removeItem('veto_results');
+    setPhotos({});
+    setResults({});
     await signOut(auth);
     router.push('/login');
   };

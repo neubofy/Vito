@@ -4,32 +4,30 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.neubofy.veto.R
 
+class PhoneStatePermission : Permission() {
+    @get:StringRes
+    override val name = R.string.perm_phone_state_name
+    @get:StringRes
+    override val description = R.string.perm_phone_state_desc
 
-@RequiresApi(Build.VERSION_CODES.S)
-class BluetoothConnectPermission : Permission() {
-    @get:StringRes
-    override val name = R.string.perm_bluetooth_connect_name
-    @get:StringRes
-    override val description = R.string.perm_bluetooth_connect_desc
+    val REQUEST_CODE = 8071
 
     override fun isGranted(context: Context): Boolean {
         return ContextCompat.checkSelfPermission(
-            context, Manifest.permission.BLUETOOTH_CONNECT
+            context, Manifest.permission.READ_PHONE_STATE
         ) == PERMISSION_GRANTED
     }
 
-    val REQUEST_CODE = 8095
-
     override fun request(activity: Activity) {
         ActivityCompat.requestPermissions(
-            activity, arrayOf(Manifest.permission.BLUETOOTH_CONNECT), REQUEST_CODE
+            activity,
+            arrayOf(Manifest.permission.READ_PHONE_STATE),
+            REQUEST_CODE
         )
     }
 }

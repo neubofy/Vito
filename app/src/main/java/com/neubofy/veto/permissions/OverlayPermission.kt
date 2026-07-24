@@ -12,6 +12,8 @@ import com.neubofy.veto.R
 class OverlayPermission : Permission() {
     @get:StringRes
     override val name = R.string.perm_overlay_name
+    @get:StringRes
+    override val description = R.string.perm_overlay_desc
 
     override fun isGranted(context: Context): Boolean {
         return Settings.canDrawOverlays(context)

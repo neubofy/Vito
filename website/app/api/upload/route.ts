@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { adminDb, adminAuth, adminStorage } from '@/lib/firebaseAdmin';
+import { adminDb, adminAuth } from '@/lib/firebaseAdmin';
+import { put, del } from '@vercel/blob';
 
 export async function POST(req: Request) {
   try {
@@ -42,36 +43,31 @@ export async function POST(req: Request) {
       const docsToDelete = existingPhotosSnap.docs.slice(1); // keep only the newest 1
       for (const doc of docsToDelete) {
         const data = doc.data();
-        if (data.path) {
+        if (data.url) {
           try {
-            await adminStorage.bucket().file(data.path).delete();
+            await del(data.url);
           } catch (e) {
-            console.error('Failed to delete storage file', data.path, e);
+            console.error('Failed to delete blob', data.url, e);
           }
         }
         await doc.ref.delete(); // delete from Firestore
       }
     }
 
-    // Upload to Firebase Storage
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const bucket = adminStorage.bucket();
     const filename = `theft-mode/${userId}/${Date.now()}-${file.name}`;
-    const fileRef = bucket.file(filename);
-
-    await fileRef.save(buffer, {
-      metadata: { contentType: file.type },
-      public: false // private to the user
+    
+    const blob = await put(filename, file, {
+      access: 'public', // Must be public for frontend to view easily without complex signed URLs
     });
 
-    // Save the photo path to Firestore so the user can see it on the dashboard
+    // Save the photo URL to Firestore so the user can see it on the dashboard
     await photosRef.add({
-      path: filename,
+      url: blob.url,
+      path: blob.pathname,
       timestamp: new Date().toISOString()
     });
 
-    return NextResponse.json({ success: true, path: filename });
+    return NextResponse.json({ success: true, url: blob.url });
   } catch (error: any) {
     console.error('Error uploading file:', error);
     return NextResponse.json(

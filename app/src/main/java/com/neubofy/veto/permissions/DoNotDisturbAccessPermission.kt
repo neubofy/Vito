@@ -12,6 +12,8 @@ import com.neubofy.veto.R
 class DoNotDisturbAccessPermission() : Permission() {
     @get:StringRes
     override val name = R.string.perm_do_not_disturb_access_name
+    @get:StringRes
+    override val description = R.string.perm_dnd_desc
 
     override fun isGranted(context: Context): Boolean {
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

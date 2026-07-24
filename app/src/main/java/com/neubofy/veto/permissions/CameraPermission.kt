@@ -13,6 +13,8 @@ import com.neubofy.veto.R
 class CameraPermission : Permission() {
     @get:StringRes
     override val name = R.string.perm_camera_name
+    @get:StringRes
+    override val description = R.string.perm_camera_desc
 
     override fun isGranted(context: Context): Boolean {
         return ContextCompat.checkSelfPermission(

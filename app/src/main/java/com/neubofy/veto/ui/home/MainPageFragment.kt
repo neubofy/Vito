@@ -52,6 +52,10 @@ class MainPageFragment : TaggedFragment() {
                 .commit()
         }
 
+        view.findViewById<MaterialCardView>(R.id.card_settings).setOnClickListener {
+            startActivity(Intent(requireContext(), com.neubofy.veto.ui.settings.SettingsActivity::class.java))
+        }
+
         return view
     }
 }

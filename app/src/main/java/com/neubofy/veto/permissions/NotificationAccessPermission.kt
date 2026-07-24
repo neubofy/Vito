@@ -15,6 +15,8 @@ import com.neubofy.veto.services.NotificationListenService
 class NotificationAccessPermission : Permission() {
     @get:StringRes
     override val name = R.string.perm_notification_access_name
+    @get:StringRes
+    override val description = R.string.perm_notification_access_desc
 
     override fun isGranted(context: Context): Boolean {
         val cn = ComponentName(context, NotificationListenService::class.java)

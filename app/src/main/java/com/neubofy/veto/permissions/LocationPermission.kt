@@ -14,6 +14,8 @@ import com.neubofy.veto.R
 class LocationPermission : Permission() {
     @get:StringRes
     override val name = R.string.perm_location_name
+    @get:StringRes
+    override val description = R.string.perm_location_desc
 
     fun isForegroundGranted(context: Context): Boolean {
         return ContextCompat.checkSelfPermission(

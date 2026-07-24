@@ -13,6 +13,8 @@ import com.neubofy.veto.R
 class SmsPermission : Permission() {
     @get:StringRes
     override val name = R.string.perm_sms_name
+    @get:StringRes
+    override val description = R.string.perm_sms_desc
 
     val REQUEST_CODE = 8070
 

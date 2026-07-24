@@ -106,7 +106,7 @@ jobs:
               fi
             done
             echo "Uploading new APK to $TARGET_TAG..."
-            gh release upload "$TARGET_TAG" "$APK_PATH"
+            gh release upload "$TARGET_TAG" "$APK_PATH" --clobber
           else
             echo "Release $TARGET_TAG does not exist. Creating..."
             if [ "$MAKE_LATEST" = "true" ]; then

@@ -118,6 +118,9 @@ class DummyCameraxActivity : AppCompatActivity() {
         cameraProvider.unbindAll()
         try {
             cameraProvider.bindToLifecycle(this, cameraSelector, imageCapture)
+            // Wait for the camera hardware to physically turn on and open the session
+            // Otherwise, takePicture throws ImageCaptureException ERROR_CAMERA_CLOSED (3)
+            kotlinx.coroutines.delay(1500L)
         } catch (e: IllegalArgumentException) {
             e.printStackTrace()
             this.log().e(

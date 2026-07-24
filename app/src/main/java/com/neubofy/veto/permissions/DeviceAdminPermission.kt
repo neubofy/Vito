@@ -13,6 +13,8 @@ import com.neubofy.veto.receiver.DeviceAdminReceiver
 class DeviceAdminPermission : Permission() {
     @get:StringRes
     override val name = R.string.perm_device_admin_name
+    @get:StringRes
+    override val description = R.string.perm_device_admin_desc
 
     override fun isGranted(context: Context): Boolean {
         val dpm = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager

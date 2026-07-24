@@ -75,27 +75,7 @@ public class MainActivity extends FmdActivity {
         invalidateOptionsMenu();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_app_bar, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.menuItemSettings) {
-            startActivity(new Intent(this, SettingsActivity.class));
-            return true;
-        } else if (item.getItemId() == R.id.menuItemWebsite) {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://veto.neubofy.in"));
-            startActivity(browserIntent);
-            return true;
-        } else if (item.getItemId() == R.id.menuItemAbout) {
-            startActivity(new Intent(this, AboutActivity.class));
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
 
 }

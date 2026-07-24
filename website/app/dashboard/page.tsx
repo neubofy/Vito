@@ -2,8 +2,9 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { auth } from '@/lib/firebaseClient';
+import { auth, db } from '@/lib/firebaseClient';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
+import { doc, collection, onSnapshot } from 'firebase/firestore';
 
 type FeedbackType = 'info' | 'success' | 'error';
 interface Feedback { type: FeedbackType; text: string; }
@@ -55,48 +56,6 @@ export default function Home() {
   const [selectedOutput, setSelectedOutput] = useState<string | null>(null);
 
 
-  const fetchData = useCallback(async (currentUser: User, currentActiveCmd: string | null) => {
-    try {
-      const token = await currentUser.getIdToken();
-      const res = await fetch('/api/data', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const { data, photos: newPhotos, results: newResults } = await res.json();
-        if (data) {
-          setDeviceLinked(!!data.fcmToken);
-        }
-        if (newPhotos) {
-          setPhotos(newPhotos);
-          localStorage.setItem('veto_photos', JSON.stringify(newPhotos));
-        }
-        if (newResults) {
-          setResults((prev) => {
-            if (currentActiveCmd) {
-              const baseCmd = currentActiveCmd.split(' ')[0];
-              const prevCmdResult = prev[baseCmd];
-              const newCmdResult = newResults[baseCmd];
-              
-              const resIsNew = newCmdResult && (!prevCmdResult || prevCmdResult.timestamp !== newCmdResult.timestamp);
-              // We don't check photo diff here because photos state update is not reliable inside this setter
-              
-              if (resIsNew) {
-                 setIsCommandPending(false);
-                 setActiveCmd(null);
-                 setFeedback({ type: 'success', text: 'Data arrived!' });
-                 setTimeout(() => setFeedback(null), 5000);
-              }
-            }
-            localStorage.setItem('veto_results', JSON.stringify(newResults));
-            return newResults;
-          });
-        }
-      }
-    } catch (e) {
-      console.error('Data fetch error:', e);
-    }
-  }, []);
-
   // Check photo separately
   useEffect(() => {
     if (activeCmd && isCommandPending) {
@@ -111,33 +70,67 @@ export default function Home() {
     }
   }, [photos, activeCmd, isCommandPending, commandStartTime]);
 
-  // Initial fetch when auth state changes
+  // Check results separately
   useEffect(() => {
+    if (activeCmd && isCommandPending) {
+       const baseCmd = activeCmd.split(' ')[0];
+       const result = results[baseCmd];
+       if (result && new Date(result.timestamp).getTime() > commandStartTime) {
+         setIsCommandPending(false);
+         setActiveCmd(null);
+         setFeedback({ type: 'success', text: 'Data arrived!' });
+         setTimeout(() => setFeedback(null), 5000);
+       }
+    }
+  }, [results, activeCmd, isCommandPending, commandStartTime]);
+
+  // Real-time Firebase listeners (no polling required!)
+  useEffect(() => {
+    let unsubUser = () => {};
+    let unsubPhotos = () => {};
+    let unsubResults = () => {};
+
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        fetchData(currentUser, null);
+        
+        unsubUser = onSnapshot(doc(db, 'users', currentUser.uid), (docSnap) => {
+          if (docSnap.exists()) {
+            setDeviceLinked(!!docSnap.data().fcmToken);
+          }
+        });
+
+        unsubPhotos = onSnapshot(collection(db, 'users', currentUser.uid, 'photos'), (snapshot) => {
+          const newPhotos: Record<string, any> = {};
+          snapshot.forEach(d => { newPhotos[d.id] = d.data(); });
+          setPhotos(newPhotos);
+          localStorage.setItem('veto_photos', JSON.stringify(newPhotos));
+        });
+
+        unsubResults = onSnapshot(collection(db, 'users', currentUser.uid, 'results'), (snapshot) => {
+          const newResults: Record<string, any> = {};
+          snapshot.forEach(d => { newResults[d.id] = d.data(); });
+          setResults(newResults);
+          localStorage.setItem('veto_results', JSON.stringify(newResults));
+        });
+
       } else {
         setUser(null);
+        unsubUser();
+        unsubPhotos();
+        unsubResults();
         router.push('/login');
       }
       setLoading(false);
     });
-    return () => unsubscribeAuth();
-  }, [router, fetchData]);
 
-  // Fast Polling ONLY when a command is pending
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-    if (user && isCommandPending) {
-      intervalId = setInterval(() => {
-        fetchData(user, activeCmd);
-      }, 2000); // Check every 2 seconds
-    }
     return () => {
-      if (intervalId) clearInterval(intervalId);
+      unsubscribeAuth();
+      unsubUser();
+      unsubPhotos();
+      unsubResults();
     };
-  }, [user, isCommandPending, activeCmd, fetchData]);
+  }, [router]);
 
   const handleLogout = async () => {
     await signOut(auth);

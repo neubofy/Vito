@@ -27,7 +27,7 @@ object UpdateManager {
     private const val KEY_LAST_CHECK_TIME = "last_check_time"
     private const val CHECK_INTERVAL_DAYS = 7L
 
-    private const val GITHUB_API_URL = "https://api.github.com/repos/pawanwashudev-official/Veto/releases"
+    private const val GITHUB_API_URL = "https://api.github.com/repos/neubofy/Veto/releases"
 
     /**
      * Check for updates.

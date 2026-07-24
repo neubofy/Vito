@@ -55,7 +55,7 @@ public class CrashedActivity extends VetoActivity {
 
     private void onSendLogClicked(View v) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse("https://github.com/pawanwashudev-official/Veto/issues"));
+        intent.setData(Uri.parse("https://github.com/neubofy/Veto/issues"));
         startActivity(intent);
         finish();
     }

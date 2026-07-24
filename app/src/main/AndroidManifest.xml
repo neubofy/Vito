@@ -176,10 +176,7 @@
             android:name=".services.TempContactExpiredService"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-        <service
-            android:name=".services.FmdBatteryLowService"
-            android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+
         <service
             android:name=".services.NotificationListenService"
             android:exported="false"

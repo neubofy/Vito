@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { auth, db } from '@/lib/firebaseClient';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
-import { doc, onSnapshot } from 'firebase/firestore';
 
 type FeedbackType = 'info' | 'success' | 'error';
 interface Feedback { type: FeedbackType; text: string; }
@@ -15,31 +14,11 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [activeCmd, setActiveCmd] = useState<string | null>(null);
-  const [deviceLinked, setDeviceLinked] = useState<boolean>(false);
 
   useEffect(() => {
-    let unsubscribeSnap: (() => void) | undefined;
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        
-        // Listen for realtime command results from the Android app
-        const userRef = doc(db, 'users', currentUser.uid);
-        unsubscribeSnap = onSnapshot(userRef, (docSnap) => {
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            setDeviceLinked(!!data.fcmToken);
-            if (data.latestCommandResult) {
-               setFeedback({ type: 'success', text: `App Response: ${data.latestCommandResult}` });
-               setActiveCmd(null); // Clear active state
-               // Hide the message after 8 seconds
-               setTimeout(() => setFeedback(null), 8000);
-            }
-          } else {
-            setDeviceLinked(false);
-          }
-        });
-
       } else {
         setUser(null);
         router.push('/login');
@@ -47,10 +26,7 @@ export default function Home() {
       setLoading(false);
     });
     
-    return () => {
-      unsubscribeAuth();
-      if (unsubscribeSnap) unsubscribeSnap();
-    };
+    return () => unsubscribeAuth();
   }, [router]);
 
   const handleLogout = async () => {
@@ -63,7 +39,7 @@ export default function Home() {
     
     // Start animation and feedback state
     setActiveCmd(command.startsWith('delete') ? 'delete' : command);
-    setFeedback({ type: 'info', text: 'Command sent successfully! Waiting for app response...' });
+    setFeedback({ type: 'info', text: 'Executing command...' });
     
     try {
       const token = await user.getIdToken();
@@ -77,6 +53,12 @@ export default function Home() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
+      
+      setFeedback({ type: 'success', text: 'Command executed successfully!' });
+      setTimeout(() => {
+        setFeedback(null);
+        setActiveCmd(null);
+      }, 4000);
     } catch (error: any) {
       setFeedback({ type: 'error', text: `Failed: ${error.message}` });
       setTimeout(() => {
@@ -124,11 +106,11 @@ export default function Home() {
                 width: '8px', 
                 height: '8px', 
                 borderRadius: '50%', 
-                backgroundColor: deviceLinked ? '#2ea043' : '#f85149', 
-                boxShadow: deviceLinked ? '0 0 10px #2ea043' : '0 0 10px #f85149' 
+                backgroundColor: '#2ea043', 
+                boxShadow: '0 0 10px #2ea043' 
               }}></div>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                {deviceLinked ? 'App Connected (FCM Linked)' : 'App Not Connected'}
+                Session Active
               </span>
             </div>
           </div>

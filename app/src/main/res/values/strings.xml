@@ -428,8 +428,8 @@
     <!-- Varia -->
     <string name="MH_Pin_Accepted">Pin accepted!</string>
 
-    <string name="perm_phone_state_name">Phone State</string>
-    <string name="perm_phone_state_desc">Required to fetch SIM info, cellular tower location, and IP address for the Stats command.</string>
+    <string name="perm_contacts_name">Contacts</string>
+    <string name="perm_contacts_desc">Required to select contacts for your allowlist.</string>
     
     <string name="perm_bluetooth_connect_desc">Required to control Bluetooth state (e.g., enable/disable Bluetooth remotely).</string>
     <string name="perm_camera_desc">Required to take pictures remotely when you send the Camera command or trigger Theft Mode.</string>

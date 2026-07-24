@@ -45,25 +45,13 @@ class StatsCommand(context: Context) : Command(context) {
         val batteryPct = bm.getIntProperty(android.os.BatteryManager.BATTERY_PROPERTY_CAPACITY)
 
         // Telephony details (SIM/IMEI)
-        var imei = "Unknown"
         var networkOperator = "Unknown"
-        var phoneNumber = "Unknown"
         
         val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as android.telephony.TelephonyManager
-        if (androidx.core.app.ActivityCompat.checkSelfPermission(context, android.Manifest.permission.READ_PHONE_STATE) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
-            try {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                    imei = tm.imei ?: "Unknown"
-                } else {
-                    @Suppress("DEPRECATION")
-                    imei = tm.deviceId ?: "Unknown"
-                }
-                networkOperator = tm.networkOperatorName ?: "Unknown"
-                @Suppress("MissingPermission")
-                phoneNumber = tm.line1Number ?: "Unknown"
-            } catch (e: Exception) {
-                // Ignore
-            }
+        try {
+            networkOperator = tm.networkOperatorName ?: "Unknown"
+        } catch (e: Exception) {
+            // Ignore
         }
 
         val deferred = CompletableDeferred<List<android.net.wifi.ScanResult>>()
@@ -84,9 +72,7 @@ class StatsCommand(context: Context) : Command(context) {
             Model: $manufacturer $model
             OS: Android $androidVersion (SDK $sdkLevel)
             Battery: $batteryPct%
-            IMEI: $imei
             SIM Network: $networkOperator
-            Phone Number: $phoneNumber
             IPs: $ipsString
             WiFi: ${wifisString.ifEmpty { "Unavailable/Timed out" }}
         """.trimIndent()

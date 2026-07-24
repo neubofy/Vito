@@ -330,18 +330,52 @@ export default function Home() {
               if (parts.length < 2) return <div key={i} style={{ gridColumn: '1 / -1' }}>{line}</div>;
               const key = parts[0];
               const val = parts.slice(1).join(':').trim();
+              
+              const handleCopy = () => {
+                navigator.clipboard.writeText(val);
+                alert(`Copied ${key.trim()} to clipboard!`);
+              };
+
               return (
                 <div key={i} style={{ 
                   backgroundColor: 'rgba(255,255,255,0.05)', 
                   padding: '1rem', 
                   borderRadius: '8px',
-                  border: '1px solid rgba(255,255,255,0.1)'
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  overflow: 'hidden'
                 }}>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>
-                    {key.trim()}
-                  </div>
-                  <div style={{ fontSize: '1.1rem', fontWeight: '500', color: '#fff' }}>
-                    {val}
+                  <div>
+                    <div style={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between', 
+                      alignItems: 'center',
+                      marginBottom: '0.5rem'
+                    }}>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                        {key.trim()}
+                      </div>
+                      <button 
+                        onClick={handleCopy}
+                        title="Copy"
+                        style={{
+                          background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '1.2rem', padding: '0 4px'
+                        }}
+                      >
+                        📋
+                      </button>
+                    </div>
+                    <div style={{ 
+                      fontSize: '1rem', 
+                      fontWeight: '500', 
+                      color: '#fff',
+                      wordBreak: 'break-word',
+                      whiteSpace: 'pre-wrap'
+                    }}>
+                      {val}
+                    </div>
                   </div>
                 </div>
               );

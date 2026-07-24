@@ -45,15 +45,12 @@ class MainPageFragment : TaggedFragment() {
                 .commit()
         }
 
-        view.findViewById<MaterialCardView>(R.id.card_sms_commands).setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, SmsCommandsFragment())
-                .addToBackStack(null)
-                .commit()
+        view.findViewById<MaterialCardView>(R.id.card_website).setOnClickListener {
+            startActivity(Intent(requireContext(), AccountActivity::class.java))
         }
 
         view.findViewById<MaterialCardView>(R.id.card_settings).setOnClickListener {
-            startActivity(Intent(requireContext(), com.neubofy.veto.ui.settings.SettingsActivity::class.java))
+            startActivity(Intent(requireContext(), com.neubofy.veto.ui.settings.VetoConfigActivity::class.java))
         }
 
         return view

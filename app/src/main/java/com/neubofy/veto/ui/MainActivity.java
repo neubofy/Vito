@@ -22,7 +22,7 @@ import com.neubofy.veto.data.SettingsRepository;
 import com.neubofy.veto.services.TempContactExpiredService;
 import com.neubofy.veto.ui.home.MainPageFragment;
 import com.neubofy.veto.ui.onboarding.UpdateboardingModernCryptoActivity;
-import com.neubofy.veto.ui.settings.SettingsActivity;
+
 import com.neubofy.veto.ui.settings.AboutActivity;
 import com.neubofy.veto.utils.UpdateManager;
 import kotlin.Unit;
@@ -75,7 +75,23 @@ public class MainActivity extends VetoActivity {
         invalidateOptionsMenu();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
 
-
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_log) {
+            startActivity(new Intent(this, com.neubofy.veto.ui.settings.LogViewActivity.class));
+            return true;
+        } else if (id == R.id.action_about) {
+            startActivity(new Intent(this, com.neubofy.veto.ui.settings.AboutActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 }

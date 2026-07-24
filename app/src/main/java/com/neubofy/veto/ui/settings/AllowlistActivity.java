@@ -3,15 +3,9 @@ package com.neubofy.veto.ui.settings;
 import static com.neubofy.veto.ui.UiUtil.setupEdgeToEdge;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -58,7 +52,6 @@ public class AllowlistActivity extends VetoActivity {
         recyclerView.setAdapter(allowlistAdapter);
 
         textWhitelistEmpty = findViewById(R.id.whitelistEmpty);
-        findViewById(R.id.buttonAddContact).setOnClickListener(this::onAddContactClicked);
         findViewById(R.id.buttonAddPhoneNumber).setOnClickListener(this::onAddPhoneNumberClicked);
 
         updateScreen();
@@ -93,81 +86,6 @@ public class AllowlistActivity extends VetoActivity {
                 .show();
     }
 
-    private void onAddContactClicked(View v) {
-        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        try {
-            startActivityForResult(intent, REQUEST_CODE);
-        } catch (ActivityNotFoundException e) {
-            intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-            try {
-                startActivityForResult(intent, REQUEST_CODE);
-            } catch (ActivityNotFoundException e2) {
-                Toast.makeText(this, getString(R.string.WhiteList_no_contact_picker), Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    @Override
-    public void onActivityResult(int reqCode, int resultCode, Intent data) {
-        super.onActivityResult(reqCode, resultCode, data);
-        switch (reqCode) {
-            case (REQUEST_CODE):
-                if (resultCode == Activity.RESULT_OK) {
-                    // Multiple items selected
-                    ClipData clipData = data.getClipData();
-                    if (clipData != null) {
-                        int count = clipData.getItemCount();
-                        for (int i = 0; i < count; i++) {
-                            ClipData.Item item = clipData.getItemAt(i);
-                            Uri uri = item.getUri();
-                            if (uri != null) {
-                                addContactFromUri(uri);
-                            }
-                        }
-                    }
-
-                    // Single item selected
-                    Uri uri = data.getData();
-                    if (uri != null) {
-                        addContactFromUri(uri);
-                    }
-                }
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + reqCode);
-        }
-    }
-
-    private void addContactFromUri(Uri uri) {
-        String[] projection = new String[]{
-                ContactsContract.Contacts.DISPLAY_NAME,
-                ContactsContract.CommonDataKinds.Phone.NUMBER
-        };
-        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
-
-        if (cursor == null || !cursor.moveToFirst()) {
-            if (cursor != null) cursor.close();
-            // cursor is empty
-            return;
-        }
-        try {
-            do {
-                int nameIdx = cursor.getColumnIndex(ContactsContract.Data.DISPLAY_NAME);
-                int numIdx = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-                
-                String cName = nameIdx >= 0 ? cursor.getString(nameIdx) : "";
-                String cNumber = numIdx >= 0 ? cursor.getString(numIdx) : "";
-
-                Contact contact = Contact.from(this, cName, cNumber);
-                if (contact != null) {
-                    addContactToAllowList(contact);
-                }
-            } while (cursor.moveToNext());
-        } finally {
-            cursor.close();
-        }
     }
 
     private void addContactToAllowList(@Nullable Contact contact) {

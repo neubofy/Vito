@@ -233,20 +233,21 @@
                                 app:tint="?attr/colorOnSurfaceVariant" />
                         </LinearLayout>
                         
+                        <TextView
+                            android:id="@+id/textStatusLockMsg"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="🔴 Not Set"
+                            android:textColor="?attr/colorError"
+                            android:textStyle="bold" />
+                            
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
-                            android:gravity="center_vertical"
+                            android:gravity="end"
                             android:layout_marginTop="8dp">
-                            <TextView
-                                android:id="@+id/textStatusLockMsg"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="🔴 Not Set"
-                                android:textColor="?attr/colorError"
-                                android:textStyle="bold" />
                             <Button
                                 android:id="@+id/btnEditLockMsg"
                                 style="@style/Widget.Material3.Button.TonalButton"

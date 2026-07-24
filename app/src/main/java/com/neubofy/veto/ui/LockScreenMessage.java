@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 
 import com.neubofy.veto.R;
@@ -40,6 +41,13 @@ public class LockScreenMessage extends VetoActivity {
 
         settings = SettingsRepository.Companion.getInstance(this);
         settings.load();
+        
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Do nothing, block back button
+            }
+        });
 
         TextView textView = findViewById(R.id.textViewLockScreenMessage);
         String message = getIntent().getStringExtra(CUSTOM_TEXT);

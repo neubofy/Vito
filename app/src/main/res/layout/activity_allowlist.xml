@@ -51,14 +51,6 @@
     </FrameLayout>
 
     <Button
-        android:id="@+id/buttonAddContact"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/margin_normal"
-        android:layout_marginTop="@dimen/margin_normal"
-        android:text="@string/WhiteList_Add_Contact" />
-
-    <Button
         android:id="@+id/buttonAddPhoneNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

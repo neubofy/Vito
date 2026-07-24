@@ -15,8 +15,7 @@ fun globalAppPermissions() = listOf(
     NotificationAccessPermission(),
     OverlayPermission(),
     SmsPermission(),
-    WriteSecureSettingsPermission(),
-    ContactsPermission()
+    WriteSecureSettingsPermission()
 )
 
 fun isMissingGlobalAppPermission(context: Context): Boolean {
